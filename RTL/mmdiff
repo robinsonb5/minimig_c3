@@ -1,0 +1,152 @@
+147,150c147,150
+< 	output	[2:0] n_cpu_ipl,		// m68k interrupt request
+< 	input	n_cpu_as,			// m68k address strobe
+< 	input	n_cpu_uds,			// m68k upper data strobe
+< 	input	n_cpu_lds,			// m68k lower data strobe
+---
+> 	output	[2:0] _cpu_ipl,		// m68k interrupt request
+> 	input	_cpu_as,			// m68k address strobe
+> 	input	_cpu_uds,			// m68k upper data strobe
+> 	input	_cpu_lds,			// m68k lower data strobe
+152,153c152,153
+< 	output	n_cpu_dtack,			// m68k data acknowledge
+< 	output	n_cpu_reset,			// m68k reset
+---
+> 	output	_cpu_dtack,			// m68k data acknowledge
+> 	output	_cpu_reset,			// m68k reset
+158,162c158,162
+< 	output	[3:0] n_ram_ce,		// sram chip enable
+< 	output	n_ram_bhe,			// sram upper byte select
+< 	output	n_ram_ble,			// sram lower byte select
+< 	output	n_ram_we,			// sram write enable
+< 	output	n_ram_oe,			// sram output enable
+---
+> 	output	[3:0] _ram_ce,		// sram chip enable
+> 	output	_ram_bhe,			// sram upper byte select
+> 	output	_ram_ble,			// sram lower byte select
+> 	output	_ram_we,			// sram write enable
+> 	output	_ram_oe,			// sram output enable
+173,175c173,175
+< 	input	[5:0]n_joy1,			// joystick 1 [fire2,fire,right,left,down,up] (default mouse port)
+< 	input	[5:0]n_joy2,			// joystick 2 [fire2,fire,right,left,down,up] (default joystick port)
+< 	input	n_15khz,				// scandoubler disable
+---
+> 	input	[5:0]_joy1,			// joystick 1 [fire2,fire,right,left,down,up] (default mouse port)
+> 	input	[5:0]_joy2,			// joystick 2 [fire2,fire,right,left,down,up] (default joystick port)
+> 	input	_15khz,				// scandoubler disable
+186c186
+< 	input	[2:0]n_scs,			// SPI chip select
+---
+> 	input	[2:0]_scs,			// SPI chip select
+192,193c192,193
+< 	output	n_hsync,				// horizontal sync
+< 	output	n_vsync,				// vertical sync
+---
+> 	output	_hsync,				// horizontal sync
+> 	output	_vsync,				// vertical sync
+198,199c198,199
+< 	output	aud_l,				// audio bitstream left
+< 	output	aud_r,				// audio bitstream right
+---
+> 	output	left,				// audio bitstream left
+> 	output	right,				// audio bitstream right
+213,215c213,216
+< 	input [8:0]ascancode,
+< 	input	[5:0]n_joy3,			// joystick 3 [fire2,fire,right,left,down,up] (joystick port)
+< 	input	[5:0]n_joy4			// joystick 4 [fire2,fire,right,left,down,up] (joystick port)
+---
+> 	input	[8:0]ascancode,		// Amiga Scancode form Dockingstation
+> 	input	[5:0]_joy3,			// joystick 3 [fire2,fire,right,left,down,up] (joystick port)
+> 	input	[5:0]_joy4,			// joystick 4 [fire2,fire,right,left,down,up] (joystick port)
+> 	output reconfigure		// reconfigure chameleon
+407c408
+< 	if (n_hsync)
+---
+> 	if (_hsync)
+532c533
+< 	._scs(n_scs[0]),
+---
+> 	._scs(_scs[0]),
+536,537c537,538
+< 	.left(aud_l),
+< 	.right(aud_r),
+---
+> 	.left(left),
+> 	.right(right),
+543c544
+< 	.direct_scs(~n_scs[2]),
+---
+> 	.direct_scs(~_scs[2]),
+582c583
+< 	._scs(n_scs[1]),
+---
+> 	._scs(_scs[1]),
+598a600
+> 	.reconfigure(reconfigure)
+630c632
+< 	.dblscan(n_15khz),
+---
+> 	.dblscan(_15khz),
+647,648c649,650
+< 	._hsync_out(n_hsync),
+< 	._vsync_out(n_vsync)
+---
+> 	._hsync_out(_hsync),
+> 	._vsync_out(_vsync)
+728,730c730,732
+< 	._as(n_cpu_as),
+< 	._lds(n_cpu_lds),
+< 	._uds(n_cpu_uds),
+---
+> 	._as(_cpu_as),
+> 	._lds(_cpu_lds),
+> 	._uds(_cpu_uds),
+732c734
+< 	._dtack(n_cpu_dtack),
+---
+> 	._dtack(_cpu_dtack),
+775,779c777,781
+< 	._bhe(n_ram_bhe),
+< 	._ble(n_ram_ble),
+< 	._we(n_ram_we),
+< 	._oe(n_ram_oe),
+< 	._ce({n_ram_ce[3],n_ram_ce[2],n_ram_ce[1],n_ram_ce[0]}),
+---
+> 	._bhe(_ram_bhe),
+> 	._ble(_ram_ble),
+> 	._we(_ram_we),
+> 	._oe(_ram_oe),
+> 	._ce({_ram_ce[3],_ram_ce[2],_ram_ce[1],_ram_ce[0]}),
+792c794
+< 	._cpu_as(n_cpu_as),
+---
+> 	._cpu_as(_cpu_as),
+810c812
+< assign n_cpu_ipl = (int7) ? 3'b000 : _iplx;	// m68k interrupt request
+---
+> assign _cpu_ipl = (int7) ? 3'b000 : _iplx;	// m68k interrupt request
+848c850,851
+< 	.sel_gayle(sel_gayle)
+---
+> 	.sel_gayle(sel_gayle),
+> 	.sel_akiko(sel_akiko)
+884c887
+< //	.reset(),
+---
+> //	.reset(cpurst),
+903c906
+< JBBoot BOOTROM1 
+---
+> JBboot BOOTROM1 
+959c962
+< assign sdo = (!n_scs[0] || !n_scs[1]) ? (paula_sdo | user_sdo) : 1'bz;
+---
+> assign sdo = (!_scs[0] || !_scs[1]) ? (paula_sdo | user_sdo) : 1'bz;
+975c978
+< assign n_cpu_reset = ~reset_out;
+---
+> assign _cpu_reset = ~reset_out;
+980c983
+< 		reset <= ~n_cpu_reset;
+---
+> 		reset <= ~_cpu_reset;

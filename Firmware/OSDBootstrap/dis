@@ -1,0 +1,877 @@
+
+test.elf:     file format elf32-m68k
+
+
+Disassembly of section seg0:
+
+00000000 <start-0x8>:
+   0:	0000 1000      	orib #0,%d0
+   4:	0000 0008      	orib #8,%d0
+
+00000008 <start>:
+   8:	33fc 5555 0000 	movew #21845,40e <_cachevalid>
+   e:	040e 
+  10:	6100 0280      	bsrw 292 <spi_init>
+  14:	6650           	bnes 66 <start2>
+  16:	33fc 0040 0000 	movew #64,414 <_drive>
+  1c:	0414 
+  1e:	6100 041c      	bsrw 43c <_FindVolume>
+  22:	670c           	beqs 30 <start5>
+  24:	4279 0000 0414 	clrw 414 <_drive>
+  2a:	6100 0410      	bsrw 43c <_FindVolume>
+  2e:	662e           	bnes 5e <start3>
+
+00000030 <start5>:
+  30:	6100 0556      	bsrw 588 <fat_cdroot>
+  34:	43fa 003c      	lea %pc@(72 <mmio_name>),%a1
+  38:	6100 059a      	bsrw 5d4 <fat_findfile>
+  3c:	6720           	beqs 5e <start3>
+  3e:	41fa 002c      	lea %pc@(6c <found_MM>),%a0
+  42:	6100 037e      	bsrw 3c2 <put_msg>
+  46:	307c 2000      	moveaw #8192,%a0
+  4a:	6100 0618      	bsrw 664 <_LoadFile2>
+  4e:	6704           	beqs 54 <start4>
+  50:	4ef8 2000      	jmp 2000 <_secbuf+0x1000>
+
+00000054 <start4>:
+  54:	31fc 60fe 2000 	movew #24830,2000 <_secbuf+0x1000>
+  5a:	4ef8 2000      	jmp 2000 <_secbuf+0x1000>
+
+0000005e <start3>:
+  5e:	41fa 0008      	lea %pc@(68 <notfound>),%a0
+  62:	6100 035e      	bsrw 3c2 <put_msg>
+
+00000066 <start2>:
+  66:	60fe           	bras 66 <start2>
+
+00000068 <notfound>:
+  68:	6e6f           	bgts d9 <read_w2+0x13>
+  6a:	7420           	moveq #32,%d2
+
+0000006c <found_MM>:
+  6c:	666f           	bnes dd <read_w2+0x17>
+  6e:	756e 6420      	mvsw %fp@(25632),%d2
+
+00000072 <mmio_name>:
+  72:	4f53           	.short 0x4f53
+  74:	445f           	negw %sp@+
+  76:	4341           	.short 0x4341
+  78:	3031 5359      	movew %a1@(0000000000000000)@(0000000000000000),%d0
+  7c:	5300           	subqb #1,%d0
+
+0000007e <cmd_read_sector>:
+  7e:	41f8 1000      	lea 1000 <_secbuf>,%a0
+  82:	0c79 aaaa 0000 	cmpiw #-21846,40e <_cachevalid>
+  88:	040e 
+  8a:	660a           	bnes 96 <read_sd11>
+  8c:	b0ba 0382      	cmpl %pc@(410 <_cachelba>),%d0
+  90:	6604           	bnes 96 <read_sd11>
+  92:	7000           	moveq #0,%d0
+  94:	4e75           	rts
+
+00000096 <read_sd11>:
+  96:	33fc aaaa 0000 	movew #-21846,40e <_cachevalid>
+  9c:	040e 
+  9e:	23c0 0000 0410 	movel %d0,410 <_cachelba>
+
+000000a4 <cmd_read_block>:
+  a4:	6100 00aa      	bsrw 150 <cmd_read>
+  a8:	664e           	bnes f8 <read_error3>
+
+000000aa <read1>:
+  aa:	323c 4e20      	movew #20000,%d1
+  ae:	12bc 00ff      	moveb #-1,%a1@
+
+000000b2 <read2>:
+  b2:	5341           	subqw #1,%d1
+  b4:	672e           	beqs e4 <read_error2>
+
+000000b6 <read_w1>:
+  b6:	3011           	movew %a1@,%d0
+  b8:	12bc 00ff      	moveb #-1,%a1@
+  bc:	b03c 00fe      	cmpb #-2,%d0
+  c0:	66f0           	bnes b2 <read2>
+  c2:	323c 01ff      	movew #511,%d1
+
+000000c6 <read_w2>:
+  c6:	3011           	movew %a1@,%d0
+  c8:	12bc 00ff      	moveb #-1,%a1@
+  cc:	10c0           	moveb %d0,%a0@+
+  ce:	51c9 fff6      	dbf %d1,c6 <read_w2>
+  d2:	12bc 00ff      	moveb #-1,%a1@
+  d6:	337c 0003 0004 	movew #3,%a1@(4)
+  dc:	41e8 fe00      	lea %a0@(-512),%a0
+  e0:	7000           	moveq #0,%d0
+  e2:	4e75           	rts
+
+000000e4 <read_error2>:
+  e4:	33fc 5555 0000 	movew #21845,40e <_cachevalid>
+  ea:	040e 
+  ec:	41fa 0186      	lea %pc@(274 <msg_timeout_Error>),%a0
+  f0:	6100 02d0      	bsrw 3c2 <put_msg>
+  f4:	70fe           	moveq #-2,%d0
+  f6:	4e75           	rts
+
+000000f8 <read_error3>:
+  f8:	33fc 5555 0000 	movew #21845,40e <_cachevalid>
+  fe:	040e 
+ 100:	41fa 015a      	lea %pc@(25c <msg_cmdtimeout_Error>),%a0
+ 104:	6100 02bc      	bsrw 3c2 <put_msg>
+ 108:	70ff           	moveq #-1,%d0
+ 10a:	4e75           	rts
+
+0000010c <cmd_reset>:
+ 10c:	223c 0095 0040 	movel #9764928,%d1
+ 112:	7000           	moveq #0,%d0
+ 114:	6040           	bras 156 <cmd_wr>
+
+00000116 <cmd_init>:
+ 116:	223c 00ff 0041 	movel #16711745,%d1
+ 11c:	7000           	moveq #0,%d0
+ 11e:	6036           	bras 156 <cmd_wr>
+
+00000120 <cmd_CMD8>:
+ 120:	223c 0087 0048 	movel #8847432,%d1
+ 126:	203c 0000 01aa 	movel #426,%d0
+ 12c:	6028           	bras 156 <cmd_wr>
+
+0000012e <cmd_CMD41>:
+ 12e:	223c 0087 0069 	movel #8847465,%d1
+ 134:	203c 4000 0000 	movel #1073741824,%d0
+ 13a:	601a           	bras 156 <cmd_wr>
+
+0000013c <cmd_CMD55>:
+ 13c:	223c 00ff 0077 	movel #16711799,%d1
+ 142:	7000           	moveq #0,%d0
+ 144:	6010           	bras 156 <cmd_wr>
+
+00000146 <cmd_CMD58>:
+ 146:	223c 00ff 007a 	movel #16711802,%d1
+ 14c:	7000           	moveq #0,%d0
+ 14e:	6006           	bras 156 <cmd_wr>
+
+00000150 <cmd_read>:
+ 150:	223c 00ff 0051 	movel #16711761,%d1
+
+00000156 <cmd_wr>:
+ 156:	43f9 00da 4000 	lea da4000 <SPIbase>,%a1
+ 15c:	12bc 00ff      	moveb #-1,%a1@
+ 160:	337c 0002 0004 	movew #2,%a1@(4)
+ 166:	1281           	moveb %d1,%a1@
+ 168:	4841           	swap %d1
+ 16a:	4a79 0000 040c 	tstw 40c <SDHCtype>
+ 170:	6710           	beqs 182 <cmd_wr12>
+ 172:	e198           	roll #8,%d0
+ 174:	1280           	moveb %d0,%a1@
+ 176:	e198           	roll #8,%d0
+ 178:	1280           	moveb %d0,%a1@
+ 17a:	e198           	roll #8,%d0
+ 17c:	1280           	moveb %d0,%a1@
+ 17e:	e198           	roll #8,%d0
+ 180:	6012           	bras 194 <cmd_wr13>
+
+00000182 <cmd_wr12>:
+ 182:	d080           	addl %d0,%d0
+ 184:	4840           	swap %d0
+ 186:	1280           	moveb %d0,%a1@
+ 188:	4840           	swap %d0
+ 18a:	e158           	rolw #8,%d0
+ 18c:	1280           	moveb %d0,%a1@
+ 18e:	e158           	rolw #8,%d0
+ 190:	1280           	moveb %d0,%a1@
+ 192:	7000           	moveq #0,%d0
+
+00000194 <cmd_wr13>:
+ 194:	1280           	moveb %d0,%a1@
+ 196:	1281           	moveb %d1,%a1@
+ 198:	223c 0000 9c40 	movel #40000,%d1
+
+0000019e <cmd_wr10>:
+ 19e:	5381           	subql #1,%d1
+ 1a0:	670c           	beqs 1ae <cmd_wr11>
+ 1a2:	12bc 00ff      	moveb #-1,%a1@
+
+000001a6 <cmd_wr9>:
+ 1a6:	3011           	movew %a1@,%d0
+ 1a8:	b03c 00ff      	cmpb #-1,%d0
+ 1ac:	67f0           	beqs 19e <cmd_wr10>
+
+000001ae <cmd_wr11>:
+ 1ae:	8000           	orb %d0,%d0
+ 1b0:	4e75           	rts
+
+000001b2 <calc_crc>:
+ 1b2:	d201           	addb %d1,%d1
+ 1b4:	b101           	eorb %d0,%d1
+ 1b6:	6a04           	bpls 1bc <crc1a>
+ 1b8:	0a01 0009      	eorib #9,%d1
+
+000001bc <crc1a>:
+ 1bc:	b101           	eorb %d0,%d1
+ 1be:	d000           	addb %d0,%d0
+ 1c0:	d201           	addb %d1,%d1
+ 1c2:	b101           	eorb %d0,%d1
+ 1c4:	6a04           	bpls 1ca <crc2a>
+ 1c6:	0a01 0009      	eorib #9,%d1
+
+000001ca <crc2a>:
+ 1ca:	b101           	eorb %d0,%d1
+ 1cc:	d000           	addb %d0,%d0
+ 1ce:	d201           	addb %d1,%d1
+ 1d0:	b101           	eorb %d0,%d1
+ 1d2:	6a04           	bpls 1d8 <crc3a>
+ 1d4:	0a01 0009      	eorib #9,%d1
+
+000001d8 <crc3a>:
+ 1d8:	b101           	eorb %d0,%d1
+ 1da:	d000           	addb %d0,%d0
+ 1dc:	d201           	addb %d1,%d1
+ 1de:	b101           	eorb %d0,%d1
+ 1e0:	6a04           	bpls 1e6 <crc4a>
+ 1e2:	0a01 0009      	eorib #9,%d1
+
+000001e6 <crc4a>:
+ 1e6:	b101           	eorb %d0,%d1
+ 1e8:	d000           	addb %d0,%d0
+ 1ea:	d201           	addb %d1,%d1
+ 1ec:	b101           	eorb %d0,%d1
+ 1ee:	6a04           	bpls 1f4 <crc5a>
+ 1f0:	0a01 0009      	eorib #9,%d1
+
+000001f4 <crc5a>:
+ 1f4:	b101           	eorb %d0,%d1
+ 1f6:	d000           	addb %d0,%d0
+ 1f8:	d201           	addb %d1,%d1
+ 1fa:	b101           	eorb %d0,%d1
+ 1fc:	6a04           	bpls 202 <crc6a>
+ 1fe:	0a01 0009      	eorib #9,%d1
+
+00000202 <crc6a>:
+ 202:	b101           	eorb %d0,%d1
+ 204:	d000           	addb %d0,%d0
+ 206:	d201           	addb %d1,%d1
+ 208:	b101           	eorb %d0,%d1
+ 20a:	6a04           	bpls 210 <crc7a>
+ 20c:	0a01 0009      	eorib #9,%d1
+
+00000210 <crc7a>:
+ 210:	b101           	eorb %d0,%d1
+ 212:	d000           	addb %d0,%d0
+ 214:	d201           	addb %d1,%d1
+ 216:	b101           	eorb %d0,%d1
+ 218:	6a04           	bpls 21e <crc8a>
+ 21a:	0a01 0009      	eorib #9,%d1
+
+0000021e <crc8a>:
+ 21e:	b101           	eorb %d0,%d1
+ 220:	d000           	addb %d0,%d0
+ 222:	4e75           	rts
+
+00000224 <msg_start_init>:
+ 224:	5374 6172 7420 	subqw #1,%a4@(000000007420496e)@(0000000000006974)
+ 22a:	496e 6974 
+ 22e:	0d0a 0049      	movepw %a2@(73),%d6
+
+00000231 <msg_init_done>:
+ 231:	496e           	.short 0x496e
+ 233:	6974           	bvss 2a9 <spi_init+0x17>
+ 235:	2064           	moveal %a4@-,%a0
+ 237:	6f6e           	bles 2a7 <spi_init+0x15>
+ 239:	650d           	bcss 248 <msg_init_fail+0xb>
+ 23b:	0a00 496e      	eorib #110,%d0
+
+0000023d <msg_init_fail>:
+ 23d:	496e           	.short 0x496e
+ 23f:	6974           	bvss 2b5 <spi_init_w1+0x5>
+ 241:	2066           	moveal %fp@-,%a0
+ 243:	6169           	bsrs 2ae <spi_init+0x1c>
+ 245:	6c75           	bges 2bc <spi_init_w2>
+ 247:	7265           	moveq #101,%d1
+ 249:	0d0a 0052      	movepw %a2@(82),%d6
+
+0000024c <msg_reset_fail>:
+ 24c:	5265           	addqw #1,%a5@-
+ 24e:	7365           	mvsw %a5@-,%d1
+ 250:	7420           	moveq #32,%d2
+ 252:	6661           	bnes 2b5 <spi_init_w1+0x5>
+ 254:	696c           	bvss 2c2 <spi_init_w2+0x6>
+ 256:	7572 650d      	mvsw %a2@(0000000000000000)@(0000000000000000,%d6:w:4),%d2
+ 25a:	0a00 436f      	eorib #111,%d0
+
+0000025c <msg_cmdtimeout_Error>:
+ 25c:	436f           	.short 0x436f
+ 25e:	6d6d           	blts 2cd <spi_init_w2+0x11>
+ 260:	616e           	bsrs 2d0 <spi_init_w2+0x14>
+ 262:	6420           	bccs 284 <msg_SDHC>
+ 264:	5469 6d65      	addqw #2,%a1@(28005)
+ 268:	6f75           	bles 2df <spi_init_w3+0x1>
+ 26a:	745f           	moveq #95,%d2
+ 26c:	4572           	.short 0x4572
+ 26e:	726f           	moveq #111,%d1
+ 270:	720d           	moveq #13,%d1
+ 272:	0a00 5469      	eorib #105,%d0
+
+00000274 <msg_timeout_Error>:
+ 274:	5469 6d65      	addqw #2,%a1@(28005)
+ 278:	6f75           	bles 2ef <spi_init_w4+0xb>
+ 27a:	745f           	moveq #95,%d2
+ 27c:	4572           	.short 0x4572
+ 27e:	726f           	moveq #111,%d1
+ 280:	720d           	moveq #13,%d1
+ 282:	0a00 5344      	eorib #68,%d0
+
+00000284 <msg_SDHC>:
+ 284:	5344           	subqw #1,%d4
+ 286:	4843           	swap %d3
+ 288:	2066           	moveal %fp@-,%a0
+ 28a:	6f75           	bles 301 <spi_init_w4+0x1d>
+ 28c:	6e64           	bgts 2f2 <spi_init_w4+0xe>
+ 28e:	200d           	movel %a5,%d0
+ 290:	0a00 33fc      	eorib #-4,%d0
+
+00000292 <spi_init>:
+ 292:	33fc ffff 0000 	movew #-1,40c <SDHCtype>
+ 298:	040c 
+ 29a:	43f9 00da 4000 	lea da4000 <SPIbase>,%a1
+ 2a0:	337c 00ff 0004 	movew #255,%a1@(4)
+ 2a6:	337c 0020 0008 	movew #32,%a1@(8)
+ 2ac:	323c 0064      	movew #100,%d1
+
+000002b0 <spi_init_w1>:
+ 2b0:	32bc ffff      	movew #-1,%a1@
+ 2b4:	51c9 fffa      	dbf %d1,2b0 <spi_init_w1>
+ 2b8:	343c 0032      	movew #50,%d2
+
+000002bc <spi_init_w2>:
+ 2bc:	6100 fe4e      	bsrw 10c <cmd_reset>
+ 2c0:	337c 0003 0004 	movew #3,%a1@(4)
+ 2c6:	b03c 0001      	cmpb #1,%d0
+ 2ca:	6712           	beqs 2de <spi_init_w3>
+ 2cc:	51ca ffee      	dbf %d2,2bc <spi_init_w2>
+ 2d0:	487a ff7a      	pea %pc@(24c <msg_reset_fail>)
+ 2d4:	6100 00fa      	bsrw 3d0 <put_msga7>
+ 2d8:	588f           	addql #4,%sp
+ 2da:	70ff           	moveq #-1,%d0
+ 2dc:	4e75           	rts
+
+000002de <spi_init_w3>:
+ 2de:	223c 0000 2000 	movel #8192,%d1
+
+000002e4 <spi_init_w4>:
+ 2e4:	12bc 00ff      	moveb #-1,%a1@
+ 2e8:	5381           	subql #1,%d1
+ 2ea:	66f8           	bnes 2e4 <spi_init_w4>
+ 2ec:	6100 fe32      	bsrw 120 <cmd_CMD8>
+ 2f0:	b03c 0001      	cmpb #1,%d0
+ 2f4:	667c           	bnes 372 <noSDHC>
+ 2f6:	12bc 00ff      	moveb #-1,%a1@
+ 2fa:	12bc 00ff      	moveb #-1,%a1@
+ 2fe:	12bc 00ff      	moveb #-1,%a1@
+ 302:	1011           	moveb %a1@,%d0
+ 304:	0c00 0001      	cmpib #1,%d0
+ 308:	6668           	bnes 372 <noSDHC>
+ 30a:	12bc 00ff      	moveb #-1,%a1@
+ 30e:	1011           	moveb %a1@,%d0
+ 310:	0c00 00aa      	cmpib #-86,%d0
+ 314:	665c           	bnes 372 <noSDHC>
+ 316:	337c 0003 0004 	movew #3,%a1@(4)
+ 31c:	487a ff66      	pea %pc@(284 <msg_SDHC>)
+ 320:	6100 00ae      	bsrw 3d0 <put_msga7>
+ 324:	588f           	addql #4,%sp
+ 326:	343c 0032      	movew #50,%d2
+
+0000032a <SDHC_1>:
+ 32a:	5342           	subqw #1,%d2
+ 32c:	6744           	beqs 372 <noSDHC>
+ 32e:	323c 07d0      	movew #2000,%d1
+
+00000332 <SDHC_4>:
+ 332:	12bc 00ff      	moveb #-1,%a1@
+ 336:	51c9 fffa      	dbf %d1,332 <SDHC_4>
+ 33a:	6100 fe00      	bsrw 13c <cmd_CMD55>
+ 33e:	b03c 0001      	cmpb #1,%d0
+ 342:	66e6           	bnes 32a <SDHC_1>
+ 344:	6100 fde8      	bsrw 12e <cmd_CMD41>
+ 348:	66e0           	bnes 32a <SDHC_1>
+ 34a:	6100 fdfa      	bsrw 146 <cmd_CMD58>
+ 34e:	66da           	bnes 32a <SDHC_1>
+ 350:	12bc 00ff      	moveb #-1,%a1@
+ 354:	1011           	moveb %a1@,%d0
+ 356:	c03c 0040      	andb #64,%d0
+ 35a:	6608           	bnes 364 <SDHC_2>
+ 35c:	33fc 0000 0000 	movew #0,40c <SDHCtype>
+ 362:	040c 
+
+00000364 <SDHC_2>:
+ 364:	12bc 00ff      	moveb #-1,%a1@
+ 368:	12bc 00ff      	moveb #-1,%a1@
+ 36c:	12bc 00ff      	moveb #-1,%a1@
+ 370:	6034           	bras 3a6 <spi_init_w6>
+
+00000372 <noSDHC>:
+ 372:	33fc 0000 0000 	movew #0,40c <SDHCtype>
+ 378:	040c 
+ 37a:	343c 000a      	movew #10,%d2
+
+0000037e <spi_init_w7>:
+ 37e:	323c 07d0      	movew #2000,%d1
+
+00000382 <spi_init_w8>:
+ 382:	12bc 00ff      	moveb #-1,%a1@
+ 386:	51c9 fffa      	dbf %d1,382 <spi_init_w8>
+ 38a:	6100 fd8a      	bsrw 116 <cmd_init>
+ 38e:	6716           	beqs 3a6 <spi_init_w6>
+ 390:	337c 0003 0004 	movew #3,%a1@(4)
+ 396:	51ca ffe6      	dbf %d2,37e <spi_init_w7>
+ 39a:	487a fea1      	pea %pc@(23d <msg_init_fail>)
+ 39e:	6130           	bsrs 3d0 <put_msga7>
+ 3a0:	588f           	addql #4,%sp
+ 3a2:	70ff           	moveq #-1,%d0
+ 3a4:	4e75           	rts
+
+000003a6 <spi_init_w6>:
+ 3a6:	337c 0001 0008 	movew #1,%a1@(8)
+ 3ac:	337c 0003 0004 	movew #3,%a1@(4)
+ 3b2:	12bc 00ff      	moveb #-1,%a1@
+ 3b6:	487a fe79      	pea %pc@(231 <msg_init_done>)
+ 3ba:	6114           	bsrs 3d0 <put_msga7>
+ 3bc:	588f           	addql #4,%sp
+ 3be:	7000           	moveq #0,%d0
+ 3c0:	4e75           	rts
+
+000003c2 <put_msg>:
+ 3c2:	1018           	moveb %a0@+,%d0
+ 3c4:	6708           	beqs 3ce <put_msg_end>
+ 3c6:	13c0 00da 8000 	moveb %d0,da8000 <RS232_base>
+ 3cc:	60f4           	bras 3c2 <put_msg>
+
+000003ce <put_msg_end>:
+ 3ce:	4e75           	rts
+
+000003d0 <put_msga7>:
+ 3d0:	2f08           	movel %a0,%sp@-
+ 3d2:	206f 0008      	moveal %sp@(8),%a0
+
+000003d6 <put_msg2>:
+ 3d6:	4a10           	tstb %a0@
+ 3d8:	6708           	beqs 3e2 <put_msg3>
+ 3da:	13d8 00da 8000 	moveb %a0@+,da8000 <RS232_base>
+ 3e0:	60f4           	bras 3d6 <put_msg2>
+
+000003e2 <put_msg3>:
+ 3e2:	205f           	moveal %sp@+,%a0
+ 3e4:	4e75           	rts
+
+000003e6 <cluster>:
+ 3e6:	0000 0000      	orib #0,%d0
+
+000003ea <part_fat>:
+ 3ea:	0000 0000      	orib #0,%d0
+
+000003ee <part_rootdir>:
+ 3ee:	0000 0000      	orib #0,%d0
+
+000003f2 <part_cstart>:
+ 3f2:	0000 0000      	orib #0,%d0
+
+000003f6 <part_rootdirentrys>:
+	...
+
+000003f8 <vol_fstype>:
+	...
+
+000003fa <vol_secperclus>:
+	...
+
+000003fc <scount>:
+	...
+
+000003fe <dir_is_fat16root>:
+ 3fe:	0000 0000      	orib #0,%d0
+
+00000402 <sector_ptr>:
+ 402:	0000 0000      	orib #0,%d0
+
+00000406 <lba>:
+ 406:	0000 0000      	orib #0,%d0
+
+0000040a <spipass>:
+	...
+
+0000040c <SDHCtype>:
+	...
+
+0000040e <_cachevalid>:
+	...
+
+00000410 <_cachelba>:
+ 410:	0000 0000      	orib #0,%d0
+
+00000414 <_drive>:
+	...
+
+00000416 <_fstype>:
+	...
+
+00000418 <_rootcluster>:
+ 418:	0000 0000      	orib #0,%d0
+
+0000041c <_rootsector>:
+ 41c:	0000 0000      	orib #0,%d0
+
+00000420 <_cluster>:
+ 420:	0000 0000      	orib #0,%d0
+
+00000424 <_sectorcnt>:
+	...
+
+00000426 <_sectorlba>:
+ 426:	0000 0000      	orib #0,%d0
+
+0000042a <_attrib>:
+	...
+
+0000042c <_volstart>:
+ 42c:	0000 0000      	orib #0,%d0
+
+00000430 <_fatstart>:
+ 430:	0000 0000      	orib #0,%d0
+
+00000434 <_datastart>:
+ 434:	0000 0000      	orib #0,%d0
+
+00000438 <_clustersize>:
+	...
+
+0000043a <_rootdirentrys>:
+	...
+
+0000043c <_FindVolume>:
+ 43c:	7000           	moveq #0,%d0
+ 43e:	23c0 0000 042c 	movel %d0,42c <_volstart>
+ 444:	6100 fc38      	bsrw 7e <cmd_read_sector>
+ 448:	664a           	bnes 494 <_error>
+ 44a:	0c28 0055 01fe 	cmpib #85,%a0@(510)
+ 450:	6642           	bnes 494 <_error>
+ 452:	0c28 00aa 01ff 	cmpib #-86,%a0@(511)
+ 458:	663a           	bnes 494 <_error>
+ 45a:	303a ffb8      	movew %pc@(414 <_drive>),%d0
+ 45e:	c07c 0070      	andw #112,%d0
+ 462:	b07c 0040      	cmpw #64,%d0
+ 466:	6430           	bccs 498 <_testfat>
+ 468:	43e8 01be      	lea %a0@(446),%a1
+ 46c:	d2c0           	addaw %d0,%a1
+ 46e:	2029 0008      	movel %a1@(8),%d0
+ 472:	e058           	rorw #8,%d0
+ 474:	4840           	swap %d0
+ 476:	e058           	rorw #8,%d0
+ 478:	23c0 0000 042c 	movel %d0,42c <_volstart>
+ 47e:	6100 fbfe      	bsrw 7e <cmd_read_sector>
+ 482:	6610           	bnes 494 <_error>
+ 484:	0c28 0055 01fe 	cmpib #85,%a0@(510)
+ 48a:	6608           	bnes 494 <_error>
+ 48c:	0c28 00aa 01ff 	cmpib #-86,%a0@(511)
+ 492:	6704           	beqs 498 <_testfat>
+
+00000494 <_error>:
+ 494:	70ff           	moveq #-1,%d0
+ 496:	4e75           	rts
+
+00000498 <_testfat>:
+ 498:	0ca8 4641 5431 	cmpil #1178686513,%a0@(54)
+ 49e:	0036 
+ 4a0:	6624           	bnes 4c6 <_testfat_2>
+ 4a2:	13fc 000c 0000 	moveb #12,416 <_fstype>
+ 4a8:	0416 
+ 4aa:	0ca8 3220 2020 	cmpil #840966176,%a0@(58)
+ 4b0:	003a 
+ 4b2:	6736           	beqs 4ea <_testfat_ex>
+ 4b4:	13fc 0010 0000 	moveb #16,416 <_fstype>
+ 4ba:	0416 
+ 4bc:	0ca8 3620 2020 	cmpil #908075040,%a0@(58)
+ 4c2:	003a 
+ 4c4:	6724           	beqs 4ea <_testfat_ex>
+
+000004c6 <_testfat_2>:
+ 4c6:	13fc 0000 0000 	moveb #0,416 <_fstype>
+ 4cc:	0416 
+ 4ce:	0ca8 4641 5433 	cmpil #1178686515,%a0@(82)
+ 4d4:	0052 
+ 4d6:	66bc           	bnes 494 <_error>
+ 4d8:	0ca8 3220 2020 	cmpil #840966176,%a0@(86)
+ 4de:	0056 
+ 4e0:	66b2           	bnes 494 <_error>
+ 4e2:	13fc 0020 0000 	moveb #32,416 <_fstype>
+ 4e8:	0416 
+
+000004ea <_testfat_ex>:
+ 4ea:	2028 000a      	movel %a0@(10),%d0
+ 4ee:	c0bc 00ff ff00 	andl #16776960,%d0
+ 4f4:	0c80 0000 0200 	cmpil #512,%d0
+ 4fa:	6698           	bnes 494 <_error>
+ 4fc:	223a ff2e      	movel %pc@(42c <_volstart>),%d1
+ 500:	3028 000e      	movew %a0@(14),%d0
+ 504:	e058           	rorw #8,%d0
+ 506:	d280           	addl %d0,%d1
+ 508:	23c1 0000 0430 	movel %d1,430 <_fatstart>
+ 50e:	0c39 0020 0000 	cmpib #32,416 <_fstype>
+ 514:	0416 
+ 516:	6624           	bnes 53c <_fat16>
+ 518:	2028 002c      	movel %a0@(44),%d0
+ 51c:	e058           	rorw #8,%d0
+ 51e:	4840           	swap %d0
+ 520:	e058           	rorw #8,%d0
+ 522:	23c0 0000 0418 	movel %d0,418 <_rootcluster>
+ 528:	2028 0024      	movel %a0@(36),%d0
+ 52c:	e058           	rorw #8,%d0
+ 52e:	4840           	swap %d0
+ 530:	e058           	rorw #8,%d0
+
+00000532 <_add_start32>:
+ 532:	d280           	addl %d0,%d1
+ 534:	5328 0010      	subqb #1,%a0@(16)
+ 538:	66f8           	bnes 532 <_add_start32>
+ 53a:	6032           	bras 56e <subcluster>
+
+0000053c <_fat16>:
+ 53c:	7000           	moveq #0,%d0
+ 53e:	23c0 0000 0418 	movel %d0,418 <_rootcluster>
+ 544:	3028 0016      	movew %a0@(22),%d0
+ 548:	e058           	rorw #8,%d0
+
+0000054a <root_sect>:
+ 54a:	d280           	addl %d0,%d1
+ 54c:	5328 0010      	subqb #1,%a0@(16)
+ 550:	66f8           	bnes 54a <root_sect>
+ 552:	23c1 0000 041c 	movel %d1,41c <_rootsector>
+ 558:	2001           	movel %d1,%d0
+ 55a:	1028 0012      	moveb %a0@(18),%d0
+ 55e:	e148           	lslw #8,%d0
+ 560:	1028 0011      	moveb %a0@(17),%d0
+ 564:	33c0 0000 043a 	movew %d0,43a <_rootdirentrys>
+ 56a:	e848           	lsrw #4,%d0
+ 56c:	d280           	addl %d0,%d1
+
+0000056e <subcluster>:
+ 56e:	7000           	moveq #0,%d0
+ 570:	1028 000d      	moveb %a0@(13),%d0
+ 574:	33c0 0000 0438 	movew %d0,438 <_clustersize>
+ 57a:	9280           	subl %d0,%d1
+ 57c:	9280           	subl %d0,%d1
+ 57e:	23c1 0000 0434 	movel %d1,434 <_datastart>
+
+00000584 <fat_ex>:
+ 584:	7000           	moveq #0,%d0
+ 586:	4e75           	rts
+
+00000588 <fat_cdroot>:
+ 588:	203a fe8e      	movel %pc@(418 <_rootcluster>),%d0
+ 58c:	23c0 0000 0420 	movel %d0,420 <_cluster>
+ 592:	6622           	bnes 5b6 <cdfat_32>
+ 594:	42b9 0000 0420 	clrl 420 <_cluster>
+ 59a:	303a fe9e      	movew %pc@(43a <_rootdirentrys>),%d0
+ 59e:	e848           	lsrw #4,%d0
+ 5a0:	33c0 0000 0424 	movew %d0,424 <_sectorcnt>
+ 5a6:	203a fe74      	movel %pc@(41c <_rootsector>),%d0
+ 5aa:	23c0 0000 0426 	movel %d0,426 <_sectorlba>
+ 5b0:	4e75           	rts
+
+000005b2 <cluster2lba>:
+ 5b2:	203a fe6c      	movel %pc@(420 <_cluster>),%d0
+
+000005b6 <cdfat_32>:
+ 5b6:	323a fe80      	movew %pc@(438 <_clustersize>),%d1
+ 5ba:	33c1 0000 0424 	movew %d1,424 <_sectorcnt>
+
+000005c0 <_fat32_1>:
+ 5c0:	e249           	lsrw #1,%d1
+ 5c2:	6504           	bcss 5c8 <_fat32_2>
+ 5c4:	e388           	lsll #1,%d0
+ 5c6:	60f8           	bras 5c0 <_fat32_1>
+
+000005c8 <_fat32_2>:
+ 5c8:	d0ba fe6a      	addl %pc@(434 <_datastart>),%d0
+ 5cc:	23c0 0000 0426 	movel %d0,426 <_sectorlba>
+ 5d2:	4e75           	rts
+
+000005d4 <fat_findfile>:
+ 5d4:	48e7 2020      	moveml %d2/%a2,%sp@-
+ 5d8:	2449           	moveal %a1,%a2
+
+000005da <fat_findfile_m4>:
+ 5da:	6100 faa2      	bsrw 7e <cmd_read_sector>
+ 5de:	6678           	bnes 658 <fat_findfile_m8>
+ 5e0:	740f           	moveq #15,%d2
+
+000005e2 <fat_findfile_m3>:
+ 5e2:	4a10           	tstb %a0@
+ 5e4:	6772           	beqs 658 <fat_findfile_m8>
+ 5e6:	700a           	moveq #10,%d0
+
+000005e8 <fat_findfile_m2>:
+ 5e8:	1232 0000      	moveb %a2@(0000000000000000,%d0:w),%d1
+ 5ec:	b230 0000      	cmpb %a0@(0000000000000000,%d0:w),%d1
+ 5f0:	670a           	beqs 5fc <fat_findfile_m1>
+ 5f2:	d23c 0020      	addb #32,%d1
+ 5f6:	b230 0000      	cmpb %a0@(0000000000000000,%d0:w),%d1
+ 5fa:	6636           	bnes 632 <fat_findfile_m9>
+
+000005fc <fat_findfile_m1>:
+ 5fc:	51c8 ffea      	dbf %d0,5e8 <fat_findfile_m2>
+ 600:	7000           	moveq #0,%d0
+ 602:	1028 000b      	moveb %a0@(11),%d0
+ 606:	33c0 0000 042a 	movew %d0,42a <_attrib>
+ 60c:	0c39 0020 0000 	cmpib #32,416 <_fstype>
+ 612:	0416 
+ 614:	6608           	bnes 61e <sfs_m3>
+ 616:	3028 0014      	movew %a0@(20),%d0
+ 61a:	e058           	rorw #8,%d0
+ 61c:	4840           	swap %d0
+
+0000061e <sfs_m3>:
+ 61e:	3028 001a      	movew %a0@(26),%d0
+ 622:	e058           	rorw #8,%d0
+ 624:	23c0 0000 0420 	movel %d0,420 <_cluster>
+ 62a:	4cdf 0404      	moveml %sp@+,%d2/%a2
+ 62e:	70ff           	moveq #-1,%d0
+ 630:	4e75           	rts
+
+00000632 <fat_findfile_m9>:
+ 632:	41e8 0020      	lea %a0@(32),%a0
+ 636:	51ca ffaa      	dbf %d2,5e2 <fat_findfile_m3>
+ 63a:	203a fdea      	movel %pc@(426 <_sectorlba>),%d0
+ 63e:	5280           	addql #1,%d0
+ 640:	23c0 0000 0426 	movel %d0,426 <_sectorlba>
+ 646:	5379 0000 0424 	subqw #1,424 <_sectorcnt>
+ 64c:	668c           	bnes 5da <fat_findfile_m4>
+ 64e:	6146           	bsrs 696 <next_cluster>
+ 650:	6706           	beqs 658 <fat_findfile_m8>
+ 652:	6100 ff5e      	bsrw 5b2 <cluster2lba>
+ 656:	6082           	bras 5da <fat_findfile_m4>
+
+00000658 <fat_findfile_m8>:
+ 658:	4cdf 0404      	moveml %sp@+,%d2/%a2
+ 65c:	7000           	moveq #0,%d0
+ 65e:	4e75           	rts
+
+00000660 <_LoadFile>:
+ 660:	206f 0004      	moveal %sp@(4),%a0
+
+00000664 <_LoadFile2>:
+ 664:	6100 ff4c      	bsrw 5b2 <cluster2lba>
+
+00000668 <_LoadFile1>:
+ 668:	6100 fa3a      	bsrw a4 <cmd_read_block>
+ 66c:	6624           	bnes 692 <lferror>
+ 66e:	41e8 0200      	lea %a0@(512),%a0
+ 672:	203a fdb2      	movel %pc@(426 <_sectorlba>),%d0
+ 676:	5280           	addql #1,%d0
+ 678:	23c0 0000 0426 	movel %d0,426 <_sectorlba>
+ 67e:	5379 0000 0424 	subqw #1,424 <_sectorcnt>
+ 684:	66e2           	bnes 668 <_LoadFile1>
+ 686:	2f08           	movel %a0,%sp@-
+ 688:	610c           	bsrs 696 <next_cluster>
+ 68a:	205f           	moveal %sp@+,%a0
+ 68c:	66d6           	bnes 664 <_LoadFile2>
+ 68e:	2008           	movel %a0,%d0
+ 690:	4e75           	rts
+
+00000692 <lferror>:
+ 692:	7000           	moveq #0,%d0
+ 694:	4e75           	rts
+
+00000696 <next_cluster>:
+ 696:	0c39 0020 0000 	cmpib #32,416 <_fstype>
+ 69c:	0416 
+ 69e:	6738           	beqs 6d8 <fnc_m32>
+ 6a0:	0c39 000c 0000 	cmpib #12,416 <_fstype>
+ 6a6:	0416 
+ 6a8:	676c           	beqs 716 <fnc_m12>
+ 6aa:	203a fd74      	movel %pc@(420 <_cluster>),%d0
+ 6ae:	e088           	lsrl #8,%d0
+ 6b0:	d0ba fd7e      	addl %pc@(430 <_fatstart>),%d0
+ 6b4:	6100 f9c8      	bsrw 7e <cmd_read_sector>
+ 6b8:	6658           	bnes 712 <fnc_end>
+ 6ba:	103a fd67      	moveb %pc@(423 <_cluster+0x3>),%d0
+ 6be:	d040           	addw %d0,%d0
+ 6c0:	3030 0000      	movew %a0@(0000000000000000,%d0:w),%d0
+ 6c4:	e058           	rorw #8,%d0
+ 6c6:	23c0 0000 0420 	movel %d0,420 <_cluster>
+ 6cc:	80bc ffff 000f 	orl #-65521,%d0
+ 6d2:	b07c ffff      	cmpw #-1,%d0
+ 6d6:	4e75           	rts
+
+000006d8 <fnc_m32>:
+ 6d8:	203a fd46      	movel %pc@(420 <_cluster>),%d0
+ 6dc:	ee88           	lsrl #7,%d0
+ 6de:	d0ba fd50      	addl %pc@(430 <_fatstart>),%d0
+ 6e2:	6100 f99a      	bsrw 7e <cmd_read_sector>
+ 6e6:	662a           	bnes 712 <fnc_end>
+ 6e8:	103a fd39      	moveb %pc@(423 <_cluster+0x3>),%d0
+ 6ec:	c07c 007f      	andw #127,%d0
+ 6f0:	d040           	addw %d0,%d0
+ 6f2:	d040           	addw %d0,%d0
+ 6f4:	2030 0000      	movel %a0@(0000000000000000,%d0:w),%d0
+ 6f8:	e058           	rorw #8,%d0
+ 6fa:	4840           	swap %d0
+ 6fc:	e058           	rorw #8,%d0
+ 6fe:	23c0 0000 0420 	movel %d0,420 <_cluster>
+ 704:	80bc f000 0007 	orl #-268435449,%d0
+ 70a:	b0bc ffff ffff 	cmpl #-1,%d0
+ 710:	4e75           	rts
+
+00000712 <fnc_end>:
+ 712:	7000           	moveq #0,%d0
+ 714:	4e75           	rts
+
+00000716 <fnc_m12>:
+ 716:	2f02           	movel %d2,%sp@-
+ 718:	203a fd06      	movel %pc@(420 <_cluster>),%d0
+ 71c:	2200           	movel %d0,%d1
+ 71e:	d080           	addl %d0,%d0
+ 720:	d081           	addl %d1,%d0
+ 722:	2200           	movel %d0,%d1
+ 724:	e088           	lsrl #8,%d0
+ 726:	e488           	lsrl #2,%d0
+ 728:	d0ba fd06      	addl %pc@(430 <_fatstart>),%d0
+ 72c:	2400           	movel %d0,%d2
+ 72e:	6100 f94e      	bsrw 7e <cmd_read_sector>
+ 732:	6652           	bnes 786 <fnc_end2>
+ 734:	2001           	movel %d1,%d0
+ 736:	e288           	lsrl #1,%d0
+ 738:	c07c 01ff      	andw #511,%d0
+ 73c:	b07c 01ff      	cmpw #511,%d0
+ 740:	6614           	bnes 756 <fnc_m14>
+ 742:	1030 0000      	moveb %a0@(0000000000000000,%d0:w),%d0
+ 746:	c142           	exg %d0,%d2
+ 748:	5280           	addql #1,%d0
+ 74a:	6100 f932      	bsrw 7e <cmd_read_sector>
+ 74e:	6636           	bnes 786 <fnc_end2>
+ 750:	e14a           	lslw #8,%d2
+ 752:	1410           	moveb %a0@,%d2
+ 754:	600a           	bras 760 <fnc_m15>
+
+00000756 <fnc_m14>:
+ 756:	1430 0000      	moveb %a0@(0000000000000000,%d0:w),%d2
+ 75a:	e14a           	lslw #8,%d2
+ 75c:	1430 0001      	moveb %a0@(0000000000000001,%d0:w),%d2
+
+00000760 <fnc_m15>:
+ 760:	e15a           	rolw #8,%d2
+ 762:	c27c 0001      	andw #1,%d1
+ 766:	6702           	beqs 76a <fnc_m13>
+ 768:	e84a           	lsrw #4,%d2
+
+0000076a <fnc_m13>:
+ 76a:	c4bc 0000 0fff 	andl #4095,%d2
+ 770:	23c2 0000 0420 	movel %d2,420 <_cluster>
+ 776:	84bc ffff f00f 	orl #-4081,%d2
+ 77c:	2002           	movel %d2,%d0
+ 77e:	241f           	movel %sp@+,%d2
+ 780:	b07c ffff      	cmpw #-1,%d0
+ 784:	4e75           	rts
+
+00000786 <fnc_end2>:
+ 786:	241f           	movel %sp@+,%d2
+ 788:	7000           	moveq #0,%d0
+ 78a:	4e75           	rts

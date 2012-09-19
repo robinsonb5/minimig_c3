@@ -1,0 +1,3227 @@
+	section text,code
+
+	xdef	_DEBUG
+	section data,data
+
+_DEBUG
+
+	dc.b	$0
+
+	xdef	_drives
+_drives
+
+	dc.b	$0
+
+	xdef	_pdfx
+	section bss,bss
+
+	ds.w	0
+_pdfx	ds.b	4
+	xdef	_df
+	ds.w	0
+_df	ds.b	2784
+	section text,code
+
+	debug	53
+; void SendSector(unsigned char *pData, unsigned char sector, unsigned char track, unsigned char dsksynch, unsigned char dsksyncl)
+
+	ds.l 0
+	procstart
+	ds.w	0
+	xdef	_SendSector
+_SendSector:
+	movem.l	l18,-(sp)
+	move.l	l17-4(A7),A0
+	move.b	l17+3(A7),D0
+	move.b	l17+7(A7),D1
+	move.b	l17+11(A7),D7
+	move.b	l17+15(A7),D6
+	link	A5,#-l15
+	debug	61
+; 
+; {
+;     unsigned char checksum[4];
+;     unsigned short i;
+;     unsigned char x;
+;     unsigned char *p;
+; 
+;     
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	62
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	63
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	64
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	67
+; 
+; 
+;     
+;     *(unsigned char *)0xda4000=(dsksynch);
+
+	move.b	D7,$00DA4000
+	debug	68
+; 
+;     *(unsigned char *)0xda4000=(dsksyncl);
+
+	move.b	D6,$00DA4000
+	debug	69
+; 
+;     *(unsigned char *)0xda4000=(dsksynch);
+
+	move.b	D7,$00DA4000
+	debug	70
+; 
+;     *(unsigned char *)0xda4000=(dsksyncl);
+
+	move.b	D6,$00DA4000
+	debug	73
+; 
+; 
+;     
+;     x = 0x55;
+
+	moveq.l	#85,D4
+	debug	74
+; 
+;     checksum[0] = x;
+
+	move.b	D4,-4(A5)
+	debug	75
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	76
+; 
+;     x = track >> 1 & 0x55;
+
+	moveq.l	#0,D2
+	move.b	D1,D2
+	lsr.l	#$01,D2
+	moveq.l	#85,D4
+	and.b	D2,D4
+	debug	77
+; 
+;     checksum[1] = x;
+
+	move.b	D4,-3(A5)
+	debug	78
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	79
+; 
+;     x = sector >> 1 & 0x55;
+
+	moveq.l	#0,D2
+	move.b	D0,D2
+	lsr.l	#$01,D2
+	moveq.l	#85,D4
+	and.b	D2,D4
+	debug	80
+; 
+;     checksum[2] = x;
+
+	move.b	D4,-2(A5)
+	debug	81
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	82
+; 
+;     x = 11 - sector >> 1 & 0x55;
+
+	moveq.l	#0,D2
+	move.b	D0,D2
+	neg.l	D2
+	moveq.l	#11,D3
+	add.l	D3,D2
+	lsr.l	#$01,D2
+	moveq.l	#85,D4
+	and.b	D2,D4
+	debug	83
+; 
+;     checksum[3] = x;
+
+	move.b	D4,-1(A5)
+	debug	84
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	87
+; 
+; 
+;     
+;     x = 0x55;
+
+	moveq.l	#85,D4
+	debug	88
+; 
+;     checksum[0] ^= x;
+
+	eor.b	D4,-4(A5)
+	debug	89
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	90
+; 
+;     x = track & 0x55;
+
+	moveq.l	#85,D4
+	and.b	D1,D4
+	debug	91
+; 
+;     checksum[1] ^= x;
+
+	eor.b	D4,-3(A5)
+	debug	92
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	93
+; 
+;     x = sector & 0x55;
+
+	moveq.l	#85,D4
+	and.b	D0,D4
+	debug	94
+; 
+;     checksum[2] ^= x;
+
+	eor.b	D4,-2(A5)
+	debug	95
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	96
+; 
+;     x = 11 - sector & 0x55;
+
+	moveq.l	#11,D2
+	sub.b	D0,D2
+	moveq.l	#85,D4
+	and.b	D2,D4
+	debug	97
+; 
+;     checksum[3] ^= x;
+
+	eor.b	D4,-1(A5)
+	debug	98
+; 
+;     *(unsigned char *)0xda4000=(x);
+
+	move.b	D4,$00DA4000
+	debug	101
+; 
+; 
+;     
+;     i = 0x20;
+
+	moveq.l	#32,D5
+	debug	102
+; 
+;     while (i--)
+
+	bra	l4
+l3
+	debug	103
+; 
+;         *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+l4
+	move.w	D5,D2
+	subq.w	#$01,D5
+	tst.w	D2
+	bne	l3
+l5
+	debug	106
+; 
+; 
+;     
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	107
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	108
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	109
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	110
+; 
+;     *(unsigned char *)0xda4000=(checksum[0] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-4(A5),D2
+	move.b	D2,$00DA4000
+	debug	111
+; 
+;     *(unsigned char *)0xda4000=(checksum[1] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-3(A5),D2
+	move.b	D2,$00DA4000
+	debug	112
+; 
+;     *(unsigned char *)0xda4000=(checksum[2] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-2(A5),D2
+	move.b	D2,$00DA4000
+	debug	113
+; 
+;     *(unsigned char *)0xda4000=(checksum[3] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-1(A5),D2
+	move.b	D2,$00DA4000
+	debug	116
+; 
+; 
+;     
+;     checksum[0] = 0;
+
+	move.b	#$00,-4(A5)
+	debug	117
+; 
+;     checksum[1] = 0;
+
+	move.b	#$00,-3(A5)
+	debug	118
+; 
+;     checksum[2] = 0;
+
+	move.b	#$00,-2(A5)
+	debug	119
+; 
+;     checksum[3] = 0;
+
+	move.b	#$00,-1(A5)
+	debug	121
+; 
+; 
+;     p = pData;
+
+	move.l	A0,A1
+	debug	122
+; 
+;     i = 0x400 / 2 / 4;
+
+	move.w	#$80,D5
+	debug	123
+; 
+;     while (i--)
+
+	bra	l7
+l6
+	debug	125
+; 
+;     {
+;         x = *p++;
+
+	move.l	A1,A2
+	addq.l	#$01,A1
+	move.b	(A2),D4
+	debug	126
+; 
+;         checksum[0] ^= x ^ x >> 1;
+
+	moveq.l	#0,D2
+	move.b	D4,D2
+	lsr.l	#$01,D2
+	eor.b	D4,D2
+	eor.b	D2,-4(A5)
+	debug	127
+; 
+;         x = *p++;
+
+	move.l	A1,A2
+	addq.l	#$01,A1
+	move.b	(A2),D4
+	debug	128
+; 
+;         checksum[1] ^= x ^ x >> 1;
+
+	moveq.l	#0,D2
+	move.b	D4,D2
+	lsr.l	#$01,D2
+	eor.b	D4,D2
+	eor.b	D2,-3(A5)
+	debug	129
+; 
+;         x = *p++;
+
+	move.l	A1,A2
+	addq.l	#$01,A1
+	move.b	(A2),D4
+	debug	130
+; 
+;         checksum[2] ^= x ^ x >> 1;
+
+	moveq.l	#0,D2
+	move.b	D4,D2
+	lsr.l	#$01,D2
+	eor.b	D4,D2
+	eor.b	D2,-2(A5)
+	debug	131
+; 
+;         x = *p++;
+
+	move.l	A1,A2
+	addq.l	#$01,A1
+	move.b	(A2),D4
+	debug	132
+; 
+;         checksum[3] ^= x ^ x >> 1;
+
+	moveq.l	#0,D2
+	move.b	D4,D2
+	lsr.l	#$01,D2
+	eor.b	D4,D2
+	eor.b	D2,-1(A5)
+l7
+	move.w	D5,D2
+	subq.w	#$01,D5
+	tst.w	D2
+	bne	l6
+l8
+	debug	136
+; 
+;     }
+; 
+;     
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	137
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	138
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	139
+; 
+;     *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+	debug	140
+; 
+;     *(unsigned char *)0xda4000=(checksum[0] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-4(A5),D2
+	move.b	D2,$00DA4000
+	debug	141
+; 
+;     *(unsigned char *)0xda4000=(checksum[1] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-3(A5),D2
+	move.b	D2,$00DA4000
+	debug	142
+; 
+;     *(unsigned char *)0xda4000=(checksum[2] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-2(A5),D2
+	move.b	D2,$00DA4000
+	debug	143
+; 
+;     *(unsigned char *)0xda4000=(checksum[3] | 0xAA);
+
+	moveq.l	#-86,D2
+	or.b	-1(A5),D2
+	move.b	D2,$00DA4000
+	debug	146
+; 
+; 
+;     
+;     i = 0x400 / 2;
+
+	move.w	#$0200,D5
+	debug	147
+; 
+;     p = pData;
+
+	move.l	A0,A1
+	debug	148
+; 
+;     while (i--)
+
+	bra	l10
+l9
+	debug	149
+; 
+;         *(unsigned char *)0xda4000=(*p++ >> 1 | 0xAA);
+
+	move.l	A1,A2
+	addq.l	#$01,A1
+	moveq.l	#0,D2
+	move.b	(A2),D2
+	lsr.l	#$01,D2
+	moveq.l	#-86,D3
+	or.b	D2,D3
+	move.b	D3,$00DA4000
+l10
+	move.w	D5,D2
+	subq.w	#$01,D5
+	tst.w	D2
+	bne	l9
+l11
+	debug	152
+; 
+; 
+;     
+;     i = 0x400 / 2;
+
+	move.w	#$0200,D5
+	debug	153
+; 
+;     p = pData;
+
+	move.l	A0,A1
+	debug	154
+; 
+;     while (i--)
+
+	bra	l13
+l12
+	debug	155
+; 
+;         *(unsigned char *)0xda4000=(*p++ | 0xAA);
+
+	move.l	A1,A2
+	addq.l	#$01,A1
+	moveq.l	#-86,D2
+	or.b	(A2),D2
+	move.b	D2,$00DA4000
+l13
+	move.w	D5,D2
+	subq.w	#$01,D5
+	tst.w	D2
+	bne	l12
+l14
+l16
+	unlk	A5
+	movem.l	(sp)+,D2/D3/D4/D5/D6/D7/A2
+	rts
+l18	reg	D2/D3/D4/D5/D6/D7/A2
+l17	equ	36
+l15	equ	4
+	procend
+	debug	156
+; 
+; }
+
+	debug	158
+; 
+; 
+; void SendGap(void)
+
+	procstart
+	ds.w	0
+	xdef	_SendGap
+_SendGap:
+	movem.l	l26,-(sp)
+	link	A5,#-l23
+	debug	161
+; 
+; {
+;     unsigned short i = (12668 - 11 * (0x40 + 0x400));
+;     while (i--)
+
+	move.w	#$02BC,D0
+	bra	l21
+l20
+	debug	162
+; 
+;         *(unsigned char *)0xda4000=(0xAA);
+
+	move.b	#$AA,$00DA4000
+l21
+	move.w	D0,D1
+	subq.w	#$01,D0
+	tst.w	D1
+	bne	l20
+l22
+l24
+	unlk	A5
+	rts
+l26	reg	
+l25	equ	8
+l23	equ	0
+	procend
+	debug	163
+; 
+; }
+
+	debug	166
+; 
+; 
+; 
+; void ReadTrack(adfTYPE *drive)
+
+	procstart
+	ds.w	0
+	xdef	_ReadTrack
+_ReadTrack:
+	movem.l	l89,-(sp)
+	move.l	l88-4(A7),A3
+	link	A5,#-l86
+	debug	176
+; 
+; { 
+; 
+;     unsigned char sector;
+;     unsigned char status;
+;     unsigned char track;
+;     unsigned short dsksync;
+;     unsigned short dsklen;
+;     
+; 
+;     if (drive->track >= drive->tracks)
+
+	move.b	671(A3),D0
+	cmp.b	1(A3),D0
+	bcs	l29
+l91
+l28
+	debug	178
+; 
+;     {
+;         printf("Illegal track read: %d\r", drive->track);
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	move.l	D0,-(sp)
+	pea.l	l79(A4)
+	jsr	_printf(pc)
+	addq.l	#8,sp
+	debug	179
+; 
+;         ErrorMessage("    Illegal track read!", drive->track);
+
+	subq.l	#4,sp
+	move.b	671(A3),3(A7)
+	pea.l	l80(A4)
+	jsr	_ErrorMessage(pc)
+	addq.l	#8,sp
+	debug	180
+; 
+;         drive->track = drive->tracks - 1;
+
+	move.b	1(A3),D0
+	subq.b	#$01,D0
+	move.b	D0,671(A3)
+l29
+l30
+	debug	184
+; 
+;     }
+; 
+;     
+;     if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l32
+l31
+	debug	185
+; 
+;         printf("*%u:", drive->track);
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	move.l	D0,-(sp)
+	pea.l	l81(A4)
+	jsr	_printf(pc)
+	addq.l	#8,sp
+l32
+l33
+	debug	187
+; 
+; 
+;     if (drive->track != drive->track_prev)
+
+	move.b	671(A3),D0
+	cmp.b	672(A3),D0
+	beq	l35
+l92
+l34
+	debug	189
+; 
+;     { 
+;         drive->track_prev = drive->track;
+
+	move.b	671(A3),672(A3)
+	debug	190
+; 
+;         sector = 0;
+
+	moveq.l	#0,D7
+	debug	191
+; 
+;         file.cluster = drive->cache[drive->track];
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	ext.l	D0
+	asl.l	#$02,D0
+	move.l	2(A3,D0.L),_file+28(A4)
+	debug	192
+; 
+;         file.sector = drive->track * 11;
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	mulu.w	#$0B,D0
+	move.l	D0,_file+20(A4)
+	debug	193
+; 
+;         drive->sector_offset = sector;
+
+	move.b	D7,670(A3)
+	debug	194
+; 
+;         drive->cluster_offset = file.cluster;
+
+	move.l	_file+28(A4),666(A3)
+	bra	l36
+l35
+	debug	198
+; 
+;     }
+;     else
+;     { 
+;         sector = drive->sector_offset;
+
+	move.b	670(A3),D7
+	debug	199
+; 
+;         file.cluster = drive->cluster_offset;
+
+	move.l	666(A3),_file+28(A4)
+	debug	200
+; 
+;         file.sector = (drive->track * 11) + sector;
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	mulu.w	#$0B,D0
+	moveq.l	#0,D1
+	move.b	D7,D1
+	add.l	D1,D0
+	move.l	D0,_file+20(A4)
+l36
+	debug	203
+; 
+;     }
+; 
+;     *(volatile unsigned short *)0xda4004=0x10;
+
+	move.w	#$10,$00DA4004
+	debug	204
+; 
+;     status   = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D6
+	debug	205
+; 
+;     track    = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D5
+	debug	206
+; 
+;     dsksync  = (*(unsigned char *)0xda4000=(0)) << 8; 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D1
+	move.b	$00DA4000,D1
+	asl.l	#$08,D1
+	move.w	D1,D4
+	debug	207
+; 
+;     dsksync |= *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D1
+	move.b	$00DA4000,D1
+	or.w	D1,D4
+	debug	208
+; 
+;     dsklen   = (*(unsigned char *)0xda4000=(0)) << 8 & 0x3F00; 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D1
+	move.b	$00DA4000,D1
+	asl.l	#$08,D1
+	move.w	#$3F00,D3
+	and.w	D1,D3
+	debug	209
+; 
+;     dsklen  |= *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D1
+	move.b	$00DA4000,D1
+	or.w	D1,D3
+	debug	210
+; 
+;     *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	212
+; 
+; 
+;     if (track >= drive->tracks)
+
+	cmp.b	1(A3),D5
+	bcs	l38
+l93
+l37
+	debug	213
+; 
+;         track = drive->tracks - 1;
+
+	move.b	1(A3),D5
+	subq.b	#$01,D5
+l38
+l39
+	debug	215
+; 
+; 
+;     if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l41
+l40
+	debug	216
+; 
+;         printf("(%u)[%04X]:", status >> 6, dsksync);
+
+	moveq.l	#0,D0
+	move.w	D4,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.b	D6,D0
+	lsr.l	#$06,D0
+	move.l	D0,-(sp)
+	pea.l	l82(A4)
+	jsr	_printf(pc)
+	lea	12(sp),sp
+l41
+l42
+	debug	218
+; 
+; 
+;     while (1)
+
+	bra	l44
+l43
+	debug	220
+; 
+;     {
+;         FileRead(&file, sector_buffer);
+
+	pea.l	_sector_buffer(A4)
+	pea.l	_file(A4)
+	jsr	_FileRead(pc)
+	addq.l	#8,sp
+	debug	222
+; 
+; 
+;         *(volatile unsigned short *)0xda4004=0x10;
+
+	move.w	#$10,$00DA4004
+	debug	225
+; 
+; 
+;         
+;         status   = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D6
+	debug	226
+; 
+;         track    = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D5
+	debug	227
+; 
+;         dsksync  = (*(unsigned char *)0xda4000=(0)) << 8; 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	asl.l	#$08,D0
+	move.w	D0,D4
+	debug	228
+; 
+;         dsksync |= *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	or.w	D0,D4
+	debug	229
+; 
+;         dsklen   = (*(unsigned char *)0xda4000=(0)) << 8 & 0x3F00; 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	asl.l	#$08,D0
+	move.w	#$3F00,D3
+	and.w	D0,D3
+	debug	230
+; 
+;         dsklen  |= *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	or.w	D0,D3
+	debug	232
+; 
+; 
+;         if (track >= drive->tracks)
+
+	cmp.b	1(A3),D5
+	bcs	l47
+l94
+l46
+	debug	233
+; 
+;             track = drive->tracks - 1;
+
+	move.b	1(A3),D5
+	subq.b	#$01,D5
+l47
+l48
+	debug	236
+; 
+; 
+;         
+;         if (dsksync == 0x0000 || dsksync == 0x8914 || dsksync == 0xA144)
+
+	tst.w	D4
+	beq	l95
+l97
+	cmp.w	#$8914,D4
+	beq	l95
+l98
+l96
+	cmp.w	#$A144,D4
+	bne	l50
+l99
+l95
+l49
+	debug	237
+; 
+;             dsksync = 0x4489;
+
+	move.w	#$4489,D4
+l50
+l51
+	debug	244
+; 
+; 
+;         
+;         
+;         
+;         
+; 
+;         if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l53
+l52
+	debug	245
+; 
+;             printf("%X:%04X", sector, dsklen);
+
+	moveq.l	#0,D0
+	move.w	D3,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.b	D7,D0
+	move.l	D0,-(sp)
+	pea.l	l83(A4)
+	jsr	_printf(pc)
+	lea	12(sp),sp
+l53
+l54
+	debug	251
+; 
+; 
+;         
+;         
+;         
+;         
+;         if (track == drive->track)
+
+	cmp.b	671(A3),D5
+	bne	l56
+l100
+l55
+	debug	254
+; 
+;         {
+;             
+;             if (status & 0x01)
+
+	btst.l	#$00,D6
+	beq	l59
+l58
+	debug	258
+; 
+;             {
+;                 
+;                 
+;                 SendSector(sector_buffer, sector, track, (unsigned char)(dsksync >> 8), (unsigned char)dsksync);
+
+	move.b	D4,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.w	D4,D0
+	lsr.l	#$08,D0
+	move.l	D0,-(sp)
+	move.l	D5,-(sp)
+	move.l	D7,-(sp)
+	pea.l	_sector_buffer(A4)
+	jsr	_SendSector(pc)
+	lea	20(sp),sp
+	debug	260
+; 
+; 
+;                 if (sector == (11 - 1))
+
+	cmp.b	#$0A,D7
+	bne	l62
+l101
+l61
+	debug	261
+; 
+;                     SendGap();
+
+	jsr	_SendGap(pc)
+l62
+l63
+l59
+l60
+l56
+l57
+	debug	266
+; 
+;             }
+;         }
+; 
+;         
+;         *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	269
+; 
+; 
+;         
+;         if (track != drive->track)
+
+	cmp.b	671(A3),D5
+	beq	l65
+l102
+l64
+	bra	l45
+l65
+l66
+	debug	273
+; 
+;             break;
+; 
+;         
+;         if (!(status & 0x01))
+
+	moveq.l	#0,D0
+	move.b	D6,D0
+	btst.l	#$00,D0
+	bne	l68
+l67
+	bra	l45
+l68
+l69
+	debug	276
+; 
+;             break;
+; 
+;         sector++;
+
+	addq.b	#$01,D7
+	debug	277
+; 
+;         if (sector < 11)
+
+	cmp.b	#$0B,D7
+	bcc	l71
+l103
+l70
+	debug	279
+; 
+;         {
+;             FileNextSector(&file);
+
+	pea.l	_file(A4)
+	jsr	_FileNextSector(pc)
+	addq.l	#4,sp
+	bra	l72
+l71
+	debug	283
+; 
+;         }
+;         else 
+;         {
+;             sector = 0;
+
+	moveq.l	#0,D7
+	debug	284
+; 
+;             file.cluster = drive->cache[drive->track];
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	ext.l	D0
+	asl.l	#$02,D0
+	move.l	2(A3,D0.L),_file+28(A4)
+	debug	285
+; 
+;             file.sector = drive->track * 11;
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	mulu.w	#$0B,D0
+	move.l	D0,_file+20(A4)
+l72
+	debug	289
+; 
+;         }
+; 
+;         
+;         drive->sector_offset = sector;
+
+	move.b	D7,670(A3)
+	debug	290
+; 
+;         drive->cluster_offset = file.cluster;
+
+	move.l	_file+28(A4),666(A3)
+	debug	292
+; 
+; 
+;         if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l74
+l73
+	debug	293
+; 
+;             printf("->");
+
+	pea.l	l84(A4)
+	jsr	_printf(pc)
+	addq.l	#4,sp
+l74
+l75
+l44
+	bra	l43
+l45
+	debug	295
+; 
+;     }
+;     if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l77
+l76
+	debug	296
+; 
+;         printf(":OK\r");
+
+	pea.l	l85(A4)
+	jsr	_printf(pc)
+	addq.l	#4,sp
+l77
+l78
+l87
+	unlk	A5
+	movem.l	(sp)+,D3/D4/D5/D6/D7/A3
+	rts
+l89	reg	D3/D4/D5/D6/D7/A3
+l88	equ	32
+l86	equ	0
+	procend
+	debug	297
+; 
+; }
+
+	debug	299
+; 
+; 
+; unsigned char FindSync(adfTYPE *drive)
+
+	procstart
+	ds.w	0
+	xdef	_FindSync
+_FindSync:
+	movem.l	l129,-(sp)
+	move.l	l128-4(A7),A3
+	link	A5,#-l126
+	debug	305
+; 
+; 
+; {
+;     unsigned char  c1, c2, c3, c4;
+;     unsigned short n;
+; 
+;     while (1)
+
+	bra	l105
+l104
+	debug	307
+; 
+;     {
+;         *(volatile unsigned short *)0xda4004=0x10;
+
+	move.w	#$10,$00DA4004
+	debug	308
+; 
+;         c1 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	309
+; 
+;         c2 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D6
+	debug	310
+; 
+;         if (!(c1 & 0x02))
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	btst.l	#$01,D0
+	bne	l108
+l107
+	bra	l106
+l108
+l109
+	debug	312
+; 
+;             break;
+;         if (c2 != drive->track)
+
+	cmp.b	671(A3),D6
+	beq	l111
+l131
+l110
+	bra	l106
+l111
+l112
+	debug	314
+; 
+;             break;
+;         *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	debug	315
+; 
+;         *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	debug	316
+; 
+;         c3 = (*(unsigned char *)0xda4000=(0)) & 0xBF; 
+
+	move.b	#$00,$00DA4000
+	moveq.l	#-65,D5
+	and.b	$00DA4000,D5
+	debug	317
+; 
+;         c4 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D4
+	debug	319
+; 
+; 
+;         if (c3 == 0 && c4 == 0)
+
+	tst.b	D5
+	bne	l114
+l133
+	tst.b	D4
+	bne	l114
+l134
+l132
+l113
+	bra	l106
+l114
+l115
+	debug	322
+; 
+;             break;
+; 
+;         n = ((c3 & 0x3F) << 8) + c4;
+
+	moveq.l	#0,D0
+	move.b	D5,D0
+	moveq.l	#63,D1
+	and.l	D1,D0
+	asl.l	#$08,D0
+	moveq.l	#0,D1
+	move.b	D4,D1
+	move.w	D0,D3
+	add.w	D1,D3
+	debug	324
+; 
+; 
+;         while (n--)
+
+	bra	l117
+l116
+	debug	326
+; 
+;         {
+;             c3 = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D5
+	debug	327
+; 
+;             c4 = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D4
+	debug	328
+; 
+;             if (c3 == 0x44 && c4 == 0x89)
+
+	cmp.b	#$44,D5
+	bne	l120
+l136
+	cmp.b	#$89,D4
+	bne	l120
+l137
+l135
+l119
+	debug	330
+; 
+;             {
+;                 *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	331
+; 
+;                 if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l123
+l122
+	debug	332
+; 
+;                     printf("#SYNC:");
+
+	pea.l	l125(A4)
+	jsr	_printf(pc)
+	addq.l	#4,sp
+l123
+l124
+	debug	334
+; 
+; 
+;                 return 1;
+
+	moveq.l	#1,D0
+	bra	l127
+l120
+l121
+l117
+	move.w	D3,D0
+	subq.w	#$01,D3
+	tst.w	D0
+	bne	l116
+l118
+	debug	337
+; 
+;             }
+;         }
+;         *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+l105
+	bra	l104
+l106
+	debug	339
+; 
+;     }
+;     *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	340
+; 
+;     return 0;
+
+	moveq.l	#0,D0
+	bra	l127
+l127
+	unlk	A5
+	movem.l	(sp)+,D3/D4/D5/D6/D7/A3
+	rts
+l129	reg	D3/D4/D5/D6/D7/A3
+l128	equ	32
+l126	equ	0
+	procend
+	debug	341
+; 
+; }
+
+	debug	343
+; 
+; 
+; unsigned char GetHeader(unsigned char *pTrack, unsigned char *pSector)
+
+	procstart
+	ds.w	0
+	xdef	_GetHeader
+_GetHeader:
+	movem.l	l184,-(sp)
+	move.l	l183-4(A7),A3
+	move.l	l183+0(A7),A2
+	link	A5,#-l181
+	debug	350
+; 
+; 
+; {
+;     unsigned char c, c1, c2, c3, c4;
+;     unsigned char i;
+;     unsigned char checksum[4];
+; 
+;     Error = 0;
+
+	move.b	#$00,_Error(A4)
+	debug	351
+; 
+;     while (1)
+
+	bra	l139
+l138
+	debug	353
+; 
+;     {
+;         *(volatile unsigned short *)0xda4004=0x10;
+
+	move.w	#$10,$00DA4004
+	debug	354
+; 
+;         c1 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D6
+	debug	355
+; 
+;         c2 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D5
+	debug	356
+; 
+;         if (!(c1 & 0x02))
+
+	moveq.l	#0,D0
+	move.b	D6,D0
+	btst.l	#$01,D0
+	bne	l142
+l141
+	bra	l140
+l142
+l143
+	debug	358
+; 
+;             break;
+;         *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	debug	359
+; 
+;         *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	debug	360
+; 
+;         c3 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D4
+	debug	361
+; 
+;         c4 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D3
+	debug	363
+; 
+; 
+;         if ((c3 & 0x3F) != 0 || c4 > 24)
+
+	moveq.l	#0,D0
+	move.b	D4,D0
+	moveq.l	#63,D1
+	and.l	D1,D0
+	tst.l	D0
+	bne	l186
+l187
+	cmp.b	#$18,D3
+	bls	l145
+l188
+l186
+l144
+	debug	365
+; 
+;         {
+;             c1 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D6
+	debug	366
+; 
+;             c2 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D5
+	debug	367
+; 
+;             if (c1 != 0x44 || c2 != 0x89)
+
+	cmp.b	#$44,D6
+	bne	l189
+l190
+	cmp.b	#$89,D5
+	beq	l148
+l191
+l189
+l147
+	debug	369
+; 
+;             {
+;                 Error = 21;
+
+	move.b	#$15,_Error(A4)
+	debug	370
+; 
+;                 printf("\rSecond sync word missing...\r");
+
+	pea.l	l178(A4)
+	jsr	_printf(pc)
+	addq.l	#4,sp
+	debug	372
+; 
+;                 break;
+;             }
+
+	bra	l140
+l148
+l149
+	debug	374
+; 
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	375
+; 
+;             checksum[0] = c;
+
+	move.b	D7,-4(A5)
+	debug	376
+; 
+;             c1 = (c & 0x55) << 1;
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D6
+	debug	377
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	378
+; 
+;             checksum[1] = c;
+
+	move.b	D7,-3(A5)
+	debug	379
+; 
+;             c2 = (c & 0x55) << 1;
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D5
+	debug	380
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	381
+; 
+;             checksum[2] = c;
+
+	move.b	D7,-2(A5)
+	debug	382
+; 
+;             c3 = (c & 0x55) << 1;
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D4
+	debug	383
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	384
+; 
+;             checksum[3] = c;
+
+	move.b	D7,-1(A5)
+	debug	385
+; 
+;             c4 = (c & 0x55) << 1;
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D3
+	debug	387
+; 
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	388
+; 
+;             checksum[0] ^= c;
+
+	eor.b	D7,-4(A5)
+	debug	389
+; 
+;             c1 |= c & 0x55;
+
+	moveq.l	#85,D0
+	and.b	D7,D0
+	or.b	D0,D6
+	debug	390
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	391
+; 
+;             checksum[1] ^= c;
+
+	eor.b	D7,-3(A5)
+	debug	392
+; 
+;             c2 |= c & 0x55;
+
+	moveq.l	#85,D0
+	and.b	D7,D0
+	or.b	D0,D5
+	debug	393
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	394
+; 
+;             checksum[2] ^= c;
+
+	eor.b	D7,-2(A5)
+	debug	395
+; 
+;             c3 |= c & 0x55;
+
+	moveq.l	#85,D0
+	and.b	D7,D0
+	or.b	D0,D4
+	debug	396
+; 
+;             c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	397
+; 
+;             checksum[3] ^= c;
+
+	eor.b	D7,-1(A5)
+	debug	398
+; 
+;             c4 |= c & 0x55;
+
+	moveq.l	#85,D0
+	and.b	D7,D0
+	or.b	D0,D3
+	debug	400
+; 
+; 
+;             if (c1 != 0xFF) 
+
+	cmp.b	#$FF,D6
+	beq	l151
+l192
+l150
+	debug	401
+; 
+;                 Error = 22;
+
+	move.b	#$16,_Error(A4)
+	bra	l152
+l151
+	debug	402
+; 
+;             else if (c2 > 159) 
+
+	moveq.l	#0,D0
+	move.b	D5,D0
+	cmp.w	#$9F,D0
+	bls	l154
+l193
+l153
+	debug	403
+; 
+;                 Error = 23;
+
+	move.b	#$17,_Error(A4)
+	bra	l155
+l154
+	debug	404
+; 
+;             else if (c3 > 10) 
+
+	cmp.b	#$0A,D4
+	bls	l157
+l194
+l156
+	debug	405
+; 
+;                 Error = 24;
+
+	move.b	#$18,_Error(A4)
+	bra	l158
+l157
+	debug	406
+; 
+;             else if (c4 > 11 || c4 == 0) 
+
+	cmp.b	#$0B,D3
+	bhi	l195
+l196
+	tst.b	D3
+	bne	l160
+l197
+l195
+l159
+	debug	407
+; 
+;                 Error = 25;
+
+	move.b	#$19,_Error(A4)
+l160
+l161
+l158
+l155
+l152
+	debug	409
+; 
+; 
+;             if (Error)
+
+	tst.b	_Error(A4)
+	beq	l163
+l162
+	debug	411
+; 
+;             {
+;                 printf("\rWrong header: %u.%u.%u.%u\r", c1, c2, c3, c4);
+
+	moveq.l	#0,D0
+	move.b	D3,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.b	D4,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.b	D5,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.b	D6,D0
+	move.l	D0,-(sp)
+	pea.l	l179(A4)
+	jsr	_printf(pc)
+	lea	20(sp),sp
+	debug	413
+; 
+;                 break;
+;             }
+
+	bra	l140
+l163
+l164
+	debug	415
+; 
+; 
+;             if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l166
+l165
+	debug	416
+; 
+;                 printf("T%uS%u\r", c2, c3);
+
+	moveq.l	#0,D0
+	move.b	D4,D0
+	move.l	D0,-(sp)
+	moveq.l	#0,D0
+	move.b	D5,D0
+	move.l	D0,-(sp)
+	pea.l	l180(A4)
+	jsr	_printf(pc)
+	lea	12(sp),sp
+l166
+l167
+	debug	418
+; 
+; 
+;             *pTrack = c2;
+
+	move.b	D5,(A3)
+	debug	419
+; 
+;             *pSector = c3;
+
+	move.b	D4,(A2)
+	debug	421
+; 
+; 
+;             for (i = 0; i < 8; i++)
+
+	moveq.l	#0,D2
+	bra	l171
+l168
+	debug	423
+; 
+;             {
+;                 checksum[0] ^= *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	move.b	-4(A5),D1
+	eor.b	D1,D0
+	move.b	D0,-4(A5)
+	debug	424
+; 
+;                 checksum[1] ^= *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	move.b	-3(A5),D1
+	eor.b	D1,D0
+	move.b	D0,-3(A5)
+	debug	425
+; 
+;                 checksum[2] ^= *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	move.b	-2(A5),D1
+	eor.b	D1,D0
+	move.b	D0,-2(A5)
+	debug	426
+; 
+;                 checksum[3] ^= *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	move.b	-1(A5),D1
+	eor.b	D1,D0
+	move.b	D0,-1(A5)
+l169
+	addq.b	#$01,D2
+l171
+	cmp.b	#$08,D2
+	bcs	l168
+l198
+l170
+	debug	429
+; 
+;             }
+; 
+;             checksum[0] &= 0x55;
+
+	and.b	#$55,-4(A5)
+	debug	430
+; 
+;             checksum[1] &= 0x55;
+
+	and.b	#$55,-3(A5)
+	debug	431
+; 
+;             checksum[2] &= 0x55;
+
+	and.b	#$55,-2(A5)
+	debug	432
+; 
+;             checksum[3] &= 0x55;
+
+	and.b	#$55,-1(A5)
+	debug	434
+; 
+; 
+;             c1 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D6
+	debug	435
+; 
+;             c2 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D5
+	debug	436
+; 
+;             c3 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D4
+	debug	437
+; 
+;             c4 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D0
+	move.b	$00DA4000,D0
+	moveq.l	#85,D1
+	and.l	D1,D0
+	asl.l	#$01,D0
+	move.b	D0,D3
+	debug	439
+; 
+; 
+;             c1 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D0
+	and.b	$00DA4000,D0
+	or.b	D0,D6
+	debug	440
+; 
+;             c2 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D0
+	and.b	$00DA4000,D0
+	or.b	D0,D5
+	debug	441
+; 
+;             c3 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D0
+	and.b	$00DA4000,D0
+	or.b	D0,D4
+	debug	442
+; 
+;             c4 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D0
+	and.b	$00DA4000,D0
+	or.b	D0,D3
+	debug	444
+; 
+; 
+;             if (c1 != checksum[0] || c2 != checksum[1] || c3 != checksum[2] || c4 != checksum[3])
+
+	cmp.b	-4(A5),D6
+	bne	l199
+l202
+	cmp.b	-3(A5),D5
+	bne	l199
+l203
+l201
+	cmp.b	-2(A5),D4
+	bne	l199
+l204
+l200
+	cmp.b	-1(A5),D3
+	beq	l173
+l205
+l199
+l172
+	debug	446
+; 
+;             {
+;                 Error = 26;
+
+	move.b	#$1A,_Error(A4)
+	debug	448
+; 
+;                 break;
+;             }
+
+	bra	l140
+l173
+l174
+	debug	450
+; 
+; 
+;             *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	451
+; 
+;             return 1;
+
+	moveq.l	#1,D0
+	bra	l182
+	bra	l146
+l145
+	debug	453
+; 
+;         }
+;         else if ((c3 & 0x80) == 0) 
+
+	moveq.l	#0,D0
+	move.b	D4,D0
+	btst.l	#$07,D0
+	bne	l176
+l175
+	debug	455
+; 
+;         {
+;             Error = 20;
+
+	move.b	#$14,_Error(A4)
+	debug	457
+; 
+;             break;
+;         }
+
+	bra	l140
+l176
+l177
+l146
+	debug	459
+; 
+; 
+;         *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+l139
+	bra	l138
+l140
+	debug	462
+; 
+;     }
+; 
+;     *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	463
+; 
+;     return 0;
+
+	moveq.l	#0,D0
+	bra	l182
+l182
+	unlk	A5
+	movem.l	(sp)+,D2/D3/D4/D5/D6/D7/A2/A3
+	rts
+l184	reg	D2/D3/D4/D5/D6/D7/A2/A3
+l183	equ	40
+l181	equ	4
+	procend
+	debug	464
+; 
+; }
+
+	debug	466
+; 
+; 
+; unsigned char GetData(void)
+
+	procstart
+	ds.w	0
+	xdef	_GetData
+_GetData:
+	movem.l	l230,-(sp)
+	link	A5,#-l227
+	debug	474
+; 
+; {
+;     unsigned char c, c1, c2, c3, c4;
+;     unsigned char i;
+;     unsigned char *p;
+;     unsigned short n;
+;     unsigned char checksum[4];
+; 
+;     Error = 0;
+
+	move.b	#$00,_Error(A4)
+	debug	475
+; 
+;     while (1)
+
+	bra	l207
+l206
+	debug	477
+; 
+;     {
+;         *(volatile unsigned short *)0xda4004=0x10;
+
+	move.w	#$10,$00DA4004
+	debug	478
+; 
+;         c1 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D1
+	debug	479
+; 
+;         c2 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D7
+	debug	480
+; 
+;         if (!(c1 & 0x02))
+
+	moveq.l	#0,D2
+	move.b	D1,D2
+	btst.l	#$01,D2
+	bne	l210
+l209
+	bra	l208
+l210
+l211
+	debug	482
+; 
+;             break;
+;         *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	debug	483
+; 
+;         *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	debug	484
+; 
+;         c3 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D6
+	debug	485
+; 
+;         c4 = *(unsigned char *)0xda4000=(0); 
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D5
+	debug	487
+; 
+; 
+;         n = ((c3 & 0x3F) << 8) + c4;
+
+	moveq.l	#0,D2
+	move.b	D6,D2
+	moveq.l	#63,D3
+	and.l	D3,D2
+	asl.l	#$08,D2
+	moveq.l	#0,D3
+	move.b	D5,D3
+	add.w	D3,D2
+	move.w	D2,-2(A5)
+	debug	489
+; 
+; 
+;         if (n >= 0x204)
+
+	cmp.w	#$0204,-2(A5)
+	bcs	l213
+l240
+l212
+	debug	491
+; 
+;         {
+;             c1 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D3
+	move.b	$00DA4000,D3
+	moveq.l	#85,D2
+	and.l	D2,D3
+	asl.l	#$01,D3
+	move.b	D3,D1
+	debug	492
+; 
+;             c2 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D3
+	move.b	$00DA4000,D3
+	moveq.l	#85,D2
+	and.l	D2,D3
+	asl.l	#$01,D3
+	move.b	D3,D7
+	debug	493
+; 
+;             c3 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D3
+	move.b	$00DA4000,D3
+	moveq.l	#85,D2
+	and.l	D2,D3
+	asl.l	#$01,D3
+	move.b	D3,D6
+	debug	494
+; 
+;             c4 = ((*(unsigned char *)0xda4000=(0)) & 0x55) << 1;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#0,D3
+	move.b	$00DA4000,D3
+	moveq.l	#85,D2
+	and.l	D2,D3
+	asl.l	#$01,D3
+	move.b	D3,D5
+	debug	496
+; 
+; 
+;             c1 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D3
+	and.b	$00DA4000,D3
+	or.b	D3,D1
+	debug	497
+; 
+;             c2 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D3
+	and.b	$00DA4000,D3
+	or.b	D3,D7
+	debug	498
+; 
+;             c3 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D3
+	and.b	$00DA4000,D3
+	or.b	D3,D6
+	debug	499
+; 
+;             c4 |= (*(unsigned char *)0xda4000=(0)) & 0x55;
+
+	move.b	#$00,$00DA4000
+	moveq.l	#85,D3
+	and.b	$00DA4000,D3
+	or.b	D3,D5
+	debug	501
+; 
+; 
+;             checksum[0] = 0;
+
+	move.b	#$00,-6(A5)
+	debug	502
+; 
+;             checksum[1] = 0;
+
+	move.b	#$00,-5(A5)
+	debug	503
+; 
+;             checksum[2] = 0;
+
+	move.b	#$00,-4(A5)
+	debug	504
+; 
+;             checksum[3] = 0;
+
+	move.b	#$00,-3(A5)
+	debug	507
+; 
+; 
+;             
+;             i = 128;
+
+	moveq.l	#-128,D4
+	debug	508
+; 
+;             p = sector_buffer;
+
+	lea.l	_sector_buffer(A4),A0
+	debug	510
+; 
+;             do
+;             {
+
+l215
+	debug	511
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	512
+; 
+;                 checksum[0] ^= c;
+
+	eor.b	D0,-6(A5)
+	debug	513
+; 
+;                 *p++ = (c & 0x55) << 1;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#0,D2
+	move.b	D0,D2
+	moveq.l	#85,D3
+	and.l	D3,D2
+	asl.l	#$01,D2
+	move.b	D2,(A1)
+	debug	514
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	515
+; 
+;                 checksum[1] ^= c;
+
+	eor.b	D0,-5(A5)
+	debug	516
+; 
+;                 *p++ = (c & 0x55) << 1;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#0,D2
+	move.b	D0,D2
+	moveq.l	#85,D3
+	and.l	D3,D2
+	asl.l	#$01,D2
+	move.b	D2,(A1)
+	debug	517
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	518
+; 
+;                 checksum[2] ^= c;
+
+	eor.b	D0,-4(A5)
+	debug	519
+; 
+;                 *p++ = (c & 0x55) << 1;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#0,D2
+	move.b	D0,D2
+	moveq.l	#85,D3
+	and.l	D3,D2
+	asl.l	#$01,D2
+	move.b	D2,(A1)
+	debug	520
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	521
+; 
+;                 checksum[3] ^= c;
+
+	eor.b	D0,-3(A5)
+	debug	522
+; 
+;                 *p++ = (c & 0x55) << 1;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#0,D2
+	move.b	D0,D2
+	moveq.l	#85,D3
+	and.l	D3,D2
+	asl.l	#$01,D2
+	move.b	D2,(A1)
+l216
+	debug	524
+; 
+;             }
+;             while (--i);
+
+	subq.b	#$01,D4
+	tst.b	D4
+	bne	l215
+l217
+	debug	527
+; 
+; 
+;             
+;             i = 128;
+
+	moveq.l	#-128,D4
+	debug	528
+; 
+;             p = sector_buffer;
+
+	lea.l	_sector_buffer(A4),A0
+	debug	530
+; 
+;             do
+;             {
+
+l218
+	debug	531
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	532
+; 
+;                 checksum[0] ^= c;
+
+	eor.b	D0,-6(A5)
+	debug	533
+; 
+;                 *p++ |= c & 0x55;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#85,D2
+	and.b	D0,D2
+	or.b	D2,(A1)
+	debug	534
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	535
+; 
+;                 checksum[1] ^= c;
+
+	eor.b	D0,-5(A5)
+	debug	536
+; 
+;                 *p++ |= c & 0x55;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#85,D2
+	and.b	D0,D2
+	or.b	D2,(A1)
+	debug	537
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	538
+; 
+;                 checksum[2] ^= c;
+
+	eor.b	D0,-4(A5)
+	debug	539
+; 
+;                 *p++ |= c & 0x55;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#85,D2
+	and.b	D0,D2
+	or.b	D2,(A1)
+	debug	540
+; 
+;                 c = *(unsigned char *)0xda4000=(0);
+
+	move.b	#$00,$00DA4000
+	move.b	$00DA4000,D0
+	debug	541
+; 
+;                 checksum[3] ^= c;
+
+	eor.b	D0,-3(A5)
+	debug	542
+; 
+;                 *p++ |= c & 0x55;
+
+	move.l	A0,A1
+	addq.l	#$01,A0
+	moveq.l	#85,D2
+	and.b	D0,D2
+	or.b	D2,(A1)
+l219
+	debug	544
+; 
+;             }
+;             while (--i);
+
+	subq.b	#$01,D4
+	tst.b	D4
+	bne	l218
+l220
+	debug	546
+; 
+; 
+;             checksum[0] &= 0x55;
+
+	and.b	#$55,-6(A5)
+	debug	547
+; 
+;             checksum[1] &= 0x55;
+
+	and.b	#$55,-5(A5)
+	debug	548
+; 
+;             checksum[2] &= 0x55;
+
+	and.b	#$55,-4(A5)
+	debug	549
+; 
+;             checksum[3] &= 0x55;
+
+	and.b	#$55,-3(A5)
+	debug	551
+; 
+; 
+;             if (c1 != checksum[0] || c2 != checksum[1] || c3 != checksum[2] || c4 != checksum[3])
+
+	cmp.b	-6(A5),D1
+	bne	l241
+l244
+	cmp.b	-5(A5),D7
+	bne	l241
+l245
+l243
+	cmp.b	-4(A5),D6
+	bne	l241
+l246
+l242
+	cmp.b	-3(A5),D5
+	beq	l222
+l247
+l241
+l221
+	debug	553
+; 
+;             {
+;                 Error = 29;
+
+	move.b	#$1D,_Error(A4)
+	debug	555
+; 
+;                 break;
+;             }
+
+	bra	l208
+l222
+l223
+	debug	557
+; 
+; 
+;             *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	558
+; 
+;             return 1;
+
+	moveq.l	#1,D0
+	bra	l228
+	bra	l214
+l213
+	debug	560
+; 
+;         }
+;         else if ((c3 & 0x80) == 0) 
+
+	moveq.l	#0,D2
+	move.b	D6,D2
+	btst.l	#$07,D2
+	bne	l225
+l224
+	debug	562
+; 
+;         {
+;             Error = 28;
+
+	move.b	#$1C,_Error(A4)
+	debug	564
+; 
+;             break;
+;         }
+
+	bra	l208
+l225
+l226
+l214
+	debug	566
+; 
+; 
+;         *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+l207
+	bra	l206
+l208
+	debug	568
+; 
+;     }
+;     *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+	debug	569
+; 
+;     return 0;
+
+	moveq.l	#0,D0
+	bra	l228
+l228
+	unlk	A5
+	movem.l	(sp)+,D2/D3/D4/D5/D6/D7
+	rts
+l230	reg	D2/D3/D4/D5/D6/D7
+l229	equ	32
+l227	equ	8
+	procend
+	debug	570
+; 
+; }
+
+	debug	572
+; 
+; 
+; void WriteTrack(adfTYPE *drive)
+
+	procstart
+	ds.w	0
+	xdef	_WriteTrack
+_WriteTrack:
+	movem.l	l282,-(sp)
+	move.l	l281-4(A7),A3
+	link	A5,#-l279
+	debug	579
+; 
+; {
+;     unsigned char sector;
+;     unsigned char Track;
+;     unsigned char Sector;
+; 
+;     
+;     file.cluster = drive->cache[drive->track];
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	ext.l	D0
+	asl.l	#$02,D0
+	move.l	2(A3,D0.L),_file+28(A4)
+	debug	580
+; 
+;     file.sector = drive->track * 11;
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	mulu.w	#$0B,D0
+	move.l	D0,_file+20(A4)
+	debug	581
+; 
+;     sector = 0;
+
+	moveq.l	#0,D7
+	debug	583
+; 
+; 
+;     drive->track_prev = drive->track + 1; 
+
+	moveq.l	#1,D0
+	add.b	671(A3),D0
+	move.b	D0,672(A3)
+	debug	585
+; 
+; 
+;     if (DEBUG)
+
+	tst.b	_DEBUG(A4)
+	beq	l249
+l248
+	debug	586
+; 
+;         printf("*%u:\r", drive->track);
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	move.l	D0,-(sp)
+	pea.l	l275(A4)
+	jsr	_printf(pc)
+	addq.l	#8,sp
+l249
+l250
+	debug	588
+; 
+; 
+;     while (FindSync(drive))
+
+	bra	l252
+l251
+	debug	590
+; 
+;     {
+;         if (GetHeader(&Track, &Sector))
+
+	pea.l	-2(A5)
+	pea.l	-1(A5)
+	jsr	_GetHeader(pc)
+	addq.l	#8,sp
+	tst.b	D0
+	beq	l255
+l254
+	debug	592
+; 
+;         {
+;             if (Track == drive->track)
+
+	move.b	-1(A5),D0
+	cmp.b	671(A3),D0
+	bne	l258
+l284
+l257
+	debug	594
+; 
+;             {
+;                 while (sector != Sector)
+
+	bra	l261
+l260
+	debug	596
+; 
+;                 {
+;                     if (sector < Sector)
+
+	cmp.b	-2(A5),D7
+	bcc	l264
+l285
+l263
+	debug	598
+; 
+;                     {
+;                         FileNextSector(&file);
+
+	pea.l	_file(A4)
+	jsr	_FileNextSector(pc)
+	addq.l	#4,sp
+	debug	599
+; 
+;                         sector++;
+
+	addq.b	#$01,D7
+	bra	l265
+l264
+	debug	603
+; 
+;                     }
+;                     else
+;                     {
+;                         file.cluster = drive->cache[drive->track];
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	ext.l	D0
+	asl.l	#$02,D0
+	move.l	2(A3,D0.L),_file+28(A4)
+	debug	604
+; 
+;                         file.sector = drive->track * 11;
+
+	moveq.l	#0,D0
+	move.b	671(A3),D0
+	mulu.w	#$0B,D0
+	move.l	D0,_file+20(A4)
+	debug	605
+; 
+;                         sector = 0;
+
+	moveq.l	#0,D7
+l265
+l261
+	cmp.b	-2(A5),D7
+	bne	l260
+l286
+l262
+	debug	609
+; 
+;                     }
+;                 }
+; 
+;                 if (GetData())
+
+	jsr	_GetData(pc)
+	tst.b	D0
+	beq	l267
+l266
+	debug	611
+; 
+;                 {
+;                     if (drive->status & 0x10)
+
+	btst.b	#$04,(A3)
+	beq	l270
+l269
+	debug	612
+; 
+;                         FileWrite(&file, sector_buffer);
+
+	pea.l	_sector_buffer(A4)
+	pea.l	_file(A4)
+	jsr	_FileWrite(pc)
+	addq.l	#8,sp
+	bra	l271
+l270
+	debug	615
+; 
+;                     else
+;                     {
+;                         Error = 30;
+
+	move.b	#$1E,_Error(A4)
+	debug	616
+; 
+;                         printf("Write attempt to protected disk!\r");
+
+	pea.l	l276(A4)
+	jsr	_printf(pc)
+	addq.l	#4,sp
+l271
+l267
+l268
+	bra	l259
+l258
+	debug	621
+; 
+;                     }
+;                 }
+;             }
+;             else
+;                 Error = 27; 
+
+	move.b	#$1B,_Error(A4)
+l259
+l255
+l256
+	debug	623
+; 
+;         }
+;         if (Error)
+
+	tst.b	_Error(A4)
+	beq	l273
+l272
+	debug	625
+; 
+;         {
+;             printf("WriteTrack: error %u\r", Error);
+
+	moveq.l	#0,D0
+	move.b	_Error(A4),D0
+	move.l	D0,-(sp)
+	pea.l	l277(A4)
+	jsr	_printf(pc)
+	addq.l	#8,sp
+	debug	626
+; 
+;             ErrorMessage("  WriteTrack", Error);
+
+	subq.l	#4,sp
+	move.b	_Error(A4),3(A7)
+	pea.l	l278(A4)
+	jsr	_ErrorMessage(pc)
+	addq.l	#8,sp
+l273
+l274
+l252
+	move.l	A3,-(sp)
+	jsr	_FindSync(pc)
+	addq.l	#4,sp
+	tst.b	D0
+	bne	l251
+l253
+l280
+	unlk	A5
+	movem.l	(sp)+,D7/A3
+	rts
+l282	reg	D7/A3
+l281	equ	16
+l279	equ	4
+	procend
+	debug	629
+; 
+;         }
+;     }
+; }
+
+	debug	631
+; 
+; 
+; void UpdateDriveStatus(void)
+
+	procstart
+	ds.w	0
+	xdef	_UpdateDriveStatus
+_UpdateDriveStatus:
+	movem.l	l290,-(sp)
+	link	A5,#-l287
+	debug	633
+; 
+; {
+;     *(volatile unsigned short *)0xda4004=0x10;
+
+	move.w	#$10,$00DA4004
+	debug	634
+; 
+;     *(unsigned char *)0xda4000=(0x10);
+
+	move.b	#$10,$00DA4000
+	debug	635
+; 
+;     *(unsigned char *)0xda4000=(df[0].status | (df[1].status << 1) | (df[2].status << 2) | (df[3].status << 3));
+
+	moveq.l	#0,D0
+	move.b	_df+696(A4),D0
+	asl.l	#$01,D0
+	or.b	_df(A4),D0
+	moveq.l	#0,D1
+	move.b	_df+1392(A4),D1
+	asl.l	#$02,D1
+	or.b	D0,D1
+	moveq.l	#0,D0
+	move.b	_df+2088(A4),D0
+	asl.l	#$03,D0
+	or.b	D1,D0
+	move.b	D0,$00DA4000
+	debug	636
+; 
+;     *(volatile unsigned short *)0xda4004=0x11;
+
+	move.w	#$11,$00DA4004
+l288
+	unlk	A5
+	rts
+l290	reg	
+l289	equ	8
+l287	equ	0
+	procend
+	debug	637
+; 
+; }
+
+	debug	639
+; 
+; 
+; void HandleFDD(unsigned char c1, unsigned char c2)
+
+	procstart
+	ds.w	0
+	xdef	_HandleFDD
+_HandleFDD:
+	movem.l	l301,-(sp)
+	move.b	l300-1(A7),D7
+	move.b	l300+3(A7),D6
+	link	A5,#-l298
+	debug	642
+; 
+; {
+;     unsigned char sel;
+;     drives = (c1 >> 4) & 0x03; 
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	lsr.l	#$04,D0
+	moveq.l	#3,D1
+	and.b	D0,D1
+	move.b	D1,_drives(A4)
+	debug	644
+; 
+; 
+;     if (c1 & 0x01)
+
+	btst.l	#$00,D7
+	beq	l293
+l292
+	debug	647
+; 
+;     {
+;         ;
+;         sel = (c1 >> 6) & 0x03;
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	lsr.l	#$06,D0
+	moveq.l	#3,D5
+	and.b	D0,D5
+	debug	648
+; 
+;         df[sel].track = c2;
+
+	moveq.l	#0,D0
+	move.b	D5,D0
+	ext.l	D0
+	move.l	#$02B8,D1
+	jsr	__muls(pc)
+	lea.l	_df(A4),A0
+	add.l	D0,A0
+	move.b	D6,671(A0)
+	debug	649
+; 
+;         ReadTrack(&df[sel]);
+
+	moveq.l	#0,D0
+	move.b	D5,D0
+	ext.l	D0
+	move.l	#$02B8,D1
+	jsr	__muls(pc)
+	lea.l	_df(A4),A0
+	add.l	D0,A0
+	pea.l	(A0)
+	jsr	_ReadTrack(pc)
+	addq.l	#4,sp
+	bra	l294
+l293
+	debug	652
+; 
+;         ;
+;     }
+;     else if (c1 & 0x02)
+
+	btst.l	#$01,D7
+	beq	l296
+l295
+	debug	655
+; 
+;     {
+;         ;
+;         sel = (c1 >> 6) & 0x03;
+
+	moveq.l	#0,D0
+	move.b	D7,D0
+	lsr.l	#$06,D0
+	moveq.l	#3,D5
+	and.b	D0,D5
+	debug	656
+; 
+;         df[sel].track = c2;
+
+	moveq.l	#0,D0
+	move.b	D5,D0
+	ext.l	D0
+	move.l	#$02B8,D1
+	jsr	__muls(pc)
+	lea.l	_df(A4),A0
+	add.l	D0,A0
+	move.b	D6,671(A0)
+	debug	657
+; 
+;         WriteTrack(&df[sel]);
+
+	moveq.l	#0,D0
+	move.b	D5,D0
+	ext.l	D0
+	move.l	#$02B8,D1
+	jsr	__muls(pc)
+	lea.l	_df(A4),A0
+	add.l	D0,A0
+	pea.l	(A0)
+	jsr	_WriteTrack(pc)
+	addq.l	#4,sp
+l296
+l297
+l294
+l299
+	unlk	A5
+	movem.l	(sp)+,D5/D6/D7
+	rts
+l301	reg	D5/D6/D7
+l300	equ	20
+l298	equ	0
+	procend
+	debug	660
+; 
+;         ;
+;     }
+; }
+
+	xref	__muls
+	xref	_FileWrite
+	xref	_FileNextSector
+	xref	_FileRead
+	xref	_ErrorMessage
+	xref	_printf
+	section data,data
+
+	ds.w	0
+l278
+
+	dc.b	$20,$20,$57,$72,$69,$74,$65,$54,$72,$61,$63,$6B
+	dc.b	$00
+	ds.w	0
+l277
+
+	dc.b	$57,$72,$69,$74,$65,$54,$72,$61,$63,$6B,$3A,$20
+	dc.b	$65,$72,$72,$6F,$72,$20,$25,$75,$0D,$00
+	ds.w	0
+l276
+
+	dc.b	$57,$72,$69,$74,$65,$20,$61,$74,$74,$65,$6D,$70
+	dc.b	$74,$20,$74,$6F,$20,$70,$72,$6F,$74,$65,$63,$74
+	dc.b	$65,$64,$20,$64,$69,$73,$6B,$21,$0D,$00
+	ds.w	0
+l275
+
+	dc.b	$2A,$25,$75,$3A,$0D,$00
+	ds.w	0
+l180
+
+	dc.b	$54,$25,$75,$53,$25,$75,$0D,$00
+	ds.w	0
+l179
+
+	dc.b	$0D,$57,$72,$6F,$6E,$67,$20,$68,$65,$61,$64,$65
+	dc.b	$72,$3A,$20,$25,$75,$2E,$25,$75,$2E,$25,$75,$2E
+	dc.b	$25,$75,$0D,$00
+	ds.w	0
+l178
+
+	dc.b	$0D,$53,$65,$63,$6F,$6E,$64,$20,$73,$79,$6E,$63
+	dc.b	$20,$77,$6F,$72,$64,$20,$6D,$69,$73,$73,$69,$6E
+	dc.b	$67,$2E,$2E,$2E,$0D,$00
+	ds.w	0
+l125
+
+	dc.b	$23,$53,$59,$4E,$43,$3A,$00
+	ds.w	0
+l85
+
+	dc.b	$3A,$4F,$4B,$0D,$00
+	ds.w	0
+l84
+
+	dc.b	$2D,$3E,$00
+	ds.w	0
+l83
+
+	dc.b	$25,$58,$3A,$25,$30,$34,$58,$00
+	ds.w	0
+l82
+
+	dc.b	$28,$25,$75,$29,$5B,$25,$30,$34,$58,$5D,$3A,$00
+	ds.w	0
+l81
+
+	dc.b	$2A,$25,$75,$3A,$00
+	ds.w	0
+l80
+
+	dc.b	$20,$20,$20,$20,$49,$6C,$6C,$65,$67,$61,$6C,$20
+	dc.b	$74,$72,$61,$63,$6B,$20,$72,$65,$61,$64,$21,$00
+	ds.w	0
+l79
+
+	dc.b	$49,$6C,$6C,$65,$67,$61,$6C,$20,$74,$72,$61,$63
+	dc.b	$6B,$20,$72,$65,$61,$64,$3A,$20,$25,$64,$0D,$00
+	xref	_Error
+	xref	_sector_buffer
+	xref	_file
+	END
