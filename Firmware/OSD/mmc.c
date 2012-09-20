@@ -208,12 +208,7 @@ unsigned char MMC_Read(unsigned long lba, unsigned char *pReadBuffer)
 	unsigned char *p;
 
     if (CardType != CARDTYPE_SDHC) // SDHC cards are addressed in sectors not bytes
-	{
-		BootPrint("Treating card as SD\n");
         lba = lba << 9; // otherwise convert sector adddress to byte address
-	}
-	else
-		BootPrint("Treating card as SDHC\n");
 
     EnableCard();
 

@@ -68,6 +68,12 @@
 // SB:
 // 2011-01-18 - fixed sound output, no more high pitch noise at game Gods
 
+// TobiFlex(TF):
+// 2012-02-12 - change sigma/delta module
+
+// AMR:
+// 2012-08-17 - remove multiplexing in front of sigma/delta module.
+
 module audio
 (
 	input 	clk,		    		//bus clock
@@ -92,18 +98,18 @@ parameter	AUD1BASE = 9'h0b0;
 parameter	AUD2BASE = 9'h0c0;
 parameter	AUD3BASE = 9'h0d0;
 
-//local signals 
+//local signals
 wire	[3:0] aen;			//address enable 0-3
 wire	[3:0] dmareq;		//dma request 0-3
 wire	[3:0] dmaspc;		//dma restart 0-3
-wire	[7:0] sample0;		//channel 0 audio sample 
-wire	[7:0] sample1;		//channel 1 audio sample 
-wire	[7:0] sample2;		//channel 2 audio sample 
-wire	[7:0] sample3;		//channel 3 audio sample 
-wire	[6:0] vol0;			//channel 0 volume 
-wire	[6:0] vol1;			//channel 1 volume 
-wire	[6:0] vol2;			//channel 2 volume 
-wire	[6:0] vol3;			//channel 3 volume 
+wire	[7:0] sample0;		//channel 0 audio sample
+wire	[7:0] sample1;		//channel 1 audio sample
+wire	[7:0] sample2;		//channel 2 audio sample
+wire	[7:0] sample3;		//channel 3 audio sample
+wire	[6:0] vol0;			//channel 0 volume
+wire	[6:0] vol1;			//channel 1 volume
+wire	[6:0] vol2;			//channel 2 volume
+wire	[6:0] vol3;			//channel 3 volume
 
 //--------------------------------------------------------------------------------------
 
@@ -169,8 +175,8 @@ audiochannel ach1
 );
 
 //instantiate audio channel 2
-audiochannel ach2 
-(	
+audiochannel ach2
+(
 	.clk(clk),
 	.reset(reset),
 	.cck(cck),
@@ -189,7 +195,7 @@ audiochannel ach2
 
 //instantiate audio channel 3
 audiochannel ach3
-(		
+(
 	.clk(clk),
 	.reset(reset),
 	.cck(cck),
@@ -209,7 +215,7 @@ audiochannel ach3
 //instantiate volume control and sigma/delta modulator
 sigmadelta dac0 
 (
-	.clk({clk}),
+	.clk({clk28m}),
 	.sample0(sample0),
 	.sample1(sample1),
 	.sample2(sample2),
@@ -220,12 +226,109 @@ sigmadelta dac0
 	.vol3(vol3),
 	.strhor(strhor),
 	.left(left),
-	.right(right)	
+	.right(right)
 );
 
 //--------------------------------------------------------------------------------------
 
 endmodule
+
+
+module third_order_sigma_delta_dac
+(
+input rst,
+input clk,
+input [15:0] pcm_in,
+output reg dac_out
+);
+
+// ======================================
+// ============== Stage #1 ==============
+// ======================================
+wire [23:0] w_data_in_p0;
+wire [23:0] w_data_err_p0;
+wire [23:0] w_data_int_p0;
+reg [23:0] r_data_fwd_p1;
+wire [23:0] w_data_qt_p2;
+wire [23:0] w_data_fb3_p1;
+wire [23:0] w_data_int_p1;
+reg [23:0] r_data_fwd_p2;
+wire [23:0] w_data_fb1_p1;
+wire [23:0] w_data_fb2_p1;
+wire [23:0] w_data_lpf_p1;
+reg [23:0] r_data_lpf_p2;
+
+// PCM input extended to 20 bits
+assign w_data_in_p0 = { {4{pcm_in[15]}}, pcm_in, 4'b0000 };
+
+// Error between the input and the quantizer output
+assign w_data_err_p0 = w_data_in_p0 - w_data_qt_p2;
+
+// First integrator adder
+assign w_data_int_p0 = { {3{w_data_err_p0[23]}}, w_data_err_p0[22:2] } // Divide by 4
++ r_data_fwd_p1;
+
+// First integrator forward delay
+always @(posedge rst or posedge clk)
+if (rst)
+r_data_fwd_p1 <= 24'd0;
+else
+r_data_fwd_p1 <= w_data_int_p0;
+
+// ======================================
+// ============== Stage #2 ==============
+// ======================================
+
+// Feedback from the quantizer output
+assign w_data_fb1_p1 = { {3{r_data_fwd_p1[23]}}, r_data_fwd_p1[22:2] } // Divide by 4
+- { {3{w_data_qt_p2[23]}}, w_data_qt_p2[22:2] }; // Divide by 4
+
+// Feedback from the third stage
+assign w_data_fb2_p1 = w_data_fb1_p1
+- { {14{r_data_fwd_p2[23]}}, r_data_fwd_p2[22:13] }; // Divide by 8192
+
+// Low pass filter
+assign w_data_lpf_p1 = w_data_fb2_p1 + r_data_lpf_p2;
+
+// Low pass filter feedback delay
+always @(posedge rst or posedge clk)
+if (rst)
+r_data_lpf_p2 <= 24'd0;
+else
+r_data_lpf_p2 <= w_data_lpf_p1;
+
+// ======================================
+// ============== Stage #3 ==============
+// ======================================
+
+// Feedback from the quantizer output
+assign w_data_fb3_p1 = { {2{w_data_lpf_p1[23]}}, w_data_lpf_p1[22:1] } // Divide by 2
+- { {2{w_data_qt_p2[23]}}, w_data_qt_p2[22:1] }; // Divide by 2
+
+// Second integrator adder
+assign w_data_int_p1 = w_data_fb3_p1 + r_data_fwd_p2;
+
+// Second integrator forward delay
+always @(posedge rst or posedge clk)
+if (rst)
+r_data_fwd_p2 <= 24'd0;
+else
+r_data_fwd_p2 <= w_data_int_p1;
+
+// =====================================
+// ========== 1-bit quantizer ==========
+// =====================================
+
+assign w_data_qt_p2 = (r_data_fwd_p2[23]) ? 24'hF00000 : 24'h100000;
+
+always @(posedge rst or posedge clk)
+if (rst)
+dac_out <= 1'b0;
+else
+dac_out <= ~r_data_fwd_p2[23];
+
+endmodule
+
 
 //--------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------
@@ -253,7 +356,7 @@ module sigmadelta
 );
 
 //local signals
-reg		[14:0] acculeft;		//sigma/delta accumulator left		
+reg		[14:0] acculeft;		//sigma/delta accumulator left
 reg		[14:0] accuright;		//sigma/delta accumulator right
 wire	[7:0] leftsmux;			//left mux sample
 wire	[7:0] rightsmux;		//right mux sample
@@ -261,16 +364,33 @@ wire	[6:0] leftvmux;			//left mux volum
 wire	[6:0] rightvmux;		//right mux volume
 wire	[13:0] ldata;			//left DAC data
 wire	[13:0] rdata; 			//right DAC data
+reg	[13:0]ldatatmp;		//left DAC data
+reg	[13:0]rdatatmp; 		//right DAC data
+reg	[14:0]ldatasum;		//left DAC data
+reg	[14:0]rdatasum; 		//right DAC data
+wire	[16:0] lfiltered;
+wire	[16:0] rfiltered;
+reg	lout;
+reg	rout;
 reg		mxc;					//multiplex control
 
 //--------------------------------------------------------------------------------------
 
 //multiplexer control
 always @(posedge clk)
-	if (strhor)
-		mxc <= 0;
-	else
+	begin
 		mxc <= ~mxc;
+		if (mxc)
+		begin
+			ldatatmp <= ldata;
+			rdatatmp <= rdata;
+		end
+		else
+		begin
+			ldatasum <= {ldata[13], ldata} + {ldatatmp[13], ldatatmp};
+			rdatasum <= {rdata[13], rdata} + {rdatatmp[13], rdatatmp};
+		end
+	end
 
 //sample multiplexer
 assign leftsmux = mxc ? sample1 : sample2;
@@ -305,28 +425,60 @@ svmul sv1
 				(rightvmux[6] | rightvmux[2]),
 				(rightvmux[6] | rightvmux[1]),
 				(rightvmux[6] | rightvmux[0]) })),
-	.out(rdata)	
+	.out(rdata)
 	);
 
-//--------------------------------------------------------------------------------------
+//vlboxfilter leftfilter
+//(
+//	.reset(~reset),
+//	.clk(clk),
+//	.pcm_in({~ldatasum[14],ldatasum[13:0],1'b0}),
+//	.pcm_out(lfiltered)
+//);
+//
+//vlboxfilter rightfilter
+//(
+//	.reset(~reset),
+//	.clk(clk),
+//	.pcm_in({~rdatasum[14],rdatasum[13:0],1'b0}),
+//	.pcm_out(rfiltered)
+//);
 
+//third_order_sigma_delta_dac leftdac
+//(
+//	.rst(reset),
+//	.clk(clk),
+//	.pcm_in({~lfiltered[15],lfiltered[14:0]}),
+////	.pcm_in({ldatasum,1'b0}),
+//	.dac_out(left)
+//);
+//
+//third_order_sigma_delta_dac rightdac
+//(
+//	.rst(reset),
+//	.clk(clk),
+//	.pcm_in({~rfiltered[15],rfiltered[14:0]}),
+////	.pcm_in({rdatasum,1'b0}),
+//	.dac_out(right)
+//);
+
+//--------------------------------------------------------------------------------------
 //left sigma/delta modulator
 always @(posedge clk)
-	if (strhor)
-		acculeft[14:0] <= 0;
-	else
-		acculeft[14:0] <= ({1'b0,acculeft[13:0]} + {1'b0,~ldata[13],ldata[12:0]});
+		acculeft[12:1] <= (acculeft[12:1] + {acculeft[12],acculeft[12],~ldatasum[14],ldatasum[13:5]});
+//		{lout,acculeft[12:0]} <= acculeft[12:0] + {~ldatasum[14],ldatasum[13:5],3'b000};
 
-assign left = acculeft[14];
+ assign left = acculeft[12];
+//	assign left = lout;
+
 
 //right sigma/delta modulator
 always @(posedge clk)
-	if (strhor)
-		accuright[14:0] <= 0;
-	else
-		accuright[14:0] <= ({1'b0,accuright[13:0]} + {1'b0,~rdata[13],rdata[12:0]});
+		accuright[12:1] <= (accuright[12:1] + {accuright[12],accuright[12],~rdatasum[14],rdatasum[13:5]});
+//		{rout,accuright[12:0]} <= accuright[12:0] + {~rdatasum[14],rdatasum[13:5],3'b000};
 
-assign right = accuright[14];
+assign right = accuright[12];
+//	assign right = rout;
 
 endmodule
 
@@ -347,7 +499,7 @@ wire	[13:0] sesample;   		//sign extended sample
 wire	[13:0] sevolume;			//sign extended volume
 
 //sign extend input parameters
-assign 	sesample[13:0] = {{6{sample[7]}},sample[7:0]};
+assign	sesample[13:0] = {{6{sample[7]}},sample[7:0]};
 assign	sevolume[13:0] = ({8'b00000000,volume[5:0]});
 
 //multiply, synthesizer should infer multiplier here - fixed by ASC (boing4000)
@@ -362,7 +514,7 @@ endmodule
 //This module handles a single amiga audio channel. attached modes are not supported
 module audiochannel
 (
-	input 	clk,					//bus clock	
+	input 	clk,					//bus clock
 	input 	reset,		    		//reset
 	input	cck,					//colour clock enable
 	input	aen,					//address enable
@@ -383,6 +535,7 @@ parameter	AUDLEN = 4'h4;
 parameter	AUDPER = 4'h6;
 parameter	AUDVOL = 4'h8;
 parameter	AUDDAT = 4'ha;
+
 
 //local signals
 reg		[15:0] audlen;			//audio length register
@@ -422,6 +575,7 @@ reg		intreq2;				//buffered interrupt request
 reg		dmasen;					//pointer register reloading request
 reg		penhi;					//enable high byte of sample buffer
 
+reg	silence;	// AMR: disable audio if repeat length is 1
 
 //--------------------------------------------------------------------------------------
  
@@ -442,7 +596,7 @@ always @(posedge clk)
 //volume register bus write
 always @(posedge clk)
 	if (reset)
-		audvol[6:0] <= 7'b000_0000;	
+		audvol[6:0] <= 7'b000_0000;
 	else if (aen && (reg_address_in[3:1]==AUDVOL[3:1]))
 		audvol[6:0] <= (data[6:0]);
 
@@ -469,7 +623,7 @@ assign	AUDxON = (dmaena);	//dma enable
 assign	AUDxIP = (intpen);	//audio interrupt pending
 
 assign intreq = (AUDxIR);		//audio interrupt request
-	
+
 //--------------------------------------------------------------------------------------
 
 //period counter 
@@ -478,16 +632,21 @@ always @(posedge clk)
 		percnt[15:0] <= (audper[15:0]);
 	else if (percount && cck)//period counter count down
 		percnt[15:0] <= (percnt[15:0] - 1);
-		
+
 assign perfin = (percnt[15:0]==1 && cck) ? 1 : 0;
 
-//length counter 
+//length counter
 always @(posedge clk)
 	if (lencntrld && cck)//load length counter from audio length register
+	begin
 		lencnt[15:0] <= (audlen[15:0]);
+		silence<=1'b0;
+		if(audlen==1 || audlen==0)
+			silence<=1'b1;
+	end
 	else if (lencount && cck)//length counter count down
 		lencnt[15:0] <= (lencnt[15:0] - 1);
-		
+
 assign lenfin = (lencnt[15:0]==1 && cck) ? 1 : 0;
 
 //--------------------------------------------------------------------------------------
@@ -499,10 +658,12 @@ always @(posedge clk)
 	else if (pbufld1 && cck)
 		datbuf[15:0] <= (auddat[15:0]);
 
-assign sample[7:0] = (penhi) ? (datbuf[15:8]) : datbuf[7:0];
+//assign sample[7:0] = (penhi) ? (datbuf[15:8]) : datbuf[7:0];
+assign sample[7:0] = silence ? 8'b0 : ((penhi) ? (datbuf[15:8]) : datbuf[7:0]);
 
 //volume output
-assign volume[6:0] = (audvol[6:0]);
+//assign volume[6:0] = (silence) ? (6'b0) : (audvol[6:0]);
+assign volume[6:0] = audvol[6:0];
 
 //--------------------------------------------------------------------------------------
 
@@ -533,7 +694,7 @@ always @(posedge clk)
 			intreq2 <= 1;
 		else if (intreq2_clr)
 			intreq2 <= 0;
-	
+
 //audio states
 parameter AUDIO_STATE_0 = 3'b000;
 parameter AUDIO_STATE_1 = 3'b001;

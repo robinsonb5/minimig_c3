@@ -248,7 +248,7 @@ misc_ios_3[0]                : 177       : output : 3.3-V LVTTL       :         
 VCCA2                        : 178       : power  :                   : 2.5V    :           :                
 GNDA2                        : 179       : gnd    :                   :         :           :                
 VCCD_PLL2                    : 180       : power  :                   : 1.2V    :           :                
-reset_n                      : 181       : input  : 3.3-V LVTTL       :         : 7         : Y              
+reset_button                 : 181       : input  : 3.3-V LVTTL       :         : 7         : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : 182       :        :                   :         : 7         :                
 sd_cs                        : 183       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[13]              : 184       : output : 3.3-V LVTTL       :         : 7         : Y              

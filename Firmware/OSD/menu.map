@@ -55,7 +55,7 @@ LOAD ./libc.a
 LOAD /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a
                 0x0000000000002000                . = 0x2000
 
-.code           0x0000000000002000    0x10c90
+.code           0x0000000000002000    0x10c4c
  BUILD/startup.o(.text)
  .text          0x0000000000002000       0x20 BUILD/startup.o
  *(.text)
@@ -133,7 +133,7 @@ LOAD /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a
                 0x000000000000871e                InfoMessage
                 0x00000000000087fa                HandleUI
                 0x000000000000b816                DebugMessage
- .text          0x000000000000b860      0xa22 BUILD/mmc.o
+ .text          0x000000000000b860      0xa0a BUILD/mmc.o
                 0x000000000000b860                MMC_CMD12
                 0x000000000000b934                MMC_CRC
                 0x000000000000b964                MMC_Command
@@ -142,316 +142,316 @@ LOAD /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a
                 0x000000000000bce6                MMC_GetCSD
                 0x000000000000bdb6                MMC_GetCapacity
                 0x000000000000be50                MMC_Read
-                0x000000000000bfbe                MMC_Init
- *fill*         0x000000000000c282        0x2 00
- .text          0x000000000000c284     0x194e BUILD/osd.o
-                0x000000000000c2c2                framebuffer_clear
-                0x000000000000c2e8                framebuffer_plot
-                0x000000000000c316                StarsInit
-                0x000000000000c370                StarsUpdate
-                0x000000000000c402                OsdSetTitle
-                0x000000000000c542                OsdWriteOffset
-                0x000000000000cccc                OsdWrite
-                0x000000000000ccf0                OsdDrawLogo
-                0x000000000000d18c                OsdWriteDoubleSize
-                0x000000000000d4c2                OSD_PrintText
-                0x000000000000d6f2                OsdClear
-                0x000000000000d728                OsdWaitVBL
-                0x000000000000d72a                OsdEnable
-                0x000000000000d750                OsdDisable
-                0x000000000000d76c                OsdReset
-                0x000000000000d792                OsdReconfig
-                0x000000000000d7ae                ConfigFilter
-                0x000000000000d7e6                ConfigMemory
-                0x000000000000d840                ConfigCPU
-                0x000000000000d862                ConfigChipset
-                0x000000000000d888                ConfigFloppy
-                0x000000000000d8c0                ConfigScanlines
-                0x000000000000d8e6                ConfigIDE
-                0x000000000000d932                ConfigAutofire
-                0x000000000000d958                GetASCIIKey
-                0x000000000000d972                OsdGetCtrl
-                0x000000000000da90                ScrollText
-                0x000000000000dbb8                ScrollReset
- *fill*         0x000000000000dbd2        0x2 00
- .text          0x000000000000dbd4       0x78 BUILD/printf.o
-                0x000000000000dbd4                printf
-                0x000000000000dc16                putchar
-                0x000000000000dc22                puts
-                0x000000000000dc36                tolower
- .text          0x000000000000dc4c       0x1c BUILD/swap.o
-                0x000000000000dc4c                SwapBBBB
-                0x000000000000dc58                SwapBB
-                0x000000000000dc60                SwapWW
- .text          0x000000000000dc68      0xbda BUILD/config.o
-                0x000000000000dc68                UploadKickstart
-                0x000000000000de2c                UploadActionReplay
-                0x000000000000dea4                SetConfigurationFilename
-                0x000000000000deda                ConfigurationExists
-                0x000000000000defe                ApplyConfiguration
-                0x000000000000e4fa                LoadConfiguration
-                0x000000000000e6dc                SaveConfiguration
- *fill*         0x000000000000e842        0x2 00
- .text          0x000000000000e844      0x170 BUILD/rafile.o
-                0x000000000000e844                RARead
-                0x000000000000e918                RASeek
-                0x000000000000e982                RAOpen
- .text          0x000000000000e9b4       0x22 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_mulsi3.o)
-                0x000000000000e9b4                __mulsi3
- *fill*         0x000000000000e9d6        0x2 00
- .text          0x000000000000e9d8       0x5c /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivsi3.o)
-                0x000000000000e9d8                __udivsi3
- .text          0x000000000000ea34       0x2e /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_modsi3.o)
-                0x000000000000ea34                __modsi3
- *fill*         0x000000000000ea62        0x2 00
- .text          0x000000000000ea64       0x2e /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_divsi3.o)
-                0x000000000000ea64                __divsi3
- *fill*         0x000000000000ea92        0x2 00
- .text          0x000000000000ea94      0x75e ./libc.a(vsnprintf.o)
-                0x000000000000ea94                vsnprintf
- *fill*         0x000000000000f1f2        0x2 00
- .text          0x000000000000f1f4       0x22 ./libc.a(sprintf.o)
-                0x000000000000f1f4                sprintf
- *fill*         0x000000000000f216        0x2 00
- .text          0x000000000000f218       0x20 ./libc.a(memcpy.o)
-                0x000000000000f218                memcpy
- .text          0x000000000000f238       0x2e ./libc.a(memcmp.o)
-                0x000000000000f238                memcmp
- *fill*         0x000000000000f266        0x2 00
- .text          0x000000000000f268       0x12 ./libc.a(strcpy.o)
-                0x000000000000f268                strcpy
- *fill*         0x000000000000f27a        0x2 00
- .text          0x000000000000f27c       0x26 ./libc.a(strcat.o)
-                0x000000000000f27c                strcat
- *fill*         0x000000000000f2a2        0x2 00
- .text          0x000000000000f2a4       0x38 ./libc.a(strncat.o)
-                0x000000000000f2a4                strncat
- .text          0x000000000000f2dc       0x34 ./libc.a(strncmp.o)
-                0x000000000000f2dc                strncmp
- .text          0x000000000000f310       0x14 ./libc.a(strlen.o)
-                0x000000000000f310                strlen
- .text          0x000000000000f324       0x1e ./libc.a(memset.o)
-                0x000000000000f324                memset
- *fill*         0x000000000000f342        0x2 00
- .text          0x000000000000f344       0x34 ./libc.a(strncpy.o)
-                0x000000000000f344                strncpy
- .text          0x000000000000f378       0x22 ./libc.a(strchr.o)
-                0x000000000000f378                strchr
- *fill*         0x000000000000f39a        0x2 00
- .text          0x000000000000f39c      0x5b0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
-                0x000000000000f39c                __udivdi3
- .text          0x000000000000f94c      0x532 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
-                0x000000000000f94c                __umoddi3
- *fill*         0x000000000000fe7e        0x2 00
- .text          0x000000000000fe80       0x2e /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umodsi3.o)
-                0x000000000000fe80                __umodsi3
- *fill*         0x000000000000feae        0x2 00
- .text          0x000000000000feb0        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
+                0x000000000000bfa6                MMC_Init
+ *fill*         0x000000000000c26a        0x2 00
+ .text          0x000000000000c26c     0x194e BUILD/osd.o
+                0x000000000000c2aa                framebuffer_clear
+                0x000000000000c2d0                framebuffer_plot
+                0x000000000000c2fe                StarsInit
+                0x000000000000c358                StarsUpdate
+                0x000000000000c3ea                OsdSetTitle
+                0x000000000000c52a                OsdWriteOffset
+                0x000000000000ccb4                OsdWrite
+                0x000000000000ccd8                OsdDrawLogo
+                0x000000000000d174                OsdWriteDoubleSize
+                0x000000000000d4aa                OSD_PrintText
+                0x000000000000d6da                OsdClear
+                0x000000000000d710                OsdWaitVBL
+                0x000000000000d712                OsdEnable
+                0x000000000000d738                OsdDisable
+                0x000000000000d754                OsdReset
+                0x000000000000d77a                OsdReconfig
+                0x000000000000d796                ConfigFilter
+                0x000000000000d7ce                ConfigMemory
+                0x000000000000d828                ConfigCPU
+                0x000000000000d84a                ConfigChipset
+                0x000000000000d870                ConfigFloppy
+                0x000000000000d8a8                ConfigScanlines
+                0x000000000000d8ce                ConfigIDE
+                0x000000000000d91a                ConfigAutofire
+                0x000000000000d940                GetASCIIKey
+                0x000000000000d95a                OsdGetCtrl
+                0x000000000000da78                ScrollText
+                0x000000000000dba0                ScrollReset
+ *fill*         0x000000000000dbba        0x2 00
+ .text          0x000000000000dbbc       0x78 BUILD/printf.o
+                0x000000000000dbbc                printf
+                0x000000000000dbfe                putchar
+                0x000000000000dc0a                puts
+                0x000000000000dc1e                tolower
+ .text          0x000000000000dc34       0x1c BUILD/swap.o
+                0x000000000000dc34                SwapBBBB
+                0x000000000000dc40                SwapBB
+                0x000000000000dc48                SwapWW
+ .text          0x000000000000dc50      0xbda BUILD/config.o
+                0x000000000000dc50                UploadKickstart
+                0x000000000000de14                UploadActionReplay
+                0x000000000000de8c                SetConfigurationFilename
+                0x000000000000dec2                ConfigurationExists
+                0x000000000000dee6                ApplyConfiguration
+                0x000000000000e4e2                LoadConfiguration
+                0x000000000000e6c4                SaveConfiguration
+ *fill*         0x000000000000e82a        0x2 00
+ .text          0x000000000000e82c      0x170 BUILD/rafile.o
+                0x000000000000e82c                RARead
+                0x000000000000e900                RASeek
+                0x000000000000e96a                RAOpen
+ .text          0x000000000000e99c       0x22 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_mulsi3.o)
+                0x000000000000e99c                __mulsi3
+ *fill*         0x000000000000e9be        0x2 00
+ .text          0x000000000000e9c0       0x5c /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivsi3.o)
+                0x000000000000e9c0                __udivsi3
+ .text          0x000000000000ea1c       0x2e /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_modsi3.o)
+                0x000000000000ea1c                __modsi3
+ *fill*         0x000000000000ea4a        0x2 00
+ .text          0x000000000000ea4c       0x2e /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_divsi3.o)
+                0x000000000000ea4c                __divsi3
+ *fill*         0x000000000000ea7a        0x2 00
+ .text          0x000000000000ea7c      0x75e ./libc.a(vsnprintf.o)
+                0x000000000000ea7c                vsnprintf
+ *fill*         0x000000000000f1da        0x2 00
+ .text          0x000000000000f1dc       0x22 ./libc.a(sprintf.o)
+                0x000000000000f1dc                sprintf
+ *fill*         0x000000000000f1fe        0x2 00
+ .text          0x000000000000f200       0x20 ./libc.a(memcpy.o)
+                0x000000000000f200                memcpy
+ .text          0x000000000000f220       0x2e ./libc.a(memcmp.o)
+                0x000000000000f220                memcmp
+ *fill*         0x000000000000f24e        0x2 00
+ .text          0x000000000000f250       0x12 ./libc.a(strcpy.o)
+                0x000000000000f250                strcpy
+ *fill*         0x000000000000f262        0x2 00
+ .text          0x000000000000f264       0x26 ./libc.a(strcat.o)
+                0x000000000000f264                strcat
+ *fill*         0x000000000000f28a        0x2 00
+ .text          0x000000000000f28c       0x38 ./libc.a(strncat.o)
+                0x000000000000f28c                strncat
+ .text          0x000000000000f2c4       0x34 ./libc.a(strncmp.o)
+                0x000000000000f2c4                strncmp
+ .text          0x000000000000f2f8       0x14 ./libc.a(strlen.o)
+                0x000000000000f2f8                strlen
+ .text          0x000000000000f30c       0x1e ./libc.a(memset.o)
+                0x000000000000f30c                memset
+ *fill*         0x000000000000f32a        0x2 00
+ .text          0x000000000000f32c       0x34 ./libc.a(strncpy.o)
+                0x000000000000f32c                strncpy
+ .text          0x000000000000f360       0x22 ./libc.a(strchr.o)
+                0x000000000000f360                strchr
+ *fill*         0x000000000000f382        0x2 00
+ .text          0x000000000000f384      0x5b0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
+                0x000000000000f384                __udivdi3
+ .text          0x000000000000f934      0x532 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
+                0x000000000000f934                __umoddi3
+ *fill*         0x000000000000fe66        0x2 00
+ .text          0x000000000000fe68       0x2e /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umodsi3.o)
+                0x000000000000fe68                __umodsi3
+ *fill*         0x000000000000fe96        0x2 00
+ .text          0x000000000000fe98        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
  *(.rodata)
- .rodata        0x000000000000feb0       0x10 BUILD/hdd.o
- .rodata        0x000000000000fec0       0x13 BUILD/main.o
-                0x000000000000fec0                version
- .rodata        0x000000000000fed3      0x4ef BUILD/osd.o
-                0x000000000000fed3                keycode_table
-                0x000000000000ff53                logodata
- .rodata        0x00000000000103c2        0x9 BUILD/config.o
- .rodata        0x00000000000103cb       0x22 ./libc.a(vsnprintf.o)
- .rodata        0x00000000000103ed      0x100 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
-                0x00000000000103ed                __clz_tab
+ .rodata        0x000000000000fe98       0x10 BUILD/hdd.o
+ .rodata        0x000000000000fea8       0x13 BUILD/main.o
+                0x000000000000fea8                version
+ .rodata        0x000000000000febb      0x4ef BUILD/osd.o
+                0x000000000000febb                keycode_table
+                0x000000000000ff3b                logodata
+ .rodata        0x00000000000103aa        0x9 BUILD/config.o
+ .rodata        0x00000000000103b3       0x22 ./libc.a(vsnprintf.o)
+ .rodata        0x00000000000103d5      0x100 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
+                0x00000000000103d5                __clz_tab
  *(.rodata.*)
  .rodata.str1.1
-                0x00000000000104ed      0x3c0 BUILD/fat.o
+                0x00000000000104d5      0x3c0 BUILD/fat.o
                                         0x3c3 (size before relaxing)
  .rodata.str1.1
-                0x00000000000108ad       0xe5 BUILD/fdd.o
+                0x0000000000010895       0xe5 BUILD/fdd.o
  .rodata.str1.1
-                0x0000000000010992       0x20 BUILD/fpga.o
+                0x000000000001097a       0x20 BUILD/fpga.o
  .rodata.str1.1
-                0x00000000000109b2      0x2b0 BUILD/hdd.o
+                0x000000000001099a      0x2b0 BUILD/hdd.o
                                         0x2c1 (size before relaxing)
  .rodata.str1.1
-                0x0000000000010c62       0xc7 BUILD/main.o
+                0x0000000000010c4a       0xc7 BUILD/main.o
  .rodata.str1.1
-                0x0000000000010d29      0xdf0 BUILD/menu.o
+                0x0000000000010d11      0xdf0 BUILD/menu.o
                                         0xec5 (size before relaxing)
  .rodata.str1.1
-                0x0000000000011b19      0x335 BUILD/mmc.o
+                0x0000000000011b01      0x309 BUILD/mmc.o
  .rodata.str1.1
-                0x0000000000011e4e       0x18 BUILD/osd.o
+                0x0000000000011e0a       0x18 BUILD/osd.o
  .rodata.str1.1
-                0x0000000000011e66      0x562 BUILD/config.o
+                0x0000000000011e22      0x562 BUILD/config.o
                                         0x575 (size before relaxing)
  .rodata.str1.1
-                0x00000000000123c8        0x7 ./libc.a(vsnprintf.o)
+                0x0000000000012384        0x7 ./libc.a(vsnprintf.o)
  *(.data)
- *fill*         0x00000000000123cf        0x1 00
- .data          0x00000000000123d0        0x0 BUILD/fat.o
- .data          0x00000000000123d0        0x0 BUILD/fdd.o
- .data          0x00000000000123d0        0x0 BUILD/fpga.o
- .data          0x00000000000123d0        0x0 BUILD/hardware.o
- .data          0x00000000000123d0        0x0 BUILD/hdd.o
- .data          0x00000000000123d0        0x0 BUILD/main.o
- .data          0x00000000000123d0       0xbe BUILD/menu.o
-                0x00000000000123d0                helptexts
-                0x00000000000123ec                config_autofire_msg
-                0x00000000000123fc                config_chipset_msg
-                0x000000000001240c                config_hdf_msg
-                0x0000000000012428                config_cpu_msg
-                0x0000000000012438                config_memory_fast_msg
-                0x0000000000012448                config_scanlines_msg
-                0x0000000000012454                config_memory_slow_msg
-                0x0000000000012464                config_memory_chip_msg
-                0x0000000000012474                config_filter_msg
- *fill*         0x000000000001248e        0x2 00
- .data          0x0000000000012490        0x0 BUILD/mmc.o
- .data          0x0000000000012490      0x800 BUILD/osd.o
-                0x0000000000012490                charfont
- .data          0x0000000000012c90        0x0 BUILD/printf.o
- .data          0x0000000000012c90        0x0 BUILD/swap.o
- .data          0x0000000000012c90        0x0 BUILD/config.o
- .data          0x0000000000012c90        0x0 BUILD/rafile.o
- .data          0x0000000000012c90        0x0 BUILD/startup.o
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_mulsi3.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivsi3.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_modsi3.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_divsi3.o)
- .data          0x0000000000012c90        0x0 ./libc.a(vsnprintf.o)
- .data          0x0000000000012c90        0x0 ./libc.a(sprintf.o)
- .data          0x0000000000012c90        0x0 ./libc.a(memcpy.o)
- .data          0x0000000000012c90        0x0 ./libc.a(memcmp.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strcpy.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strcat.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strncat.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strncmp.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strlen.o)
- .data          0x0000000000012c90        0x0 ./libc.a(memset.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strncpy.o)
- .data          0x0000000000012c90        0x0 ./libc.a(strchr.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umodsi3.o)
- .data          0x0000000000012c90        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
+ *fill*         0x000000000001238b        0x1 00
+ .data          0x000000000001238c        0x0 BUILD/fat.o
+ .data          0x000000000001238c        0x0 BUILD/fdd.o
+ .data          0x000000000001238c        0x0 BUILD/fpga.o
+ .data          0x000000000001238c        0x0 BUILD/hardware.o
+ .data          0x000000000001238c        0x0 BUILD/hdd.o
+ .data          0x000000000001238c        0x0 BUILD/main.o
+ .data          0x000000000001238c       0xbe BUILD/menu.o
+                0x000000000001238c                helptexts
+                0x00000000000123a8                config_autofire_msg
+                0x00000000000123b8                config_chipset_msg
+                0x00000000000123c8                config_hdf_msg
+                0x00000000000123e4                config_cpu_msg
+                0x00000000000123f4                config_memory_fast_msg
+                0x0000000000012404                config_scanlines_msg
+                0x0000000000012410                config_memory_slow_msg
+                0x0000000000012420                config_memory_chip_msg
+                0x0000000000012430                config_filter_msg
+ *fill*         0x000000000001244a        0x2 00
+ .data          0x000000000001244c        0x0 BUILD/mmc.o
+ .data          0x000000000001244c      0x800 BUILD/osd.o
+                0x000000000001244c                charfont
+ .data          0x0000000000012c4c        0x0 BUILD/printf.o
+ .data          0x0000000000012c4c        0x0 BUILD/swap.o
+ .data          0x0000000000012c4c        0x0 BUILD/config.o
+ .data          0x0000000000012c4c        0x0 BUILD/rafile.o
+ .data          0x0000000000012c4c        0x0 BUILD/startup.o
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_mulsi3.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivsi3.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_modsi3.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_divsi3.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(vsnprintf.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(sprintf.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(memcpy.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(memcmp.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strcpy.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strcat.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strncat.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strncmp.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strlen.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(memset.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strncpy.o)
+ .data          0x0000000000012c4c        0x0 ./libc.a(strchr.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umodsi3.o)
+ .data          0x0000000000012c4c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
 
-.extra          0x0000000000012c90     0x68c0
-                0x0000000000012c90                __s_bss = .
+.extra          0x0000000000012c4c     0x68c0
+                0x0000000000012c4c                __s_bss = .
  *(.bss)
- .bss           0x0000000000012c90     0x19e1 BUILD/fat.o
-                0x0000000000012c90                t_sort_table
-                0x0000000000012c98                t_DirEntry
-                0x0000000000012d98                t_DirEntryLFN
-                0x00000000000135c0                iPreviousDirectory
-                0x00000000000135c4                iCurrentDirectory
-                0x00000000000135c8                iSelectedEntry
-                0x00000000000135c9                nDirEntries
-                0x00000000000135ca                sort_table
-                0x00000000000135d2                DirEntry
-                0x00000000000136d2                DirEntryLFN
-                0x0000000000013efa                buffered_fat_index
-                0x0000000000013efe                fat_buffer
-                0x00000000000140fe                partitioncount
-                0x0000000000014102                partitions
-                0x0000000000014142                sector_buffer
-                0x0000000000014542                fat_size
-                0x0000000000014546                dir_entries
-                0x0000000000014548                cluster_mask
-                0x000000000001454c                cluster_size
-                0x000000000001454d                fat_number
-                0x000000000001454e                root_directory_size
-                0x0000000000014552                root_directory_start
-                0x0000000000014556                root_directory_cluster
-                0x000000000001455a                data_start
-                0x000000000001455e                fat_start
-                0x0000000000014562                boot_sector
-                0x0000000000014566                fat32
-                0x0000000000014567                fattype
-                0x0000000000014568                entries_per_cluster
-                0x000000000001456a                directory_cluster
- *fill*         0x0000000000014671        0x3 00
- .bss           0x0000000000014674      0xae6 BUILD/fdd.o
-                0x0000000000014674                df
-                0x0000000000015154                pdfx
-                0x0000000000015158                drives
-                0x0000000000015159                DEBUG
- *fill*         0x000000000001515a        0x2 00
- .bss           0x000000000001515c        0x0 BUILD/fpga.o
- .bss           0x000000000001515c        0x0 BUILD/hardware.o
- .bss           0x000000000001515c     0x23fa BUILD/hdd.o
-                0x000000000001515c                rdbfile
-                0x0000000000015286                debugmsg2
-                0x00000000000152ae                debugmsg
-                0x00000000000152d6                hdf
- *fill*         0x0000000000017556        0x2 00
- .bss           0x0000000000017558       0x29 BUILD/main.o
-                0x0000000000017558                s
-                0x0000000000017580                Error
- *fill*         0x0000000000017581        0x3 00
- .bss           0x0000000000017584      0x186 BUILD/menu.o
-                0x0000000000017584                fs_MenuCancel
-                0x0000000000017585                fs_MenuSelect
-                0x0000000000017586                fs_Options
-                0x0000000000017588                fs_pFileExt
-                0x000000000001758c                config_autofire
-                0x000000000001758d                DiskInfo
-                0x0000000000017592                DirEntryInfo
-                0x00000000000175ba                menu_timer
-                0x00000000000175be                menumask
-                0x00000000000175c2                menusub
-                0x00000000000175c3                parentstate
-                0x00000000000175c4                menustate
- *fill*         0x000000000001770a        0x2 00
- .bss           0x000000000001770c       0x17 BUILD/mmc.o
-                0x000000000001770c                CSDData
-                0x000000000001771c                CardType
-                0x000000000001771d                response
-                0x000000000001771e                timeout
-                0x0000000000017722                crc
- *fill*         0x0000000000017723        0x1 00
- .bss           0x0000000000017724      0xc5c BUILD/osd.o
-                0x0000000000017724                framebuffer
-                0x0000000000017f24                stars
- .bss           0x0000000000018380      0x100 BUILD/printf.o
-                0x0000000000018380                buf
- .bss           0x0000000000018480        0x0 BUILD/swap.o
- .bss           0x0000000000018480     0x10ce BUILD/config.o
-                0x0000000000018480                romfile
-                0x00000000000187b2                romkey
-                0x00000000000193b2                DebugMode
-                0x00000000000193b3                configfilename
-                0x00000000000193c0                file
-                0x00000000000194ea                config
- *fill*         0x000000000001954e        0x2 00
- .bss           0x0000000000019550        0x0 BUILD/rafile.o
- .bss           0x0000000000019550        0x0 BUILD/startup.o
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_mulsi3.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivsi3.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_modsi3.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_divsi3.o)
- .bss           0x0000000000019550        0x0 ./libc.a(vsnprintf.o)
- .bss           0x0000000000019550        0x0 ./libc.a(sprintf.o)
- .bss           0x0000000000019550        0x0 ./libc.a(memcpy.o)
- .bss           0x0000000000019550        0x0 ./libc.a(memcmp.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strcpy.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strcat.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strncat.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strncmp.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strlen.o)
- .bss           0x0000000000019550        0x0 ./libc.a(memset.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strncpy.o)
- .bss           0x0000000000019550        0x0 ./libc.a(strchr.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umodsi3.o)
- .bss           0x0000000000019550        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
-                0x0000000000019550                __e_bss = .
+ .bss           0x0000000000012c4c     0x19e1 BUILD/fat.o
+                0x0000000000012c4c                t_sort_table
+                0x0000000000012c54                t_DirEntry
+                0x0000000000012d54                t_DirEntryLFN
+                0x000000000001357c                iPreviousDirectory
+                0x0000000000013580                iCurrentDirectory
+                0x0000000000013584                iSelectedEntry
+                0x0000000000013585                nDirEntries
+                0x0000000000013586                sort_table
+                0x000000000001358e                DirEntry
+                0x000000000001368e                DirEntryLFN
+                0x0000000000013eb6                buffered_fat_index
+                0x0000000000013eba                fat_buffer
+                0x00000000000140ba                partitioncount
+                0x00000000000140be                partitions
+                0x00000000000140fe                sector_buffer
+                0x00000000000144fe                fat_size
+                0x0000000000014502                dir_entries
+                0x0000000000014504                cluster_mask
+                0x0000000000014508                cluster_size
+                0x0000000000014509                fat_number
+                0x000000000001450a                root_directory_size
+                0x000000000001450e                root_directory_start
+                0x0000000000014512                root_directory_cluster
+                0x0000000000014516                data_start
+                0x000000000001451a                fat_start
+                0x000000000001451e                boot_sector
+                0x0000000000014522                fat32
+                0x0000000000014523                fattype
+                0x0000000000014524                entries_per_cluster
+                0x0000000000014526                directory_cluster
+ *fill*         0x000000000001462d        0x3 00
+ .bss           0x0000000000014630      0xae6 BUILD/fdd.o
+                0x0000000000014630                df
+                0x0000000000015110                pdfx
+                0x0000000000015114                drives
+                0x0000000000015115                DEBUG
+ *fill*         0x0000000000015116        0x2 00
+ .bss           0x0000000000015118        0x0 BUILD/fpga.o
+ .bss           0x0000000000015118        0x0 BUILD/hardware.o
+ .bss           0x0000000000015118     0x23fa BUILD/hdd.o
+                0x0000000000015118                rdbfile
+                0x0000000000015242                debugmsg2
+                0x000000000001526a                debugmsg
+                0x0000000000015292                hdf
+ *fill*         0x0000000000017512        0x2 00
+ .bss           0x0000000000017514       0x29 BUILD/main.o
+                0x0000000000017514                s
+                0x000000000001753c                Error
+ *fill*         0x000000000001753d        0x3 00
+ .bss           0x0000000000017540      0x186 BUILD/menu.o
+                0x0000000000017540                fs_MenuCancel
+                0x0000000000017541                fs_MenuSelect
+                0x0000000000017542                fs_Options
+                0x0000000000017544                fs_pFileExt
+                0x0000000000017548                config_autofire
+                0x0000000000017549                DiskInfo
+                0x000000000001754e                DirEntryInfo
+                0x0000000000017576                menu_timer
+                0x000000000001757a                menumask
+                0x000000000001757e                menusub
+                0x000000000001757f                parentstate
+                0x0000000000017580                menustate
+ *fill*         0x00000000000176c6        0x2 00
+ .bss           0x00000000000176c8       0x17 BUILD/mmc.o
+                0x00000000000176c8                CSDData
+                0x00000000000176d8                CardType
+                0x00000000000176d9                response
+                0x00000000000176da                timeout
+                0x00000000000176de                crc
+ *fill*         0x00000000000176df        0x1 00
+ .bss           0x00000000000176e0      0xc5c BUILD/osd.o
+                0x00000000000176e0                framebuffer
+                0x0000000000017ee0                stars
+ .bss           0x000000000001833c      0x100 BUILD/printf.o
+                0x000000000001833c                buf
+ .bss           0x000000000001843c        0x0 BUILD/swap.o
+ .bss           0x000000000001843c     0x10ce BUILD/config.o
+                0x000000000001843c                romfile
+                0x000000000001876e                romkey
+                0x000000000001936e                DebugMode
+                0x000000000001936f                configfilename
+                0x000000000001937c                file
+                0x00000000000194a6                config
+ *fill*         0x000000000001950a        0x2 00
+ .bss           0x000000000001950c        0x0 BUILD/rafile.o
+ .bss           0x000000000001950c        0x0 BUILD/startup.o
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_mulsi3.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivsi3.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_modsi3.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_divsi3.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(vsnprintf.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(sprintf.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(memcpy.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(memcmp.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strcpy.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strcat.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strncat.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strncmp.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strlen.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(memset.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strncpy.o)
+ .bss           0x000000000001950c        0x0 ./libc.a(strchr.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umodsi3.o)
+ .bss           0x000000000001950c        0x0 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_clz.o)
+                0x000000000001950c                __e_bss = .
 
-.eh_frame       0x0000000000019550      0x22c
+.eh_frame       0x000000000001950c      0x22c
  *(.eh_frame)
- .eh_frame      0x0000000000019550      0x128 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
- .eh_frame      0x0000000000019678      0x104 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
+ .eh_frame      0x000000000001950c      0x128 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_udivdi3.o)
+ .eh_frame      0x0000000000019634      0x104 /opt/m68k/lib/gcc/m68k-elf/4.6.2/m68000/libgcc.a(_umoddi3.o)
                                         0x11c (size before relaxing)
-                0x000000000001977c                heap_low = .
-                0x000000000001a77c                . = (. + 0x1000)
-                0x000000000001a77c                heap_top = .
+                0x0000000000019738                heap_low = .
+                0x000000000001a738                . = (. + 0x1000)
+                0x000000000001a738                heap_top = .
                 0x0000000000001000                stack_top = 0x1000
 OUTPUT(menu.elf elf32-m68k)
 

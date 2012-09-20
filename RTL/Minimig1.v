@@ -393,19 +393,19 @@ assign memcfg = memory_config;
 //BUFG sckbuf1 ( .I(sck), .O(buf_sck) );
 
 // power led control
-reg	[3:0] led_cnt;
-reg	led_dim;
+//reg	[3:0] led_cnt;
+//reg	led_dim;
 
-assign pwrled = (_led & (led_dim | ~turbo)) ? 1'b0 : 1'b1; // led dim at off-state and active turbo mode
-//assign pwrled = _led ? 1'b0 : 1'b1;
+//assign pwrled = (_led & (led_dim | ~turbo)) ? 1'b0 : 1'b1; // led dim at off-state and active turbo mode
+assign pwrled = _led ? 1'b0 : 1'b1;
 
 // power-led pwm 
-always @(posedge clk)
-		led_cnt <= led_cnt + 1;
+//always @(posedge clk)
+//		led_cnt <= led_cnt + 1;
 
-always @(posedge clk)
-	if (n_hsync)
-		led_dim <= |led_cnt;
+//always @(posedge clk)
+//	if (n_hsync)
+//		led_dim <= |led_cnt;
 
 // drive step sound emulation
 reg	_step_del;
