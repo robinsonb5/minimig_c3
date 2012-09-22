@@ -1,0 +1,35 @@
+To Do:
+
+Simplify bank mapping.  Since the entire Amiga memory map fits easily within SDRAM
+on the Chameleon and C3 board, there's no need for clever memory map trickery;
+everything can simply use its native address.
+On the DE1 board we only have 8 meg available.  Suggest:
+0x000000-0x200000: chipram
+0x200000-0x600000: fast RAM
+0x600000-0x780000: slow RAM
+0x780000-0x800000: kickstart ROM
+The bottom line is that memory mapping should be board-specific, not a core function.
+This would allow turbo-kickstart, turbo-chipram, turbo-slowram, etc.
+
+Add write cache
+
+Add multi-slot capability to SDRAM controller.
+
+Add extra 16 meg of RAM (using addram if need be)
+
+Look at adding extra SPI devices; maybe allow proper direct SD card access, via an
+sdmmc.device
+Look at supporting SPI-based ethernet
+
+Look at presenting better geometry to the Amiga when using direct SD access, to make
+Fat95 more usable.
+
+Check TG68K movem.l ,(ax) bug
+
+Try to simplify/speed up the TG68 ALU using hardware multipliers and div megafunc.
+
+Try out alternative sigma-delta arrangements to fix Gauntlet III noises.
+
+Explore the possibility of hardware assist for MP3 and JPEG decoding.
+
+Create a Chameleon toplevel.

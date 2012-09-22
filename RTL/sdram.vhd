@@ -25,10 +25,15 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
 entity sdram is
+generic
+	(
+		rows : integer := 12;
+		cols : integer := 10
+	);
 port
 	(
 	sdata		: inout std_logic_vector(15 downto 0);
-	sdaddr		: out std_logic_vector(11 downto 0); -- FIXME - genericize the chip layout
+	sdaddr		: out std_logic_vector((rows-1) downto 0);
 	dqm			: out std_logic_vector(1 downto 0);
 	sd_cs		: out std_logic_vector(3 downto 0);
 	ba			: buffer std_logic_vector(1 downto 0);
@@ -40,18 +45,18 @@ port
 	reset_in	: in std_logic;
 	
 	hostWR		: in std_logic_vector(15 downto 0);
-	hostAddr	: in std_logic_vector(23 downto 0);
+	hostAddr	: in std_logic_vector(31 downto 1) := (others =>'0'); -- Let Quartus cull the unused address lines.
 	hostState	: in std_logic_vector(2 downto 0);
 	hostL		: in std_logic;
 	hostU		: in std_logic;
 	cpuWR		: in std_logic_vector(15 downto 0);
-	cpuAddr		: in std_logic_vector(24 downto 1);
+	cpuAddr		: in std_logic_vector(31 downto 1) := (others =>'0'); -- Let Quartus cull the unused address lines.
 	cpuU		: in std_logic;
 	cpuL		: in std_logic;
 	cpustate	: in std_logic_vector(5 downto 0);
 	cpu_dma		: in std_logic;
 	chipWR		: in std_logic_vector(15 downto 0);
-	chipAddr	: in std_logic_vector(23 downto 1);
+	chipAddr	: in std_logic_vector(31 downto 1) := (others =>'0'); -- Let Quartus cull the unused address lines.
 	chipU		: in std_logic;
 	chipL		: in std_logic;
 	chipRW		: in std_logic;
@@ -84,15 +89,15 @@ signal cas_dqm		:std_logic_vector(1 downto 0);
 signal init_done	:std_logic;
 signal datain		:std_logic_vector(15 downto 0);
 signal datawr		:std_logic_vector(15 downto 0);
-signal casaddr		:std_logic_vector(24 downto 0);
+signal casaddr		:std_logic_vector(31 downto 1);
 signal sdwrite 		:std_logic;
 signal sdata_reg	:std_logic_vector(15 downto 0);
 
 signal hostCycle	:std_logic;
-signal zmAddr		:std_logic_vector(24 downto 0);
+signal zmAddr		:std_logic_vector(31 downto 1);
 signal zena			:std_logic;
 signal zcache		:std_logic_vector(63 downto 0);
-signal zcache_addr	:std_logic_vector(23 downto 0);
+signal zcache_addr	:std_logic_vector(31 downto 1);
 signal zcache_fill	:std_logic;
 signal zcachehit	:std_logic;
 signal zvalid		:std_logic_vector(3 downto 0);
@@ -102,7 +107,7 @@ signal hostRDd	:std_logic_vector(15 downto 0);
 
 signal cena			:std_logic;
 signal ccache		:std_logic_vector(63 downto 0);
-signal ccache_addr	:std_logic_vector(24 downto 0);
+signal ccache_addr	:std_logic_vector(31 downto 1);
 signal ccache_fill	:std_logic;
 signal ccachehit	:std_logic;
 signal cvalid		:std_logic_vector(3 downto 0);
@@ -152,7 +157,9 @@ begin
 -- SPIHOST cache
 -------------------------------------------------------------------------
 	hostena <= '1' when zena='1' or hostState(1 downto 0)="01" OR zcachehit='1' else '0'; 
-	zmAddr <= '0'& NOT hostAddr(23) & hostAddr(22) & NOT hostAddr(21) & hostAddr(20 downto 0);
+
+	-- Map host processor's address space to 0xA00000
+	zmAddr <= X"00" & NOT hostAddr(23) & hostAddr(22) & NOT hostAddr(21) & hostAddr(20 downto 1);
 	
 	process (sysclk, zmAddr, hostAddr, zcache_addr, zcache, zequal, zvalid, hostRDd) 
 	begin
@@ -163,21 +170,6 @@ begin
 		end if;	
 		zcachehit <= '0';
 		if zequal='1' and zvalid(0)='1' and hostStated(1)='0' THEN
---			case (hostAddr(2 downto 1)-zcache_addr(2 downto 1)) is
---				when "00"=>
---					zcachehit <= zvalid(0);
---					hostRD <= zcache(63 downto 48);
---				when "01"=>
---					zcachehit <= zvalid(1);
---					hostRD <= zcache(47 downto 32);
---				when "10"=>
---					zcachehit <= zvalid(2);
---					hostRD <= zcache(31 downto 16);
---				when "11"=>
---					zcachehit <= zvalid(3);
---					hostRD <= zcache(15 downto 0);
---				when others=> null;
---			end case;	
 			case (hostAddr(2 downto 1)&zcache_addr(2 downto 1)) is
 				when "0000"|"0101"|"1010"|"1111"=>
 					zcachehit <= zvalid(0);
@@ -230,7 +222,7 @@ begin
 										if hostStated(1)='0' AND hostCycle='1' THEN	--only instruction cache
 --										if cas_sd_we='1' AND hostStated(1)='0' AND hostCycle='1' THEN	--only instruction cache
 --										if cas_sd_we='1' AND hostCycle='1' THEN
-											zcache_addr <= casaddr(23 downto 0);
+											zcache_addr <= casaddr;
 											zcache_fill <= '1';
 											zvalid <= "0000";
 										end if;
@@ -276,21 +268,6 @@ begin
 		end if;	
 		ccachehit <= '0';
 		if cequal='1' and cvalid(0)='1' and cpuStated(1)='0' THEN
---			case (cpuAddr(2 downto 1)-ccache_addr(2 downto 1)) is
---				when "00"=>
---					ccachehit <= cvalid(0);
---					cpuRD <= ccache(63 downto 48);
---				when "01"=>
---					ccachehit <= cvalid(1);
---					cpuRD <= ccache(47 downto 32);
---				when "10"=>
---					ccachehit <= cvalid(2);
---					cpuRD <= ccache(31 downto 16);
---				when "11"=>
---					ccachehit <= cvalid(3);
---					cpuRD <= ccache(15 downto 0);
---				when others=> null;
---			end case;	
 			case (cpuAddr(2 downto 1)&ccache_addr(2 downto 1)) is
 				when "0000"|"0101"|"1010"|"1111"=>
 					ccachehit <= cvalid(0);
@@ -508,7 +485,7 @@ begin
 			sd_ras <= '1';
 			sd_cas <= '1';
 			sd_we <= '1';
-			sdaddr <= "XXXXXXXXXXXX";
+			sdaddr <= (others => 'X');
 			ba <= "00";
 			dqm <= "00";
 			if init_done='0' then
@@ -532,7 +509,8 @@ begin
 							sd_we <= '0';
 --							ba <= "00";
 	--						sdaddr <= "0001000100010"; --BURST=4 LATENCY=2
-							sdaddr <= "001000110010"; --BURST=4 LATENCY=3
+							sdaddr(rows-1 downto 10)<=(others =>'0');
+							sdaddr(9 downto 0) <= "1000110010"; --BURST=4 LATENCY=3
 						when others =>	null;	--NOP
 					end case;
 				END IF;
@@ -551,6 +529,19 @@ begin
 -- 0xf80000 - 0xfffffe  -  Kickstart ROM
 -- In order to split into 2 meg chunks, the RAM access could be split as follows
 -- R RBBR RRRR RRRR RCCC CCCC CCC0
+
+-- We want to genericise this while maintaining 2 megabyte banks:
+-- Bank bits must remain bits (22 downto 21)
+-- Col bits must be (cols downto 1)
+-- Low chunk of row bits must be (20 downto (cols+1))
+-- High chunk of row bits must be ((2+rows+cols)) downto 23)
+
+-- Thus for 12 rows, 10 columns, we have:
+-- 	col <= addr(10 downto 1);
+-- 	row <= addr(24 downto 23)&addr(20 downto 11);
+-- while for 13 rows, 9 columns, we'd have:
+-- 	col <= addr(9 downto 1);
+-- 	row <= addr(24 downto 23)&addr(20 downto 10);
 
 				if sdram_state=ph1 THEN
 					cpuCycle <= '0';
@@ -573,14 +564,17 @@ begin
 					IF chip_dma='0' OR chipRW='0' THEN
 						chipCycle <= '1';
 					-- R RBBR RRRR RRRR RCCC CCCC CCC0
-						sdaddr <= '0'&chipAddr(23)&chipaddr(20 downto 11);
+-- Col bits must be (cols downto 1)
+-- Low chunk of row bits must be (20 downto (cols+1))
+-- High chunk of row bits must be ((2+rows+cols)) downto 23)
+						sdaddr <= chipAddr((2+rows+cols) downto 23)&chipAddr(20 downto (cols+1));
 --						ba <= "00";
 						ba <= chipAddr(22 downto 21);
 --						cas_dqm <= "00";	--only word access
 						cas_dqm <= chipU& chipL;
 						sd_cs <= "1110"; 	--ACTIVE
 						sd_ras <= '0';
-						casaddr <= '0'&chipAddr(23 downto 1)&'0';
+						casaddr <= chipAddr;
 						datain <= chipWR;
 						cas_sd_cas <= '0';
 						cas_sd_we <= chipRW;
@@ -589,12 +583,13 @@ begin
 					ELSIF cpuState(2)='0' AND cpuState(5)='0' THEN	
 						cpuCycle <= '1';
 					-- R RBBR RRRR RRRR RCCC CCCC CCC0
-						sdaddr <= cpuAddr(24 downto 23)&cpuAddr(20 downto 11);
+						sdaddr <= cpuAddr((2+rows+cols) downto 23)&cpuAddr(20 downto (cols+1));
+--						sdaddr <= cpuAddr(24 downto 23)&cpuAddr(20 downto 11);
 						ba <= cpuAddr(22 downto 21);
 						cas_dqm <= cpuU& cpuL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
-						casaddr <= cpuAddr(24 downto 1)&'0';
+						casaddr <= cpuAddr;
 						datain <= cpuWR;
 						cas_sd_cas <= '0';
 						cas_sd_we <= NOT cpuState(1) OR NOT cpuState(0);
@@ -609,7 +604,8 @@ begin
 						ELSE	
 							hostCycle <= '1';
 						-- R RBBR RRRR RRRR RCCC CCCC CCC0
-							sdaddr <= '0'&zmAddr(23)&zmAddr(20 downto 11);
+--							sdaddr <= '0'&zmAddr(23)&zmAddr(20 downto 11);
+							sdaddr <= zmAddr((2+rows+cols) downto 23)&zmAddr(20 downto (cols+1));
 							ba <= zmAddr(22 downto 21);
 							cas_dqm <= hostU& hostL;
 							sd_cs <= "1110"; --ACTIVE
@@ -625,11 +621,12 @@ begin
 					END IF;
 				END IF;
 				if sdram_state=ph4 then
-					sdaddr <= "01" & casaddr(10 downto 1);--auto precharge
+					sdaddr <= (others => '0');
+					sdaddr((cols+1) downto 0) <= "01" & casaddr(cols downto 1);--auto precharge
 					ba <= casaddr(22 downto 21);
 					sd_cs <= cas_sd_cs; 
 					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm;
+						dqm <= cas_dqm; -- Only use dqm on writes; the cache can thus ignore addr(0)
 					END IF;
 					sd_ras <= cas_sd_ras;
 					sd_cas <= cas_sd_cas;

@@ -1,6 +1,6 @@
 <sld_project_info>
   <file_info>
-    <file checksum="0x00EE029B" device="EP3C25Q240C8" path="Fampiga_C3.sof" usercode="0xFFFFFFFF"/>
+    <file checksum="0x00F10B0D" device="EP3C25Q240C8" path="Fampiga_C3.sof" usercode="0xFFFFFFFF"/>
   </file_info>
   <hub_info ir_width="8" node_count="1"/>
   <node_info>
@@ -15,7 +15,7 @@
         <parameter name="sld_trigger_bits" type="unknown" value="224"/>
         <parameter name="SLD_NODE_CRC_BITS" type="dec" value="32"/>
         <parameter name="sld_node_crc_hiword" type="unknown" value="2634"/>
-        <parameter name="sld_node_crc_loword" type="unknown" value="29057"/>
+        <parameter name="sld_node_crc_loword" type="unknown" value="11564"/>
         <parameter name="SLD_INCREMENTAL_ROUTING" type="dec" value="0"/>
         <parameter name="sld_sample_depth" type="unknown" value="1024"/>
         <parameter name="sld_segment_size" type="unknown" value="1024"/>

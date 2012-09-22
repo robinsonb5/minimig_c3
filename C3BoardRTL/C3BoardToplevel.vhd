@@ -206,11 +206,15 @@ signal clk7m : std_logic;
 signal clk28m : std_logic;
 signal pll_locked : std_logic;
 
+-- LED signals
+signal diskled : std_logic;
+signal floppyled : std_logic;
+
 begin
 
 	power_led(3 downto 0)<=(others =>'0');
-	disk_led(4 downto 0)<=(others =>'0');
-	odd_led(4 downto 0)<=(others =>'0');
+	disk_led(5 downto 0)<=(others =>diskled);
+	odd_led(5 downto 0)<=(others =>floppyled);
 	net_led(5 downto 0)<=(others =>'0');
 
 	ps2m_dat_in<=ps2m_dat;
@@ -287,8 +291,8 @@ myFampiga: entity work.Fampiga
 		clk28m=>clk28m,
 		reset_n=>reset_n,
 		powerled_out=>power_led(5 downto 4),
-		diskled_out=>disk_led(5),
-		oddled_out=>odd_led(5),
+		diskled_out=>diskled,
+		oddled_out=>floppyled,
 
 		-- SDRAM.  A separate shifted clock is provided by the toplevel
 		sdr_addr => sdr_addr,

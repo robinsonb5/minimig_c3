@@ -111,7 +111,7 @@ signal cpu_ram_uds : std_logic;
 -- OSD CPU signals
 
 signal hostWR : std_logic_vector(15 downto 0);
-signal hostAddr : std_logic_vector(23 downto 0);
+signal hostAddr : std_logic_vector(31 downto 1);
 signal hostState : std_logic_vector(2 downto 0);
 signal hostL : std_logic;
 signal hostU : std_logic;
@@ -203,7 +203,7 @@ begin
 	sdr_cke<='1';
 	powerled_out<=powerled & '1';
 --	oddled_out<=floppyled;
-	diskled_out<=spi_chipselect(1);
+	diskled_out<=not spi_chipselect(1);
 
 	sd_clk <= spi_sck;
 	sd_cs <= spi_chipselect(1);
@@ -341,6 +341,11 @@ MainCPU: entity work.TG68K
 	);
 
 mysdram : entity work.sdram
+	generic map
+	(
+		rows => 12,
+		cols => 10
+	)
 	port map
 	(
 		sdata => sdr_data,
@@ -365,7 +370,7 @@ mysdram : entity work.sdram
 		hostena => hostena_in,
 
 		cpuWR	=> cpu_data_out,
-		cpuAddr => cpu_ramaddr(24 downto 1),
+		cpuAddr => cpu_ramaddr(31 downto 1),
 		cpuU => cpu_ram_uds,
 		cpuL => cpu_ram_lds,
 		cpustate	=> cpustate,
@@ -374,7 +379,7 @@ mysdram : entity work.sdram
 		cpuena => cpu_ena,
 		
 		chipWR => mm_ram_data_out,
-		chipAddr => "00"&mm_ram_address,
+		chipAddr => X"00"&"00"&mm_ram_address,
 		chipU => mm_ram_bhe,
 		chipL	=> mm_ram_ble,
 		chipRW => mm_ram_we,
@@ -396,7 +401,7 @@ mycfide : entity work.cfide
 		n_reset => sdram_ready,
 		cpuena_in => hostena_in,
 		memdata_in => hostRD,
-		addr => hostaddr,
+		addr(23 downto 1) => hostaddr(23 downto 1),
 		cpudata_in => hostWR,
 		state => hostState(1 downto 0),
 		lds => hostL,
@@ -420,8 +425,8 @@ myhostcpu : entity work.TG68KdotC_Kernel
 		nReset => sdram_ready,
 		clkena_in => hostena and enaWRreg,
 		data_in => hostdata,
-		addr(23 downto 0) => hostaddr,
-		addr(31 downto 24) => open,
+		addr(31 downto 1) => hostaddr,
+		addr(0) => open,
 		data_write => hostWR,
 		nWr => open, -- uses busstate instead?
 		nUDS => hostU,
