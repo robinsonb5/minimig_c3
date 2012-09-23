@@ -10,3 +10,6 @@ source tree.  The C3 board is somewhat easier to develop for than the Chameleon 
 being very similar hardware-wide, so this project is basically intended to be a testbed
 for improvements to the core, which I hope to bring back to the Chameleon as time goes on.
 
+More information on the project and its progress can be found at:
+http://www.retroramblings.net
+
