@@ -595,7 +595,7 @@ begin
 						cas_sd_cas <= '0';
 						cas_sd_we <= NOT cpuState(1) OR NOT cpuState(0);
 					ELSE
-						hostSlot_cnt <= "00001111";	
+						hostSlot_cnt <= "00000111";	-- Turbo chipram tends to starve the OSD of cycles, so we reduce this.
 --					ELSIF hostState(2)='1' OR hostena='1' OR slow(3 downto 0)="0001" THEN	--refresh cycle
 						IF hostState(2)='1' OR hostena='1' THEN	--refresh cycle
 	--					ELSIF slow(3 downto 0)="0001" THEN	--refresh cycle

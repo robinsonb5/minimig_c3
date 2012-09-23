@@ -1,0 +1,12 @@
+Fampiga_C3 is a port of the Minimig core to a generic Cyclone III FPGA board.
+
+It's based closely on the Chameleon 64 port by Tobias Gubener, a version of which
+can be found in one of my other repositories.  That was itself forked from a version
+hosted by Christian Vogelgsang.
+
+While the C3 board port probably won't be much use to other people, since it requires
+custom IO boards, I hope ultimately to have a Chameleon version building from the same
+source tree.  The C3 board is somewhat easier to develop for than the Chameleon despite
+being very similar hardware-wide, so this project is basically intended to be a testbed
+for improvements to the core, which I hope to bring back to the Chameleon as time goes on.
+

@@ -469,7 +469,7 @@ svmul sv1
 //left sigma/delta modulator
 always @(posedge sigmadeltaclk)
 begin
-	if(ldatasum[14:7]==8'h00 || ldatasum[14:7]==8'hff)
+	if(ldatasum[14:5]==10'b000000000 || ldatasum[14:5]==10'b1111111111)
 		acculeft[17:1] <= (acculeft[17:1] + {acculeft[17],acculeft[17],12'h800,2'b00});
 	else
 		acculeft[17:1] <= (acculeft[17:1] + {acculeft[17],acculeft[17],~ldatasum[14],ldatasum[13:0]});
@@ -483,7 +483,7 @@ end
 //right sigma/delta modulator
 always @(posedge sigmadeltaclk)
 begin
-	if(rdatasum[14:7]==8'h00 || rdatasum[14:7]==8'hff)
+	if(rdatasum[14:5]==10'b000000000 || rdatasum[14:5]==10'b1111111111)
 		accuright[17:1] <= (accuright[17:1] + {accuright[17],accuright[17],12'h800,2'b00});
 	else
 		accuright[17:1] <= (accuright[17:1] + {accuright[17],accuright[17],~rdatasum[14],rdatasum[13:0]});
