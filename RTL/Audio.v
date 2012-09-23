@@ -78,6 +78,7 @@ module audio
 (
 	input 	clk,		    		//bus clock
 	input	clk28m,
+	input sigmadeltaclk,	// AMR
 	input 	cck,		    		//colour clock enable
 	input 	reset,			   		//reset 
 	input	strhor,					//horizontal strobe
@@ -216,6 +217,7 @@ audiochannel ach3
 sigmadelta dac0 
 (
 	.clk({clk28m}),
+	.sigmadeltaclk(sigmadeltaclk), // AMR
 	.sample0(sample0),
 	.sample1(sample1),
 	.sample2(sample2),
@@ -342,6 +344,7 @@ endmodule
 module sigmadelta
 (
 	input clk,					//bus clock
+	input sigmadeltaclk,	// AMR
 	input	[7:0] sample0,		//sample 0 input
 	input	[7:0] sample1,		//sample 1 input
 	input	[7:0] sample2,		//sample 2 input
@@ -356,8 +359,8 @@ module sigmadelta
 );
 
 //local signals
-reg		[14:0] acculeft;		//sigma/delta accumulator left
-reg		[14:0] accuright;		//sigma/delta accumulator right
+reg		[17:0] acculeft;		//sigma/delta accumulator left
+reg		[17:0] accuright;		//sigma/delta accumulator right
 wire	[7:0] leftsmux;			//left mux sample
 wire	[7:0] rightsmux;		//right mux sample
 wire	[6:0] leftvmux;			//left mux volum
@@ -464,20 +467,30 @@ svmul sv1
 
 //--------------------------------------------------------------------------------------
 //left sigma/delta modulator
-always @(posedge clk)
-		acculeft[12:1] <= (acculeft[12:1] + {acculeft[12],acculeft[12],~ldatasum[14],ldatasum[13:5]});
+always @(posedge sigmadeltaclk)
+begin
+	if(ldatasum[14:7]==8'h00 || ldatasum[14:7]==8'hff)
+		acculeft[17:1] <= (acculeft[17:1] + {acculeft[17],acculeft[17],12'h800,2'b00});
+	else
+		acculeft[17:1] <= (acculeft[17:1] + {acculeft[17],acculeft[17],~ldatasum[14],ldatasum[13:0]});
 //		{lout,acculeft[12:0]} <= acculeft[12:0] + {~ldatasum[14],ldatasum[13:5],3'b000};
+end
 
- assign left = acculeft[12];
+ assign left = acculeft[17];
 //	assign left = lout;
 
 
 //right sigma/delta modulator
-always @(posedge clk)
-		accuright[12:1] <= (accuright[12:1] + {accuright[12],accuright[12],~rdatasum[14],rdatasum[13:5]});
+always @(posedge sigmadeltaclk)
+begin
+	if(rdatasum[14:7]==8'h00 || rdatasum[14:7]==8'hff)
+		accuright[17:1] <= (accuright[17:1] + {accuright[17],accuright[17],12'h800,2'b00});
+	else
+		accuright[17:1] <= (accuright[17:1] + {accuright[17],accuright[17],~rdatasum[14],rdatasum[13:0]});
 //		{rout,accuright[12:0]} <= accuright[12:0] + {~rdatasum[14],rdatasum[13:5],3'b000};
+end
 
-assign right = accuright[12];
+assign right = accuright[17];
 //	assign right = rout;
 
 endmodule

@@ -39,12 +39,13 @@ set_time_format -unit ns -decimal_places 3
 #**************************************************************
 
 create_clock -name {clk_50} -period 20.000 -waveform { 0.000 0.500 } [get_ports {clk_50}]
-create_clock -name spi_clock -period 40.000 Fampiga:myFampiga|cfide:mycfide|sck
+create_clock -name spi_clock -period 35.000 Fampiga:myFampiga|cfide:mycfide|sck
 
 #**************************************************************
 # Create Generated Clock
 #**************************************************************
 
+#create_generated_clock -name spi_clk -source mypll|altpll_component|auto_generated|pll1|clk[0] -divide_by 2 Fampiga:myFampiga|cfide:mycfide|sck
 
 derive_pll_clocks 
 

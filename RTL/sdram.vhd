@@ -159,7 +159,8 @@ begin
 	hostena <= '1' when zena='1' or hostState(1 downto 0)="01" OR zcachehit='1' else '0'; 
 
 	-- Map host processor's address space to 0xA00000
-	zmAddr <= X"00" & NOT hostAddr(23) & hostAddr(22) & NOT hostAddr(21) & hostAddr(20 downto 1);
+	-- AMR - changed this to 0xE00000
+	zmAddr <= X"00" & NOT hostAddr(23) & not hostAddr(22) & NOT hostAddr(21) & hostAddr(20 downto 1);
 	
 	process (sysclk, zmAddr, hostAddr, zcache_addr, zcache, zequal, zvalid, hostRDd) 
 	begin
@@ -580,7 +581,7 @@ begin
 						cas_sd_we <= chipRW;
 --					ELSIF cpu_dma='1' AND hostSlot_cnt /= "00000000" THEN
 --					ELSIF cpu_dma='0' OR cpuRW='0' THEN
-					ELSIF cpuState(2)='0' AND cpuState(5)='0' THEN	
+					ELSIF cpuState(2)='0' AND cpuState(5)='0' and hostSlot_cnt /= "00000000" THEN	-- Address hostcycle starvation...
 						cpuCycle <= '1';
 					-- R RBBR RRRR RRRR RCCC CCCC CCC0
 						sdaddr <= cpuAddr((2+rows+cols) downto 23)&cpuAddr(20 downto (cols+1));
@@ -593,7 +594,7 @@ begin
 						datain <= cpuWR;
 						cas_sd_cas <= '0';
 						cas_sd_we <= NOT cpuState(1) OR NOT cpuState(0);
-					ELSE 
+					ELSE
 						hostSlot_cnt <= "00001111";	
 --					ELSIF hostState(2)='1' OR hostena='1' OR slow(3 downto 0)="0001" THEN	--refresh cycle
 						IF hostState(2)='1' OR hostena='1' THEN	--refresh cycle

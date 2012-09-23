@@ -11,6 +11,10 @@ On the DE1 board we only have 8 meg available.  Suggest:
 The bottom line is that memory mapping should be board-specific, not a core function.
 This would allow turbo-kickstart, turbo-chipram, turbo-slowram, etc.
 
+(The current fastram implementation maps 0x200000 to 0x1200000
+and the OSD processor's RAM to 0xa00000.  Mapping the fastram to 0x400000 would
+be more convenient, since it would leave the second 16 meg free.)
+
 Add write cache
 
 Add multi-slot capability to SDRAM controller.
@@ -33,3 +37,5 @@ Try out alternative sigma-delta arrangements to fix Gauntlet III noises.
 Explore the possibility of hardware assist for MP3 and JPEG decoding.
 
 Create a Chameleon toplevel.
+
+Add support for Graffiti modes.

@@ -58,6 +58,7 @@ module Paula
 	// system bus interface
 	input 	clk,		    		// bus clock
 	input	clk28m,					// 28 MHz system clock
+	input sigmadeltaclk,	// AMR
 	input 	cck,		    		// colour clock enable
 	input 	reset,			   		// reset 
 	input 	[8:1] reg_address_in,	// register address inputs
@@ -282,6 +283,7 @@ audio ad1
 (
 	.clk(clk),
 	.clk28m(clk28m),
+	.sigmadeltaclk(sigmadeltaclk),
 	.cck(cck),
 	.reset(reset),
 	.strhor(strhor),
