@@ -243,7 +243,7 @@ GND                          : 172       : gnd    :                   :         
 leds[3]                      : 173       : output : 3.3-V LVTTL       :         : 6         : Y              
 VCCINT                       : 174       : power  :                   : 1.2V    :           :                
 GND                          : 175       : gnd    :                   :         :           :                
-misc_ios_22[9]               : 176       : output : 3.3-V LVTTL       :         : 6         : Y              
+misc_ios_22[8]               : 176       : output : 3.3-V LVTTL       :         : 6         : Y              
 misc_ios_3[0]                : 177       : output : 3.3-V LVTTL       :         : 6         : Y              
 VCCA2                        : 178       : power  :                   : 2.5V    :           :                
 GNDA2                        : 179       : gnd    :                   :         :           :                
@@ -263,18 +263,18 @@ VCCIO7                       : 192       : power  :                   : 3.3V    
 GND                          : 193       : gnd    :                   :         :           :                
 sd_miso                      : 194       : input  : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[10]              : 195       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_22[8]               : 196       : output : 3.3-V LVTTL       :         : 7         : Y              
+misc_ios_22[7]               : 196       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[9]               : 197       : output : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 198       : power  :                   : 1.2V    :           :                
 GND                          : 199       : gnd    :                   :         :           :                
-misc_ios_22[7]               : 200       : output : 3.3-V LVTTL       :         : 7         : Y              
+misc_ios_22[6]               : 200       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[8]               : 201       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_22[6]               : 202       : output : 3.3-V LVTTL       :         : 7         : Y              
+misc_ios_22[5]               : 202       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[7]               : 203       : output : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 204       : power  :                   : 1.2V    :           :                
 GND                          : 205       : gnd    :                   :         :           :                
 VCCIO7                       : 206       : power  :                   : 3.3V    : 7         :                
-misc_ios_22[5]               : 207       : output : 3.3-V LVTTL       :         : 7         : Y              
+misc_ios_22[4]               : 207       : output : 3.3-V LVTTL       :         : 7         : Y              
 GND                          : 208       : gnd    :                   :         :           :                
 GND+                         : 209       :        :                   :         : 7         :                
 GND+                         : 210       :        :                   :         : 7         :                
@@ -283,23 +283,23 @@ GND+                         : 212       :        :                   :         
 VCCIO8                       : 213       : power  :                   : 3.3V    : 8         :                
 misc_ios_21[6]               : 214       : output : 3.3-V LVTTL       :         : 8         : Y              
 GND                          : 215       : gnd    :                   :         :           :                
-misc_ios_22[4]               : 216       : output : 3.3-V LVTTL       :         : 8         : Y              
+misc_ios_22[3]               : 216       : output : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_21[5]               : 217       : output : 3.3-V LVTTL       :         : 8         : Y              
-misc_ios_22[3]               : 218       : output : 3.3-V LVTTL       :         : 8         : Y              
+misc_ios_22[2]               : 218       : output : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_21[4]               : 219       : output : 3.3-V LVTTL       :         : 8         : Y              
 VCCINT                       : 220       : power  :                   : 1.2V    :           :                
 misc_ios_21[3]               : 221       : output : 3.3-V LVTTL       :         : 8         : Y              
 GND                          : 222       : gnd    :                   :         :           :                
 misc_ios_21[2]               : 223       : output : 3.3-V LVTTL       :         : 8         : Y              
-misc_ios_22[2]               : 224       : output : 3.3-V LVTTL       :         : 8         : Y              
+misc_ios_22[1]               : 224       : output : 3.3-V LVTTL       :         : 8         : Y              
 VCCIO8                       : 225       : power  :                   : 3.3V    : 8         :                
 misc_ios_21[1]               : 226       : output : 3.3-V LVTTL       :         : 8         : Y              
 GND                          : 227       : gnd    :                   :         :           :                
 VCCINT                       : 228       : power  :                   : 1.2V    :           :                
 GND                          : 229       : gnd    :                   :         :           :                
-misc_ios_22[1]               : 230       : output : 3.3-V LVTTL       :         : 8         : Y              
+misc_ios_22[0]               : 230       : output : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_21[0]               : 231       : output : 3.3-V LVTTL       :         : 8         : Y              
-misc_ios_22[0]               : 232       : output : 3.3-V LVTTL       :         : 8         : Y              
+vga_scandbl                  : 232       : input  : 3.3-V LVTTL       :         : 8         : Y              
 led_out                      : 233       : output : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_1[2]                : 234       : output : 3.3-V LVTTL       :         : 8         : Y              
 ps2k_clk                     : 235       : bidir  : 3.3-V LVTTL       :         : 8         : Y              

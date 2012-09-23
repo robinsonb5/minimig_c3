@@ -261,6 +261,26 @@ BEGIN
 -- Bit 2 becomes (bit 3 and bit 2) or (bit 1 xor bit 2)
 -- Bit 3 becomes bit 3 or (bit 2 and bit 1)
 
+-- Alternatively, add 4 to each address?
+-- 0000 -> 0000 -- chip, 1st meg, 0 -> 0
+-- 0001 -> 0001 -- chip, 2nd meg, 1 -> 1
+-- 0010 -> 0110 -- fast, 1st meg, 2 -> 6
+-- 0011 -> 0111 -- fast, 2nd meg, 3 -> 7
+-- 0100 -> 1000 -- fast, 3rd meg, 4 -> 8
+-- 0101 -> 1001 -- fast, 4th meg, 5 -> 9
+-- 0110 -> 1010 -- fast, 5th meg, 6 -> A
+-- 0111 -> 1011 -- fast, 6th meg, 7 -> B
+-- 1000 -> 1100 -- fast, 7th meg, 8 -> C
+-- 1001 -> 1101 -- fast, 8th meg, 9 -> D
+-- Below here mapping is handled by the Minimig.
+-- 1010 -> (1110) -- E: PCMCIA space, doesn't matter.
+-- 1011 -> (1111) -- F: Peripheral space, doesn't matter
+-- 1100 -> 0000 -- 0: slow ram - a good idea to leave this if possible
+-- 1101 -> 0001 -- 1: more slow ram, only up to 0xd7fffe
+-- 1110 -> 0010 -- 2: OSD processor's RAM
+-- 1111 -> 0011 -- 3: Kickstart ROM
+
+
 	ramaddr(20 downto 0) <= cpuaddr(20 downto 0);
 	ramaddr(31 downto 24) <= cpuaddr(31 downto 24);
 	ramaddr(23 downto 21) <= cpuaddr(23 downto 21) when cpuaddr(24)='1'

@@ -44,6 +44,8 @@ port(
 		
 		vga_hsync 	: buffer std_logic;
 		vga_vsync 	: buffer std_logic;
+		
+		vga_scandbl : in std_logic;
 
 		-- PS/2
 		ps2k_clk : inout std_logic;
@@ -73,7 +75,7 @@ port(
 		-- Any remaining IOs yet to be assigned
 		misc_ios_1 : out std_logic_vector(5 downto 0);
 		misc_ios_21 : out std_logic_vector(13 downto 0);
-		misc_ios_22 : out std_logic_vector(9 downto 0);
+		misc_ios_22 : out std_logic_vector(8 downto 0);
 		misc_ios_3 : out std_logic_vector(1 downto 0)
 	);
 end entity;
@@ -152,12 +154,14 @@ attribute chip_pin of power_button : signal is "94";
 
 attribute chip_pin of leds : signal is "173, 169, 167, 135";
 
+attribute chip_pin of vga_scandbl : signal is "232";
+
 -- Free pins, not yet assigned
 
 attribute chip_pin of misc_ios_1 : signal is "12,14,56,234,21,57";
 
 attribute chip_pin of misc_ios_21 : signal is "184,187,189,195,197,201,203,214,217,219,221,223,226,231";
-attribute chip_pin of misc_ios_22 : signal is "176,196,200,202,207,216,218,224,230,232";
+attribute chip_pin of misc_ios_22 : signal is "176,196,200,202,207,216,218,224,230";
 attribute chip_pin of misc_ios_3 : signal is "95,177";
 
 -- Signals internal to the project
@@ -314,6 +318,8 @@ myFampiga: entity work.Fampiga
 		vga_hsync => vga_hsync,
 		vga_vsync => vga_vsync,
 
+		vga_scandbl => vga_scandbl,
+		
 		-- PS/2
 		ps2k_clk_in => ps2k_clk_in,
 		ps2k_clk_out => ps2k_clk_out,

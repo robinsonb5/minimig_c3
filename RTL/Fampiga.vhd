@@ -31,6 +31,7 @@ port(
 
 		vga_hsync 	: buffer std_logic;
 		vga_vsync 	: buffer std_logic;
+		vga_scandbl : in std_logic;
 
 		-- PS/2
 		ps2k_clk_in : inout std_logic;
@@ -254,7 +255,7 @@ MyMinimig: COMPONENT Minimig1
 		rts => open,
 		n_joy1	=> "111111",
 		n_joy2 => "111111",
-		n_15khz => '1',
+		n_15khz => vga_scandbl,
 		pwrled => powerled,
 		kbddat => ps2k_dat_in,
 		kbdclk => ps2k_clk_in,
