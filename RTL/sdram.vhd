@@ -86,6 +86,7 @@ signal cas_sd_ras	:std_logic;
 signal cas_sd_cas	:std_logic;
 signal cas_sd_we 	:std_logic;
 signal cas_dqm		:std_logic_vector(1 downto 0);
+signal cas_sdaddr	:std_logic_vector((rows-1) downto 0);
 signal init_done	:std_logic;
 signal datain		:std_logic_vector(15 downto 0);
 signal datawr		:std_logic_vector(15 downto 0);
@@ -114,6 +115,13 @@ signal cvalid		:std_logic_vector(3 downto 0);
 signal cequal		:std_logic;
 signal cpuStated	:std_logic_vector(1 downto 0);
 signal cpuRDd		:std_logic_vector(15 downto 0);
+
+signal dcache		:std_logic_vector(63 downto 0);
+signal dcache_addr	:std_logic_vector(31 downto 1);
+signal dcache_fill	:std_logic;
+signal dcachehit	:std_logic;
+signal dvalid		:std_logic_vector(3 downto 0);
+signal dequal		:std_logic;
 
 signal hostSlot_cnt	:std_logic_vector(7 downto 0);
 signal reset_cnt	:std_logic_vector(7 downto 0);
@@ -192,7 +200,7 @@ begin
 	end process;		
 		
 	
---Daten�bernahme
+--Datenbernahme
 	process (sysclk, reset) begin
 		if reset = '0' THEN
 			zcache_fill <= '0';
@@ -258,7 +266,7 @@ begin
 -------------------------------------------------------------------------
 -- cpu cache
 -------------------------------------------------------------------------
-	cpuena <= '1' when cena='1' or ccachehit='1' else '0'; 
+	cpuena <= '1' when cena='1' or ccachehit='1' or dcachehit='1' else '0'; 
 	
 	process (sysclk, cpuAddr, ccache_addr, ccache, cequal, cvalid, cpuRDd) 
 	begin
@@ -268,6 +276,14 @@ begin
 			cequal <='0';
 		end if;	
 		ccachehit <= '0';
+
+		if cpuAddr(24 downto 3)=dcache_addr(24 downto 3) THEN
+			dequal <='1';
+		else	
+			dequal <='0';
+		end if;	
+		dcachehit <= '0';
+
 		if cequal='1' and cvalid(0)='1' and cpuStated(1)='0' THEN
 			case (cpuAddr(2 downto 1)&ccache_addr(2 downto 1)) is
 				when "0000"|"0101"|"1010"|"1111"=>
@@ -284,18 +300,36 @@ begin
 					cpuRD <= ccache(15 downto 0);
 				when others=> null;
 			end case;	
+		elsif dequal='1' and dvalid(0)='1' and cpuStated(1 downto 0)="10" THEN
+			case (cpuAddr(2 downto 1)&dcache_addr(2 downto 1)) is
+				when "0000"|"0101"|"1010"|"1111"=>
+					dcachehit <= dvalid(0);
+					cpuRD <= dcache(63 downto 48);
+				when "0100"|"1001"|"1110"|"0011"=>
+					dcachehit <= dvalid(1);
+					cpuRD <= dcache(47 downto 32);
+				when "1000"|"1101"|"0010"|"0111"=>
+					dcachehit <= dvalid(2);
+					cpuRD <= dcache(31 downto 16);
+				when "1100"|"0001"|"0110"|"1011"=>
+					dcachehit <= dvalid(3);
+					cpuRD <= dcache(15 downto 0);
+				when others=> null;
+			end case;	
 		else	
 			cpuRD <= cpuRDd;
 		end if;	
 	end process;		
 		
 	
---Daten�bernahme
+--Datenbernahme
 	process (sysclk, reset) begin
 		if reset = '0' THEN
 			ccache_fill <= '0';
+			dcache_fill <= '0';
 			cena <= '0';
 			cvalid <= "0000";
+			dvalid <= "0000";
 		elsif (sysclk'event and sysclk='1') THEN
 				if cpuState(5)='1' THEN
 					cena <= '0';
@@ -313,6 +347,7 @@ begin
 					end if;
 				end if;
 				cpuStated <= cpuState(1 downto 0);
+
 				if cequal='1' and cpuState(1 downto 0)="11" THEN
 					cvalid <= "0000";
 				end if;
@@ -347,6 +382,43 @@ begin
 											cvalid <= "1111";
 										end if;
 										ccache_fill <= '0';
+						when others =>	null;
+					end case;
+
+				if dequal='1' and cpuState(1 downto 0)="11" THEN
+					dvalid <= "0000";
+				end if;
+					case sdram_state is	
+						when ph7 =>	
+										if cpuStated(1 downto 0)="10" AND cpuCycle='1' THEN	-- data cache
+--										if cas_sd_we='1' AND hostStated(1)='0' AND hostCycle='1' THEN	--only instruction cache
+--										if cas_sd_we='1' AND hostCycle='1' THEN
+											dcache_addr <= casaddr;
+											dcache_fill <= '1';
+											dvalid <= "0000";
+										end if;
+						when ph9 =>	
+										if dcache_fill='1' THEN
+											dcache(63 downto 48) <= sdata_reg;
+--											cvalid(0) <= '1';
+										end if;
+						when ph10 =>	
+										if dcache_fill='1' THEN
+											dcache(47 downto 32) <= sdata_reg;
+--											cvalid(1) <= '1';
+										end if;
+						when ph11 =>	
+										if dcache_fill='1' THEN
+											dcache(31 downto 16) <= sdata_reg;
+--											cvalid(2) <= '1';
+										end if;
+						when ph12 =>	
+										if dcache_fill='1' THEN
+											dcache(15 downto 0) <= sdata_reg;
+--											cvalid(3) <= '1';
+											dvalid <= "1111";
+										end if;
+										dcache_fill <= '0';
 						when others =>	null;
 					end case;	
 			end if;
@@ -486,32 +558,32 @@ begin
 			sd_ras <= '1';
 			sd_cas <= '1';
 			sd_we <= '1';
-			sdaddr <= (others => 'X');
+--			sdaddr <= (others => 'X');
 			ba <= "00";
 			dqm <= "00";
 			if init_done='0' then
 				if sdram_state =ph1 then
 					case initstate is
 						when "0010" => --PRECHARGE
-							sdaddr(10) <= '1'; 	--all banks
-							sd_cs <="0000";
-							sd_ras <= '0';
-							sd_cas <= '1';
-							sd_we <= '0';
+							cas_sdaddr(10) <= '1'; 	--all banks
+							cas_sd_cs <="0000";
+							cas_sd_ras <= '0';
+							cas_sd_cas <= '1';
+							cas_sd_we <= '0';
 						when "0011"|"0100"|"0101"|"0110"|"0111"|"1000"|"1001"|"1010"|"1011"|"1100" => --AUTOREFRESH
-							sd_cs <="0000"; 
-							sd_ras <= '0';
-							sd_cas <= '0';
-							sd_we <= '1';
+							cas_sd_cs <="0000"; 
+							cas_sd_ras <= '0';
+							cas_sd_cas <= '0';
+							cas_sd_we <= '1';
 						when "1101" => --LOAD MODE REGISTER
-							sd_cs <="0000";
-							sd_ras <= '0';
-							sd_cas <= '0';
-							sd_we <= '0';
+							cas_sd_cs <="0000";
+							cas_sd_ras <= '0';
+							cas_sd_cas <= '0';
+							cas_sd_we <= '0';
 --							ba <= "00";
 	--						sdaddr <= "0001000100010"; --BURST=4 LATENCY=2
-							sdaddr(rows-1 downto 10)<=(others =>'0');
-							sdaddr(9 downto 0) <= "1000110010"; --BURST=4 LATENCY=3
+							cas_sdaddr(rows-1 downto 10)<=(others =>'0');
+							cas_sdaddr(9 downto 0) <= "1000110010"; --BURST=4 LATENCY=3
 						when others =>	null;	--NOP
 					end case;
 				END IF;
@@ -599,9 +671,9 @@ begin
 --					ELSIF hostState(2)='1' OR hostena='1' OR slow(3 downto 0)="0001" THEN	--refresh cycle
 						IF hostState(2)='1' OR hostena='1' THEN	--refresh cycle
 	--					ELSIF slow(3 downto 0)="0001" THEN	--refresh cycle
-							sd_cs <="0000"; --AUTOREFRESH
-							sd_ras <= '0';
-							sd_cas <= '0';
+							cas_sd_cs <="0000"; --AUTOREFRESH
+							cas_sd_ras <= '0';
+							cas_sd_cas <= '0';
 						ELSE	
 							hostCycle <= '1';
 						-- R RBBR RRRR RRRR RCCC CCCC CCC0
@@ -621,19 +693,23 @@ begin
 						END IF;
 					END IF;
 				END IF;
-				if sdram_state=ph4 then
-					sdaddr <= (others => '0');
-					sdaddr((cols+1) downto 0) <= "01" & casaddr(cols downto 1);--auto precharge
-					ba <= casaddr(22 downto 21);
-					sd_cs <= cas_sd_cs; 
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm; -- Only use dqm on writes; the cache can thus ignore addr(0)
-					END IF;
-					sd_ras <= cas_sd_ras;
-					sd_cas <= cas_sd_cas;
-					sd_we  <= cas_sd_we;
+				if sdram_state=ph2 then -- prepare the SDRAM transcation
+					cas_sdaddr <= (others => '0');
+					cas_sdaddr((cols+1) downto 0) <= "01" & casaddr(cols downto 1);--auto precharge
+				end if;
+			end if;
+			if sdram_state=ph4 then -- We run this even during init, simplifying the sd_we, sd_ras and sd_cas logic.
+				sdaddr<=cas_sdaddr;
+				ba <= casaddr(22 downto 21);
+				sd_cs <= cas_sd_cs; 
+				IF cas_sd_we='0' THEN
+					dqm <= cas_dqm; -- Only use dqm on writes; the cache can thus ignore addr(0)
 				END IF;
-			END IF;	
+				sd_ras <= cas_sd_ras;
+				sd_cas <= cas_sd_cas;
+				sd_we  <= cas_sd_we;
+			END IF;
 		END IF;	
 	END process;
+	
 END;

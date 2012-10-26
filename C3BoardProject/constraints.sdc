@@ -39,15 +39,16 @@ set_time_format -unit ns -decimal_places 3
 #**************************************************************
 
 create_clock -name {clk_50} -period 20.000 -waveform { 0.000 0.500 } [get_ports {clk_50}]
-create_clock -name spi_clock -period 35.000 Fampiga:myFampiga|cfide:mycfide|sck
+# create_clock -name spi_clock -period 35.000 Fampiga:myFampiga|cfide:mycfide|sck
 
 #**************************************************************
 # Create Generated Clock
 #**************************************************************
 
-#create_generated_clock -name spi_clk -source mypll|altpll_component|auto_generated|pll1|clk[0] -divide_by 2 Fampiga:myFampiga|cfide:mycfide|sck
-
 derive_pll_clocks 
+# create_generated_clock -name spi_clk -source mypll|altpll_component|auto_generated|pll1|clk[0] -divide_by 2 Fampiga:myFampiga|cfide:mycfide|sck
+create_generated_clock -name sd1clk_pin -source [get_pins {mypll|altpll_component|auto_generated|pll1|clk[1]}] [get_ports {sdram1_clk}]
+create_generated_clock -name sd2clk_pin -source [get_pins {mypll2|altpll_component|auto_generated|pll1|clk[1]}] [get_ports {sdram2_clk}]
 
 #**************************************************************
 # Set Clock Latency
@@ -60,54 +61,23 @@ derive_pll_clocks
 
 derive_clock_uncertainty;
 
-
-set sdr1_clk mypll|altpll_component|auto_generated|pll1|clk[1]
-set sdr2_clk mypll2|altpll_component|auto_generated|pll1|clk[1]
-#create_generated_clock -name sdr1_clk_pin -source $sdr1_clk -offset 0.5 [get_ports {sdram1_clk}]
-#create_generated_clock -name sdr2_clk_pin -source $sdr2_clk -offset 0.5 [get_ports {sdram2_clk}]
-
 #**************************************************************
 # Set Input Delay
 #**************************************************************
 
-#set_input_delay -clock { mypll|altpll_component|auto_generated|pll1|clk[0] } 4 [get_ports *sd1_data*]
-#set_input_delay -clock { mypll|altpll_component|auto_generated|pll1|clk[0] } 4 [get_ports *sd2_data*]
-
-#set_input_delay -clock sd1_clk_pin -max [expr 5.4 + 0.6] [get_ports *sd1_data*]
-#set_input_delay -clock sd1_clk_pin -min [expr 2.7 + 0.4] [get_ports *sd1_data*]
-#set_input_delay -clock sd2_clk_pin -max [expr 5.4 + 0.6] [get_ports *sd2_data*]
-#set_input_delay -clock sd2_clk_pin -min [expr 2.7 + 0.4] [get_ports *sd2_data*]
-#set_input_delay -clock sdr1_clk_pin -max 6.0 [get_ports *sd1_data*]
-#set_input_delay -clock sdr1_clk_pin -min 3.1 [get_ports *sd1_data*]
-#set_input_delay -clock sdr2_clk_pin -max 6.0 [get_ports *sd2_data*]
-#set_input_delay -clock sdr2_clk_pin -min 3.1 [get_ports *sd2_data*]
+set_input_delay -clock sd1clk_pin -max 6.4 [get_ports sd1_data*]
+set_input_delay -clock sd2clk_pin -max 6.4 [get_ports sd2_data*]
+set_input_delay -clock sd1clk_pin -min 3.2 [get_ports sd1_data*]
+set_input_delay -clock sd2clk_pin -min 3.2 [get_ports sd2_data*]
 
 #**************************************************************
 # Set Output Delay
 #**************************************************************
 
-#set_output_delay -clock { mypll|altpll_component|auto_generated|pll1|clk[0] } 4 [get_ports *sd1*]
-#set_output_delay -clock { mypll|altpll_component|auto_generated|pll1|clk[0] } 4 [get_ports *sd2*]
-
-#set_output_delay -clock sd1_clk_pin -max [expr 1.5 + 0.6] [get_ports *sd1*]
-#set_output_delay -clock sd1_clk_pin -min [expr -0.8 + 0.4)] [get_ports *sd1*]
-#set_output_delay -clock sd1_clk_pin -max [expr 1.5 + 0.6] [get_ports *sd2*]
-#set_output_delay -clock sd1_clk_pin -min [expr -0.8 + 0.4)] [get_ports *sd2*]
-
-#set_output_delay -clock { mypll|altpll_component|auto_generated|pll1|clk[2] } -max 1.5 [get_ports *sd1*]
-#set_output_delay -clock { mypll|altpll_component|auto_generated|pll1|clk[2] } -min -0.8 [get_ports *sd1*]
-#set_output_delay -clock { mypll2|altpll_component|auto_generated|pll1|clk[2] } -max 1.5 [get_ports *sd2*]
-#set_output_delay -clock { mypll2|altpll_component|auto_generated|pll1|clk[2] } -min -0.8 [get_ports *sd2*]
-
-#set_output_delay -clock sdr1_clk_pin -max 2.1 [get_ports *sd1*]
-#set_output_delay -clock sdr1_clk_pin -min -0.4 [get_ports *sd1*]
-#set_output_delay -clock sdr2_clk_pin -max 2.1 [get_ports *sd2*]
-#set_output_delay -clock sdr2_clk_pin -min -0.4 [get_ports *sd2*]
-
-# set_output_delay -clock sdr1_clk_pin -max 0.6 [get_ports *sdram1_clk*]
-# set_output_delay -clock sdr1_clk_pin -min 0.4 [get_ports *sdram1_clk*]
-# set_output_delay -clock sdr2_clk_pin -max 0.6 [get_ports *sdram2_clk*]
-# set_output_delay -clock sdr2_clk_pin -min 0.4 [get_ports *sdram2_clk*]
+set_output_delay -clock sd1clk_pin -max 1.5 [get_ports sd1*]
+set_output_delay -clock sd2clk_pin -max 1.5 [get_ports sd2*]
+set_output_delay -clock sd1clk_pin -min -0.8 [get_ports sd1*]
+set_output_delay -clock sd2clk_pin -min -0.8 [get_ports sd2*]
 
 #**************************************************************
 # Set Clock Groups
@@ -124,6 +94,39 @@ set sdr2_clk mypll2|altpll_component|auto_generated|pll1|clk[1]
 #**************************************************************
 # Set Multicycle Path
 #**************************************************************
+
+set_multicycle_path -from [get_clocks {sd1clk_pin}] -to [get_clocks {mypll|altpll_component|auto_generated|pll1|clk[0]}] -setup -end 2
+set_multicycle_path -from [get_clocks {sd2clk_pin}] -to [get_clocks {mypll|altpll_component|auto_generated|pll1|clk[0]}] -setup -end 2
+
+#set_multicycle_path -from [get_clocks {mypll|altpll_component|auto_generated|pll1|clk[0]}] -to [get_clocks {sd2clk_pin}] -setup -end 2
+
+# set_multicycle_path -setup -to   {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|ram_block1a*~portb_address_reg*} 4
+#set_multicycle_path -setup -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -end 4 
+#set_multicycle_path -setup -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -end 4 
+#set_multicycle_path -setup -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -end 4 
+#set_multicycle_path -setup -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -end 4 
+#
+#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
+#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -hold -end 4
+#
+#set_multicycle_path -from {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -setup -end 4
+#set_multicycle_path -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -setup -end 4
+#set_multicycle_path -from {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -setup -end 4
+#set_multicycle_path -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -setup -end 4
+#
+#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
+#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
+#
+#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|regfile_low_rtl_*} -to * -setup -end 4
+#set_multicycle_path -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|regfile_low_rtl_*} -from * -setup -end 4
+#
+#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -setup -end 4
+#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -hold -end 4
+#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -setup -end 4
+#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -hold -end 4
+#
+#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
+#set_multicycle_path -to * -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
 
 
 

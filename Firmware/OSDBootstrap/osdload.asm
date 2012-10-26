@@ -76,7 +76,7 @@ start:
 ;       move.b    #'$',$da8000
 
 ;       lea      himem-$80,A0
-;       lea      himem-$80,A7
+        lea      himem-$80,A7
 ;       move.l	a7,usp
 ;       and		#$F8FF,sr
        

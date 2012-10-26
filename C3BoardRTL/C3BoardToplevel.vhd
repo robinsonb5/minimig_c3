@@ -17,7 +17,7 @@ port(
 		sd1_addr : out std_logic_vector(11 downto 0);
 		sd1_data : inout std_logic_vector(7 downto 0);
 		sd1_ba : out std_logic_vector(1 downto 0);
-		sd1_clk : out std_logic;
+		sdram1_clk : out std_logic;
 		sd1_cke : out std_logic;
 		sd1_dqm : out std_logic;
 		sd1_cs : out std_logic;
@@ -29,7 +29,7 @@ port(
 		sd2_addr : out std_logic_vector(11 downto 0);
 		sd2_data : inout std_logic_vector(7 downto 0);
 		sd2_ba : out std_logic_vector(1 downto 0);
-		sd2_clk : out std_logic;
+		sdram2_clk : out std_logic;
 		sd2_cke : out std_logic;
 		sd2_dqm : out std_logic;
 		sd2_cs : out std_logic;
@@ -97,7 +97,7 @@ attribute chip_pin of led_out : signal is "233";
 attribute chip_pin of sd1_addr : signal is "83,69,82,81,80,78,99,110,63,64,65,68";
 attribute chip_pin of sd1_data : signal is "109,103,111,93,100,106,107,108";
 attribute chip_pin of sd1_ba : signal is "70,71";
-attribute chip_pin of sd1_clk : signal is "117";
+attribute chip_pin of sdram1_clk : signal is "117";
 attribute chip_pin of sd1_cke : signal is "84";
 attribute chip_pin of sd1_dqm : signal is "87";
 attribute chip_pin of sd1_cs : signal is "72";
@@ -108,13 +108,14 @@ attribute chip_pin of sd1_ras : signal is "73";
 attribute chip_pin of sd2_addr : signal is "142,114,144,139,137,134,148,161,120,119,118,113";
 attribute chip_pin of sd2_data : signal is "166,164,162,160,146,147,159,168";
 attribute chip_pin of sd2_ba : signal is "126,127";
-attribute chip_pin of sd2_clk : signal is "186";
+attribute chip_pin of sdram2_clk : signal is "186";
 attribute chip_pin of sd2_cke : signal is "143";
 attribute chip_pin of sd2_dqm : signal is "145";
 attribute chip_pin of sd2_cs : signal is "128";
 attribute chip_pin of sd2_we : signal is "133";
 attribute chip_pin of sd2_cas : signal is "132";
 attribute chip_pin of sd2_ras : signal is "131";
+
 
 -- Video output via custom board
 
@@ -255,17 +256,17 @@ begin
 		port map (
 			inclk0 => clk_50,
 			c0 => clk,
-			c1 => sd1_clk,
+			c1 => sdram1_clk,
 			c3 => clk28m,
 			c4 => clk7m,
 --			c2 => sd2_clk
 			locked => pll_locked
 		);
 		
-	mypll2 : entity work.PLL
+	mypll2 : entity work.PLL2
 		port map (
 			inclk0 => clk_50,
-			c1 => sd2_clk
+			c1 => sdram2_clk
 		);
 
 	myleds : entity work.statusleds_pwm

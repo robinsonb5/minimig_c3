@@ -97,6 +97,7 @@ signal enacnt: std_logic_vector(6 downto 0);
 
 signal rs232_select : std_logic;
 signal rs232data : std_logic_vector(15 downto 0);
+signal slower : std_logic_vector(2 downto 0);
 
 begin
 
@@ -112,8 +113,20 @@ srom: entity work.OSDBootstrap
 		q		=> rom_data									--: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
     );
 
+-- Slow down accesses
+process(sysclk, cpuena)
+begin
+	if rising_edge(sysclk) then
+		slower<='0'&slower(2 downto 1);
+		if cpuena='1' then
+			slower<="111";
+		end if;	
+	end if;
+end process;
 
-memce <= '0' WHEN ROM_select='0' AND addr(23)='0' ELSE '1';
+--memce <= '0' WHEN ROM_select='0' AND addr(23)='0' ELSE '1';
+memce <= slower(0) WHEN ROM_select='0' AND addr(23)='0' ELSE '1';
+
 cpudata <=  rom_data WHEN ROM_select='1' ELSE 
 			IOdata WHEN IOcpuena='1' ELSE
 			part_in WHEN PART_select='1' ELSE 

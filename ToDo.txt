@@ -15,11 +15,12 @@ This would allow turbo-kickstart, turbo-chipram, turbo-slowram, etc.
 and the OSD processor's RAM to 0xa00000.  Mapping the fastram to 0x400000 would
 be more convenient, since it would leave the second 16 meg free.)
 
-Add write cache
+| Add write cache
+Add larger caches
 
 Add multi-slot capability to SDRAM controller.
 
-Add extra 16 meg of RAM (using addram if need be)
+| Add extra 16 meg of RAM (using addram if need be)
 
 Look at adding extra SPI devices; maybe allow proper direct SD card access, via an
 sdmmc.device
@@ -32,10 +33,17 @@ Check TG68K movem.l ,(ax) bug
 
 Try to simplify/speed up the TG68 ALU using hardware multipliers and div megafunc.
 
-Try out alternative sigma-delta arrangements to fix Gauntlet III noises.
+| Try out alternative sigma-delta arrangements to fix Gauntlet III noises.
 
 Explore the possibility of hardware assist for MP3 and JPEG decoding.
 
 Create a Chameleon toplevel.
 
 Add support for Graffiti modes.
+
+Hotswap for SD cards
+
+Add OSD processor configuration registers.  We don't really want platform-specific
+configuration details going to the general purpose chipset core.
+Move such things as Return to Chameleon, Fastmem config and Turbo Chipram enables
+to the cfide component.

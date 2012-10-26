@@ -90,7 +90,7 @@ VCCINT                       : 19        : power  :                   : 1.2V    
 GND                          : 20        : gnd    :                   :         :           :                
 misc_ios_1[1]                : 21        : output : 3.3-V LVTTL       :         : 1         : Y              
 aud_r                        : 22        : output : 3.3-V LVTTL       :         : 1         : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : 23        :        :                   :         : 1         :                
+~ALTERA_DCLK~ / RESERVED_INPUT : 23        : input  : 3.3-V LVTTL       :         : 1         : N              
 RESERVED_INPUT_WITH_WEAK_PULLUP : 24        :        :                   :         : 1         :                
 nCONFIG                      : 25        :        :                   :         : 1         :                
 altera_reserved_tdi          : 26        : input  : 3.3-V LVTTL       :         : 1         : N              
@@ -184,7 +184,7 @@ sd2_addr[0]                  : 113       : output : 3.3-V LVTTL       :         
 sd2_addr[10]                 : 114       : output : 3.3-V LVTTL       :         : 4         : Y              
 VCCINT                       : 115       : power  :                   : 1.2V    :           :                
 GND                          : 116       : gnd    :                   :         :           :                
-sd1_clk                      : 117       : output : 3.3-V LVTTL       :         : 4         : Y              
+sdram1_clk                   : 117       : output : 3.3-V LVTTL       :         : 4         : Y              
 sd2_addr[1]                  : 118       : output : 3.3-V LVTTL       :         : 4         : Y              
 sd2_addr[2]                  : 119       : output : 3.3-V LVTTL       :         : 4         : Y              
 sd2_addr[3]                  : 120       : output : 3.3-V LVTTL       :         : 4         : Y              
@@ -253,7 +253,7 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : 182       :        :                   :      
 sd_cs                        : 183       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[13]              : 184       : output : 3.3-V LVTTL       :         : 7         : Y              
 sd_mosi                      : 185       : output : 3.3-V LVTTL       :         : 7         : Y              
-sd2_clk                      : 186       : output : 3.3-V LVTTL       :         : 7         : Y              
+sdram2_clk                   : 186       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[12]              : 187       : output : 3.3-V LVTTL       :         : 7         : Y              
 sd_clk                       : 188       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[11]              : 189       : output : 3.3-V LVTTL       :         : 7         : Y              

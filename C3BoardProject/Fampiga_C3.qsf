@@ -58,71 +58,9 @@ set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "USE AS REGULAR IO
 set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
-set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
-set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
-set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to power_button
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[11]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[10]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[9]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[8]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[7]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[6]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[5]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[4]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[3]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[2]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[1]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_addr[0]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_ba[1]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_ba[0]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_cas
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_cke
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to sd1_clk
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_cs
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[7]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[6]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[5]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[4]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[3]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[2]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[1]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_data[0]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_dqm
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_ras
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd1_we
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[11]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[10]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[9]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[8]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[7]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[6]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[5]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[4]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[3]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[2]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[1]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_addr[0]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_ba[1]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_ba[0]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_cas
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_cke
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to sd2_clk
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_cs
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[7]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[6]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[5]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[4]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[3]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[2]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[1]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_data[0]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_dqm
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_ras
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to sd2_we
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH 400 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name ENABLE_SIGNALTAP ON
@@ -144,45 +82,7 @@ set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL_PIP
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ENABLE_ADVANCED_TRIGGER=0" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SEGMENT_SIZE=1024" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SAMPLE_DEPTH=1024" -section_id auto_signaltap_0
-set_global_assignment -name VHDL_FILE ../RTL/cfide.vhd
-set_global_assignment -name SDC_FILE constraints.sdc
-set_global_assignment -name VHDL_FILE ../RTL/Debounce.vhd
-set_global_assignment -name BDF_FILE ../RTL/fampiga_top.bdf
-set_global_assignment -name VHDL_FILE ../RTL/sdram.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68K.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68K_ALU.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68K_Pack.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68KdotC_Kernel.vhd
-set_global_assignment -name VERILOG_FILE ../RTL/Bitplanes.v
-set_global_assignment -name VERILOG_FILE ../RTL/Blitter.v
-set_global_assignment -name VERILOG_FILE ../RTL/CIA8520.v
-set_global_assignment -name VERILOG_FILE ../RTL/Minimig1.v
-set_global_assignment -name VERILOG_FILE ../RTL/Amber.v
-set_global_assignment -name VERILOG_FILE ../RTL/Clock.v
-set_global_assignment -name VERILOG_FILE ../RTL/Sprites.v
-set_global_assignment -name VERILOG_FILE ../RTL/PS2Keyboard.v
-set_global_assignment -name VERILOG_FILE ../RTL/ActionReplay3.v
-set_global_assignment -name VERILOG_FILE ../RTL/Paula.v
-set_global_assignment -name VERILOG_FILE ../RTL/Copper.v
-set_global_assignment -name VERILOG_FILE ../RTL/Beamcounter.v
-set_global_assignment -name VERILOG_FILE ../RTL/Agnus.v
-set_global_assignment -name VERILOG_FILE ../RTL/Gary.v
-set_global_assignment -name VERILOG_FILE ../RTL/Audio.v
-set_global_assignment -name VERILOG_FILE ../RTL/Denise.v
-set_global_assignment -name VERILOG_FILE ../RTL/BootRom.v
-set_global_assignment -name VERILOG_FILE ../RTL/Gayle.v
-set_global_assignment -name VERILOG_FILE ../RTL/Userio.v
-set_global_assignment -name VERILOG_FILE ../RTL/Floppy.v
-set_global_assignment -name VHDL_FILE ../C3BoardRTL/statusleds_pwm.vhd
-set_global_assignment -name VHDL_FILE ../C3BoardRTL/poweronreset.vhd
-set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/PLL.qip
-set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/JBBoot.qip
-set_global_assignment -name SIGNALTAP_FILE stp1.stp
-set_global_assignment -name QIP_FILE ../C3BoardRTL/OSDBootstrap.qip
-set_global_assignment -name VHDL_FILE ../C3BoardRTL/C3BoardToplevel.vhd
-set_global_assignment -name VHDL_FILE ../RTL/Fampiga.vhd
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to "PLL:mypll|altpll:altpll_component|clk[0]" -section_id auto_signaltap_0
-set_global_assignment -name TEXT_FILE ../ToDo.txt
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[0] -to "Fampiga:myFampiga|Minimig1:MyMinimig|cpu_address[10]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[1] -to "Fampiga:myFampiga|Minimig1:MyMinimig|cpu_address[11]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[2] -to "Fampiga:myFampiga|Minimig1:MyMinimig|cpu_address[12]" -section_id auto_signaltap_0
@@ -335,12 +235,33 @@ set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[72] -t
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[73] -to "Fampiga:myFampiga|TG68K:MainCPU|addr[7]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[74] -to "Fampiga:myFampiga|TG68K:MainCPU|addr[8]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[75] -to "Fampiga:myFampiga|TG68K:MainCPU|addr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[76] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[77] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[78] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[79] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[80] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[81] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[5]" -section_id auto_signaltap_0
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to vga_scandbl
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE BALANCED
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name FITTER_EARLY_TIMING_ESTIMATE_MODE REALISTIC
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name AUTO_MERGE_PLLS OFF
+set_global_assignment -name CYCLONEIII_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name FORCE_CONFIGURATION_VCCIO ON
+set_global_assignment -name ENABLE_DRC_SETTINGS OFF
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION AUTO
+set_global_assignment -name FITTER_EFFORT "AUTO FIT"
+set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
+set_global_assignment -name AUTO_DELAY_CHAINS OFF
+set_global_assignment -name REMOVE_DUPLICATE_REGISTERS ON
+set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[76] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[77] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[78] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[79] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[80] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[81] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[5]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[82] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[0]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[83] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[10]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[84] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[11]" -section_id auto_signaltap_0
@@ -373,95 +294,12 @@ set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[110
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[111] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[7]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[112] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[8]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[113] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[114] -to "Fampiga:myFampiga|cfide:mycfide|addr[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[115] -to "Fampiga:myFampiga|cfide:mycfide|addr[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[116] -to "Fampiga:myFampiga|cfide:mycfide|addr[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[117] -to "Fampiga:myFampiga|cfide:mycfide|addr[12]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[118] -to "Fampiga:myFampiga|cfide:mycfide|addr[13]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[119] -to "Fampiga:myFampiga|cfide:mycfide|addr[14]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[120] -to "Fampiga:myFampiga|cfide:mycfide|addr[15]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[121] -to "Fampiga:myFampiga|cfide:mycfide|addr[16]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[122] -to "Fampiga:myFampiga|cfide:mycfide|addr[17]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[123] -to "Fampiga:myFampiga|cfide:mycfide|addr[18]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[124] -to "Fampiga:myFampiga|cfide:mycfide|addr[19]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[125] -to "Fampiga:myFampiga|cfide:mycfide|addr[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[126] -to "Fampiga:myFampiga|cfide:mycfide|addr[20]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[127] -to "Fampiga:myFampiga|cfide:mycfide|addr[21]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[128] -to "Fampiga:myFampiga|cfide:mycfide|addr[22]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[129] -to "Fampiga:myFampiga|cfide:mycfide|addr[23]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[130] -to "Fampiga:myFampiga|cfide:mycfide|addr[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[131] -to "Fampiga:myFampiga|cfide:mycfide|addr[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[132] -to "Fampiga:myFampiga|cfide:mycfide|addr[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[133] -to "Fampiga:myFampiga|cfide:mycfide|addr[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[134] -to "Fampiga:myFampiga|cfide:mycfide|addr[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[135] -to "Fampiga:myFampiga|cfide:mycfide|addr[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[136] -to "Fampiga:myFampiga|cfide:mycfide|addr[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[137] -to "Fampiga:myFampiga|cfide:mycfide|addr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[138] -to "Fampiga:myFampiga|cfide:mycfide|scs[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[139] -to "Fampiga:myFampiga|cfide:mycfide|scs[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[140] -to "Fampiga:myFampiga|cfide:mycfide|scs[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[141] -to "Fampiga:myFampiga|cfide:mycfide|scs[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[142] -to "Fampiga:myFampiga|cfide:mycfide|scs[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[143] -to "Fampiga:myFampiga|cfide:mycfide|scs[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[144] -to "Fampiga:myFampiga|cfide:mycfide|scs[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[145] -to "Fampiga:myFampiga|cfide:mycfide|scs[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[146] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[147] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[148] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[149] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[150] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[151] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[152] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[153] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[154] -to "Fampiga:myFampiga|sdr_addr[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[155] -to "Fampiga:myFampiga|sdr_addr[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[156] -to "Fampiga:myFampiga|sdr_addr[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[157] -to "Fampiga:myFampiga|sdr_addr[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[158] -to "Fampiga:myFampiga|sdr_addr[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[159] -to "Fampiga:myFampiga|sdr_addr[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[160] -to "Fampiga:myFampiga|sdr_addr[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[161] -to "Fampiga:myFampiga|sdr_addr[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[162] -to "Fampiga:myFampiga|sdr_addr[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[163] -to "Fampiga:myFampiga|sdr_addr[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[164] -to "Fampiga:myFampiga|sdr_addr[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[165] -to "Fampiga:myFampiga|sdr_addr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[166] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[167] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[168] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[12]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[169] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[13]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[170] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[14]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[171] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[15]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[172] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[16]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[173] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[17]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[174] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[18]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[175] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[19]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[176] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[177] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[20]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[178] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[21]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[179] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[22]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[180] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[23]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[181] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[24]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[182] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[25]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[183] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[26]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[184] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[27]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[185] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[28]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[186] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[29]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[187] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[188] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[30]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[189] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[31]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[190] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[191] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[192] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[193] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[194] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[195] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[196] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[76] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[77] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[78] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[79] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[80] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[81] -to "Fampiga:myFampiga|TG68K:MainCPU|memcfg[5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[76] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[77] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[78] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[79] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[80] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[81] -to "Fampiga:myFampiga|TG68K:MainCPU|cpustate[5]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[82] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[0]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[83] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[10]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[84] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[11]" -section_id auto_signaltap_0
@@ -494,136 +332,279 @@ set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[110] -
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[111] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[7]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[112] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[8]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[113] -to "Fampiga:myFampiga|TG68K:MainCPU|ramaddr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[114] -to "Fampiga:myFampiga|cfide:mycfide|addr[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[115] -to "Fampiga:myFampiga|cfide:mycfide|addr[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[116] -to "Fampiga:myFampiga|cfide:mycfide|addr[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[117] -to "Fampiga:myFampiga|cfide:mycfide|addr[12]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[118] -to "Fampiga:myFampiga|cfide:mycfide|addr[13]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[119] -to "Fampiga:myFampiga|cfide:mycfide|addr[14]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[120] -to "Fampiga:myFampiga|cfide:mycfide|addr[15]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[121] -to "Fampiga:myFampiga|cfide:mycfide|addr[16]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[122] -to "Fampiga:myFampiga|cfide:mycfide|addr[17]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[123] -to "Fampiga:myFampiga|cfide:mycfide|addr[18]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[124] -to "Fampiga:myFampiga|cfide:mycfide|addr[19]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[125] -to "Fampiga:myFampiga|cfide:mycfide|addr[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[126] -to "Fampiga:myFampiga|cfide:mycfide|addr[20]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[127] -to "Fampiga:myFampiga|cfide:mycfide|addr[21]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[128] -to "Fampiga:myFampiga|cfide:mycfide|addr[22]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[129] -to "Fampiga:myFampiga|cfide:mycfide|addr[23]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[130] -to "Fampiga:myFampiga|cfide:mycfide|addr[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[131] -to "Fampiga:myFampiga|cfide:mycfide|addr[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[132] -to "Fampiga:myFampiga|cfide:mycfide|addr[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[133] -to "Fampiga:myFampiga|cfide:mycfide|addr[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[134] -to "Fampiga:myFampiga|cfide:mycfide|addr[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[135] -to "Fampiga:myFampiga|cfide:mycfide|addr[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[136] -to "Fampiga:myFampiga|cfide:mycfide|addr[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[137] -to "Fampiga:myFampiga|cfide:mycfide|addr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[138] -to "Fampiga:myFampiga|cfide:mycfide|scs[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[139] -to "Fampiga:myFampiga|cfide:mycfide|scs[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[140] -to "Fampiga:myFampiga|cfide:mycfide|scs[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[141] -to "Fampiga:myFampiga|cfide:mycfide|scs[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[142] -to "Fampiga:myFampiga|cfide:mycfide|scs[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[143] -to "Fampiga:myFampiga|cfide:mycfide|scs[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[144] -to "Fampiga:myFampiga|cfide:mycfide|scs[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[145] -to "Fampiga:myFampiga|cfide:mycfide|scs[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[146] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[147] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[148] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[149] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[150] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[151] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[152] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[153] -to "Fampiga:myFampiga|cfide:mycfide|sd_cs[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[154] -to "Fampiga:myFampiga|sdr_addr[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[155] -to "Fampiga:myFampiga|sdr_addr[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[156] -to "Fampiga:myFampiga|sdr_addr[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[157] -to "Fampiga:myFampiga|sdr_addr[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[158] -to "Fampiga:myFampiga|sdr_addr[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[159] -to "Fampiga:myFampiga|sdr_addr[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[160] -to "Fampiga:myFampiga|sdr_addr[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[161] -to "Fampiga:myFampiga|sdr_addr[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[162] -to "Fampiga:myFampiga|sdr_addr[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[163] -to "Fampiga:myFampiga|sdr_addr[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[164] -to "Fampiga:myFampiga|sdr_addr[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[165] -to "Fampiga:myFampiga|sdr_addr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[166] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[167] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[168] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[12]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[169] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[13]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[170] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[14]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[171] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[15]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[172] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[16]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[173] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[17]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[174] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[18]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[175] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[19]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[176] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[177] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[20]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[178] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[21]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[179] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[22]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[180] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[23]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[181] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[24]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[182] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[25]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[183] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[26]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[184] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[27]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[185] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[28]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[186] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[29]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[187] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[188] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[30]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[189] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[31]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[190] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[191] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[192] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[193] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[194] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[195] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[196] -to "Fampiga:myFampiga|sdram:mysdram|casaddr[9]" -section_id auto_signaltap_0
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to vga_scandbl
-set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
-set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[197] -to "Fampiga:myFampiga|sdram:mysdram|sdata[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[198] -to "Fampiga:myFampiga|sdram:mysdram|sdata[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[199] -to "Fampiga:myFampiga|sdram:mysdram|sdata[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[200] -to "Fampiga:myFampiga|sdram:mysdram|sdata[12]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[201] -to "Fampiga:myFampiga|sdram:mysdram|sdata[13]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[202] -to "Fampiga:myFampiga|sdram:mysdram|sdata[14]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[203] -to "Fampiga:myFampiga|sdram:mysdram|sdata[15]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[204] -to "Fampiga:myFampiga|sdram:mysdram|sdata[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[205] -to "Fampiga:myFampiga|sdram:mysdram|sdata[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[206] -to "Fampiga:myFampiga|sdram:mysdram|sdata[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[207] -to "Fampiga:myFampiga|sdram:mysdram|sdata[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[208] -to "Fampiga:myFampiga|sdram:mysdram|sdata[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[209] -to "Fampiga:myFampiga|sdram:mysdram|sdata[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[210] -to "Fampiga:myFampiga|sdram:mysdram|sdata[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[211] -to "Fampiga:myFampiga|sdram:mysdram|sdata[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[212] -to "Fampiga:myFampiga|sdram:mysdram|sdata[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[213] -to sd1_cas -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[214] -to sd1_ras -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[215] -to sd2_cas -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[216] -to sd2_ras -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[197] -to "Fampiga:myFampiga|sdram:mysdram|sdata[0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[198] -to "Fampiga:myFampiga|sdram:mysdram|sdata[10]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[199] -to "Fampiga:myFampiga|sdram:mysdram|sdata[11]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[200] -to "Fampiga:myFampiga|sdram:mysdram|sdata[12]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[201] -to "Fampiga:myFampiga|sdram:mysdram|sdata[13]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[202] -to "Fampiga:myFampiga|sdram:mysdram|sdata[14]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[203] -to "Fampiga:myFampiga|sdram:mysdram|sdata[15]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[204] -to "Fampiga:myFampiga|sdram:mysdram|sdata[1]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[205] -to "Fampiga:myFampiga|sdram:mysdram|sdata[2]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[206] -to "Fampiga:myFampiga|sdram:mysdram|sdata[3]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[207] -to "Fampiga:myFampiga|sdram:mysdram|sdata[4]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[208] -to "Fampiga:myFampiga|sdram:mysdram|sdata[5]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[209] -to "Fampiga:myFampiga|sdram:mysdram|sdata[6]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[210] -to "Fampiga:myFampiga|sdram:mysdram|sdata[7]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[211] -to "Fampiga:myFampiga|sdram:mysdram|sdata[8]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[212] -to "Fampiga:myFampiga|sdram:mysdram|sdata[9]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[213] -to sd1_cas -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[214] -to sd1_ras -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[215] -to sd2_cas -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[216] -to sd2_ras -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=217" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=217" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=675" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_LOWORD=57953" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_HIWORD=2957" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[114] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[115] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[10]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[116] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[11]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[117] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[12]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[118] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[13]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[119] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[14]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[120] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[15]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[121] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[16]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[122] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[17]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[123] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[18]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[124] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[19]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[125] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[126] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[20]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[127] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[21]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[128] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[22]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[129] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[23]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[130] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[24]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[131] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[25]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[132] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[26]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[133] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[27]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[134] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[28]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[135] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[29]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[136] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[137] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[30]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[138] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[31]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[139] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[140] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[141] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[142] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[6]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[143] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[7]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[144] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[8]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[145] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[9]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[146] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|clkena_in" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[147] -to "Fampiga:myFampiga|cfide:mycfide|cpuena" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[148] -to "Fampiga:myFampiga|cfide:mycfide|enaWRreg" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[149] -to "Fampiga:myFampiga|sdr_addr[0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[150] -to "Fampiga:myFampiga|sdr_addr[10]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[151] -to "Fampiga:myFampiga|sdr_addr[11]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[152] -to "Fampiga:myFampiga|sdr_addr[1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[153] -to "Fampiga:myFampiga|sdr_addr[2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[154] -to "Fampiga:myFampiga|sdr_addr[3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[155] -to "Fampiga:myFampiga|sdr_addr[4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[156] -to "Fampiga:myFampiga|sdr_addr[5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[157] -to "Fampiga:myFampiga|sdr_addr[6]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[158] -to "Fampiga:myFampiga|sdr_addr[7]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[159] -to "Fampiga:myFampiga|sdr_addr[8]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[160] -to "Fampiga:myFampiga|sdr_addr[9]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[114] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[115] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[10]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[116] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[11]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[117] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[12]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[118] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[13]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[119] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[14]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[120] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[15]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[121] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[16]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[122] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[17]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[123] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[18]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[124] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[19]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[125] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[126] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[20]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[127] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[21]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[128] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[22]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[129] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[23]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[130] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[24]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[131] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[25]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[132] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[26]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[133] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[27]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[134] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[28]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[135] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[29]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[136] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[137] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[30]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[138] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[31]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[139] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[140] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[141] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[142] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[6]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[143] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[7]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[144] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[8]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[145] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|addr[9]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[146] -to "Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|clkena_in" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[147] -to "Fampiga:myFampiga|cfide:mycfide|cpuena" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[148] -to "Fampiga:myFampiga|cfide:mycfide|enaWRreg" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[149] -to "Fampiga:myFampiga|sdr_addr[0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[150] -to "Fampiga:myFampiga|sdr_addr[10]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[151] -to "Fampiga:myFampiga|sdr_addr[11]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[152] -to "Fampiga:myFampiga|sdr_addr[1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[153] -to "Fampiga:myFampiga|sdr_addr[2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[154] -to "Fampiga:myFampiga|sdr_addr[3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[155] -to "Fampiga:myFampiga|sdr_addr[4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[156] -to "Fampiga:myFampiga|sdr_addr[5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[157] -to "Fampiga:myFampiga|sdr_addr[6]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[158] -to "Fampiga:myFampiga|sdr_addr[7]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[159] -to "Fampiga:myFampiga|sdr_addr[8]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[160] -to "Fampiga:myFampiga|sdr_addr[9]" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=161" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=161" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=507" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_LOWORD=29480" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_HIWORD=6337" -section_id auto_signaltap_0
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[11]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[10]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[9]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[8]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[7]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[6]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[5]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[4]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[3]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[2]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_addr[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_ba[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_ba[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_cas
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_cke
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_cs
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[7]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[6]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[5]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[4]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[3]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[2]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_data[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_dqm
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_ras
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd1_we
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[11]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[10]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[9]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[8]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[7]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[6]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[5]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[4]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[3]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[2]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_addr[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_ba[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_ba[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_cas
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_cke
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_cs
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[7]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[6]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[5]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[4]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[3]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[2]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_data[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_dqm
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_ras
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd2_we
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd_clk
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sd_mosi
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sdram1_clk
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to sdram2_clk
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[11]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[10]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[9]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[8]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[7]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[6]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[5]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[4]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[3]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[2]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[1]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_addr[0]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_ba[1]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_ba[0]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_cas
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_cke
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_cs
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[7]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[6]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[5]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[4]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[3]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[2]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[1]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_data[0]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_dqm
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_ras
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd1_we
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[11]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[10]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[9]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[8]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[7]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[6]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[5]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[4]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[3]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[2]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[1]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_addr[0]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_ba[1]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_ba[0]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_cas
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_cke
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_cs
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[7]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[6]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[5]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[4]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[3]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[2]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[1]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_data[0]
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_dqm
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_ras
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd2_we
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd_clk
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sd_mosi
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sdram1_clk
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to sdram2_clk
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[7]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[6]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[5]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[4]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[3]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[2]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[1]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd1_data[0]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[7]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[6]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[5]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[4]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[3]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[2]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[1]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[0]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd_miso
+set_global_assignment -name VHDL_FILE ../RTL/cfide.vhd
+set_global_assignment -name VHDL_FILE ../RTL/Debounce.vhd
+set_global_assignment -name BDF_FILE ../RTL/fampiga_top.bdf
+set_global_assignment -name VHDL_FILE ../RTL/sdram.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68K.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68K_ALU.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68K_Pack.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68KdotC_Kernel.vhd
+set_global_assignment -name VERILOG_FILE ../RTL/Bitplanes.v
+set_global_assignment -name VERILOG_FILE ../RTL/Blitter.v
+set_global_assignment -name VERILOG_FILE ../RTL/CIA8520.v
+set_global_assignment -name VERILOG_FILE ../RTL/Minimig1.v
+set_global_assignment -name VERILOG_FILE ../RTL/Amber.v
+set_global_assignment -name VERILOG_FILE ../RTL/Clock.v
+set_global_assignment -name VERILOG_FILE ../RTL/Sprites.v
+set_global_assignment -name VERILOG_FILE ../RTL/PS2Keyboard.v
+set_global_assignment -name VERILOG_FILE ../RTL/ActionReplay3.v
+set_global_assignment -name VERILOG_FILE ../RTL/Paula.v
+set_global_assignment -name VERILOG_FILE ../RTL/Copper.v
+set_global_assignment -name VERILOG_FILE ../RTL/Beamcounter.v
+set_global_assignment -name VERILOG_FILE ../RTL/Agnus.v
+set_global_assignment -name VERILOG_FILE ../RTL/Gary.v
+set_global_assignment -name VERILOG_FILE ../RTL/Audio.v
+set_global_assignment -name VERILOG_FILE ../RTL/Denise.v
+set_global_assignment -name VERILOG_FILE ../RTL/BootRom.v
+set_global_assignment -name VERILOG_FILE ../RTL/Gayle.v
+set_global_assignment -name VERILOG_FILE ../RTL/Userio.v
+set_global_assignment -name VERILOG_FILE ../RTL/Floppy.v
+set_global_assignment -name VHDL_FILE ../C3BoardRTL/statusleds_pwm.vhd
+set_global_assignment -name VHDL_FILE ../C3BoardRTL/poweronreset.vhd
+set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/PLL.qip
+set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/JBBoot.qip
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
+set_global_assignment -name QIP_FILE ../C3BoardRTL/OSDBootstrap.qip
+set_global_assignment -name VHDL_FILE ../C3BoardRTL/C3BoardToplevel.vhd
+set_global_assignment -name VHDL_FILE ../RTL/Fampiga.vhd
+set_global_assignment -name TEXT_FILE ../ToDo.txt
+set_global_assignment -name QIP_FILE PLL2.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
