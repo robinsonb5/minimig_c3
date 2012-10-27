@@ -38,6 +38,9 @@
 
 #define SPIN (*(volatile unsigned short *)0xDEE010)	// Waste a few cycles to let the FPGA catch up
 
+#define PLATFORM (*(volatile unsigned short *)0xda4010) // A 16-bit register for platform-specific config.
+
+
 // static inline unsigned char SPI(unsigned char o)
 //{	
 //	volatile unsigned char *ptr = (volatile unsigned char *)0xda4000;

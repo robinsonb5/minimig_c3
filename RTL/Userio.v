@@ -65,6 +65,9 @@
 // 2011-04-10   - add cpu and fastmem config   
 // 2012-01-07   - add Joystick 1-4 and AMIGA mice 1+2 and AMIGA Keybord for Chameleon Docking Station   
 
+// AMR
+// 2012-10-27   - Made scanline 4-bits wide, allowing for separate laced / normal settings.
+
 module userio
 (
 	input 	clk,		    		// bus clock
@@ -102,7 +105,7 @@ module userio
 	output	[5:0] memory_config,
 	output	[3:0] chipset_config,
 	output	[3:0] floppy_config,
-	output	[1:0] scanline,
+	output	[3:0] scanline,
 	output	[2:0] ide_config,
 	output	[1:0] cpu_config,
 	output	usrrst,					// user reset from osd module
@@ -390,7 +393,7 @@ module osd
 	output	reg [5:0] memory_config = 0,
 	output	reg [3:0] chipset_config = 0,
 	output	reg [3:0] floppy_config = 0,
-	output	reg [1:0] scanline = 0,
+	output	reg [3:0] scanline = 0,
 	output	reg	[2:0] ide_config = 0,		// enable hard disk support
 	output	reg [1:0] cpu_config = 0,
 	output	reg [1:0] autofire_config = 0,
@@ -564,7 +567,7 @@ always @(posedge clk)
 // scanline mode
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:4]==4'b1010)
-		scanline <= wrdat[1:0];
+		scanline <= wrdat[3:0];
 		
 // hdd config
 always @(posedge clk)

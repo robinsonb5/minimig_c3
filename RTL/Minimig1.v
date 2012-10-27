@@ -138,6 +138,10 @@
 // 2011-04-10	- added readable VPOSW and VHPOSW register (fix for RSI slideshow)
 // 11-04-2011	- autofire function toggle able via capslock / led status
 
+// AMR:
+// 2012-10-27  - made scanline 4 bits wide, and toggled which bits are fed to amber
+//					  based on the laced signal.
+
 module Minimig1
 (
 	// m68k pins
@@ -348,7 +352,7 @@ wire	usrrst;					// user reset from osd interface
 wire	bootrst;				// user reset to bootloader
 wire	[1:0] lr_filter;		// lowres interpolation filter mode: bit 0 - horizontal, bit 1 - vertical
 wire	[1:0] hr_filter;		// hires interpolation filter mode: bit 0 - horizontal, bit 1 - vertical
-wire	[1:0] scanline;			// scanline effect configuration
+wire	[3:0] scanline;			// scanline effect configuration
 wire	hires;					// hires signal from Denise for interpolation filter enable in Amber
 wire	aron;					// Action Replay is enabled
 wire	cpu_speed;				// requests CPU to switch speed mode
@@ -454,6 +458,8 @@ assign init_b = (vsync_t);
 // Disabled Action Replay
 assign ovr=1'b0;
 
+wire lace;
+
 //--------------------------------------------------------------------------------------
 
 // instantiate agnus
@@ -494,7 +500,8 @@ Agnus AGNUS1
 	.a1k(chipset_config[2]),
 	.ecs(chipset_config[3]),
 	.floppy_speed(floppy_config[0]),
-	.turbo(turbo)
+	.turbo(turbo),
+	.lace(lace)
 );
 
 // instantiate paula
@@ -634,7 +641,7 @@ Amber AMBER1
 	.dblscan(n_15khz),
 	.lr_filter(lr_filter),
 	.hr_filter(hr_filter),
-	.scanline(scanline),
+	.scanline(lace ? scanline[3:2] : scanline[1:0]),
 	.htotal(htotal),
 	.hires(hires),
 	.osd_blank(osd_blank),

@@ -689,6 +689,7 @@ void ConfigMemory(unsigned char memory)
     SPI(OSDCMDCFGMEM | 0x04 | ((memory>>2) & 0x03));	//slow
     DisableOsd();
     EnableOsd();
+	// FIXME - certain options are platform-specific and don't involve the core.  Need a new hardware register for these.
     SPI(OSDCMDCFGMEM | 0x08 | ((memory>>4) & 0x03));	//fast
     DisableOsd();
     EnableOsd();

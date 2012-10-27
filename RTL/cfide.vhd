@@ -212,47 +212,56 @@ end process;
 		ELSIF (sysclk'event AND sysclk='1') THEN
 		IF enaWRreg='1' THEN
 			IF SPI_select='1' AND state="11" AND SD_busy='0' THEN	 --SD write
-				IF addr(3)='1' THEN				--DA4008
-					spi_speed <= cpudata_in(7 downto 0);
-				ELSIF addr(2)='1' THEN				--DA4004
-					scs(0) <= not cpudata_in(0);
-					IF cpudata_in(7)='1' THEN
-						scs(7) <= not cpudata_in(0);
-					END IF;
-					IF cpudata_in(6)='1' THEN
-						scs(6) <= not cpudata_in(0);
-					END IF;
-					IF cpudata_in(5)='1' THEN
-						scs(5) <= not cpudata_in(0);
-					END IF;
-					IF cpudata_in(4)='1' THEN
-						scs(4) <= not cpudata_in(0);
-					END IF;
-					IF cpudata_in(3)='1' THEN
-						scs(3) <= not cpudata_in(0);
-					END IF;
-					IF cpudata_in(2)='1' THEN
-						scs(2) <= not cpudata_in(0);
-					END IF;
-					IF cpudata_in(1)='1' THEN
-						scs(1) <= not cpudata_in(0);
-					END IF;
-				ELSE							--DA4000
-					spi_div <= spi_speed;
-					sd_out <= cpudata_in(15 downto 0);
-					IF scs(6)='1' THEN		-- SPI direkt Mode
-						shiftcnt <= "10111111111111";
-						sd_out <= "1111111111111111";
-					ELSIF uds='0' AND lds='0' THEN
-						shiftcnt <= "10000000001111";
-					ELSE
-						shiftcnt <= "10000000000111";
-						IF lds='0' THEN
-							sd_out(15 downto 8) <= cpudata_in(7 downto 0);
+				case addr(4 downto 0) is
+					when "10000" => -- DA4010, platform-specific register
+						
+					when "01000" =>
+--						IF addr(3)='1' THEN				--DA4008
+						spi_speed <= cpudata_in(7 downto 0);
+					when "00100" =>
+--						ELSIF addr(2)='1' THEN				--DA4004
+						scs(0) <= not cpudata_in(0);
+						IF cpudata_in(7)='1' THEN
+							scs(7) <= not cpudata_in(0);
 						END IF;
-					END IF;
-					sck <= '1';
-				END IF;
+						IF cpudata_in(6)='1' THEN
+							scs(6) <= not cpudata_in(0);
+						END IF;
+						IF cpudata_in(5)='1' THEN
+							scs(5) <= not cpudata_in(0);
+						END IF;
+						IF cpudata_in(4)='1' THEN
+							scs(4) <= not cpudata_in(0);
+						END IF;
+						IF cpudata_in(3)='1' THEN
+							scs(3) <= not cpudata_in(0);
+						END IF;
+						IF cpudata_in(2)='1' THEN
+							scs(2) <= not cpudata_in(0);
+						END IF;
+						IF cpudata_in(1)='1' THEN
+							scs(1) <= not cpudata_in(0);
+						END IF;
+					when "00000" =>
+--						ELSE							--DA4000
+						spi_div <= spi_speed;
+						sd_out <= cpudata_in(15 downto 0);
+						IF scs(6)='1' THEN		-- SPI direkt Mode
+							shiftcnt <= "10111111111111";
+							sd_out <= "1111111111111111";
+						ELSIF uds='0' AND lds='0' THEN
+							shiftcnt <= "10000000001111";
+						ELSE
+							shiftcnt <= "10000000000111";
+							IF lds='0' THEN
+								sd_out(15 downto 8) <= cpudata_in(7 downto 0);
+							END IF;
+						END IF;
+						sck <= '1';
+					when others =>
+						null;
+				end case;
+--				END IF;
 			ELSE
 				IF spi_div="00000000" THEN
 					spi_div <= spi_speed;
