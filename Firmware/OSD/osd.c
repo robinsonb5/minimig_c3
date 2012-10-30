@@ -666,12 +666,13 @@ void OsdReset(unsigned char boot)
     DisableOsd();
 }
 
-void OsdReconfig()
-{
-	EnableOsd();
-	SPI(OSDCMDRECONFIG);
-	DisableOsd();
-}
+//void OsdReconfig()
+//{
+//	EnableOsd();
+//	SPI(OSDCMDRECONFIG);
+//	DisableOsd();
+//}
+
 
 void ConfigFilter(unsigned char lores, unsigned char hires)
 {
@@ -679,6 +680,7 @@ void ConfigFilter(unsigned char lores, unsigned char hires)
     SPI(OSDCMDCFGFLT | ((hires & 0x03) << 2) | (lores & 0x03));
     DisableOsd();
 }
+
 
 void ConfigMemory(unsigned char memory)
 {
