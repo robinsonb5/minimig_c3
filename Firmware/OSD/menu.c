@@ -1103,7 +1103,7 @@ void HandleUI(void)
         strcat(s, config_memory_slow_msg[config.memory >> 2 & 0x03]);
         OsdWrite(2, s, menusub == 1,0);
         strcpy(s, "        Fast : ");
-        strcat(s, config_memory_fast_msg[config.memory >> 4 & 0x03]);
+        strcat(s, config_memory_fast_msg[config.fastram & 0x03]);
         OsdWrite(3, s, menusub == 2,0);
 
 		if(PLATFORM&(1<<PLATFORM_TURBOCHIP))
@@ -1135,7 +1135,7 @@ void HandleUI(void)
 		else
 		{
 	        OsdWrite(6, "", 0,0);
-			menumask&=0xef;	// Remove bit 4
+			menumask&=0xdf;	// Remove bit 5
 		}
 
         OsdWrite(7, STD_EXIT, menusub == 6,0);
@@ -1160,13 +1160,13 @@ void HandleUI(void)
             }
             else if (menusub == 2)
             {
-                config.memory = ((config.memory + 0x10) & 0x30) | (config.memory & ~0x30);
+                config.fastram = ((config.fastram + 0x1) & 0x3) | (config.fastram & ~0x3);
 //                if ((config.memory & 0x30) == 0x30)
 //					config.memory -= 0x30;
 //				if (!(config.disable_ar3 & 0x01)&&(config.memory & 0x20))
 //                    config.memory &= ~0x30;
                 menustate = MENU_SETTINGS_MEMORY1;
-                ConfigMemory(config.memory);
+                ConfigFastRAM(config.fastram);
             }
             else if (menusub == 3)
             {
@@ -1516,7 +1516,7 @@ void HandleUI(void)
 
      // check if hardfile configuration has changed
     case MENU_HARDFILE_EXIT :
-
+		// FIXME - check enabled bit here too.
          if (memcmp(config.hardfile, t_hardfile, sizeof(t_hardfile)) != 0)
          {
              menustate = MENU_HARDFILE_CHANGED1;
