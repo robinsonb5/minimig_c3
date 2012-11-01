@@ -90,9 +90,11 @@ signal mm_ram_oe : std_logic;
 		-- Config
 
 signal cpu_config : std_logic_vector(1 downto 0);
-signal mem_config : std_logic_vector(5 downto 0);
+signal mem_config : std_logic_vector(3 downto 0);
 signal sdram_ready : std_logic;
 signal cpu_ena : std_logic;
+signal turbochipram : std_logic;
+signal fastramsize : std_logic_vector(1 downto 0);
 
 		-- TG68 signals
 signal wrd : std_logic;
@@ -173,7 +175,7 @@ COMPONENT Minimig1
 		aud_l		:	 OUT STD_LOGIC;
 		aud_r		:	 OUT STD_LOGIC;
 		cpu_config		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-		memcfg		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
+		memcfg		:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		drv_snd		:	 OUT STD_LOGIC;
 		floppyled		:	 OUT STD_LOGIC;
 		init_b		:	 OUT STD_LOGIC;
@@ -330,9 +332,10 @@ MainCPU: entity work.TG68K
       fromram => cpu_data_from_ram,
       ramready => cpu_ena,	-- dtack equivalent for fastram access 
       cpu => cpu_config,
-      memcfg => mem_config,
       ramaddr => cpu_ramaddr,
       cpustate => cpustate,
+		turbochipram => turbochipram,
+		fastramcfg => fastramsize,
 
 		nResetOut => maincpuready,
       skipFetch => open,
@@ -418,7 +421,9 @@ mycfide : entity work.cfide
 		sd_dimm => sd_miso,
 		enaWRreg => enaWRreg,
 		debugTxD => rs232_txd,
-		debugRxD => rs232_rxd
+		debugRxD => rs232_rxd,
+		fastramsize => fastramsize,
+		turbochipram => turbochipram
    );
 
 myhostcpu : entity work.TG68KdotC_Kernel

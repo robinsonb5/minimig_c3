@@ -49,7 +49,9 @@ entity cfide is
 		sd_dimm		: in std_logic;		--for sdcard
 		enaWRreg    : in std_logic:='1';
 		debugTxD : out std_logic;
-		debugRxD : in std_logic
+		debugRxD : in std_logic;
+		fastramsize : out std_logic_vector(1 downto 0);
+		turbochipram : out std_logic
    );
 
 end cfide;
@@ -133,7 +135,9 @@ cpudata <=  rom_data WHEN ROM_select='1' ELSE
 			memdata_in;
 part_in <= 
 			timecnt WHEN addr(4 downto 1)="1000" ELSE	--DEE010
-			"XXXXXXXX"&"1"&"0000001";-- WHEN addr(4 downto 1)="1001" ELSE	--DEE012
+			"XXXXXXXX"&"1"&"0000001" WHEN addr(4 downto 1)="1001" ELSE	--DEE012
+			"XXXX"&"00000001"&"0101"; -- Reconfig supported, Turbo Chipram supported, 32 meg of RAM
+				--  WHEN addr(4 downto 1)="1010" ELSE	--DEE014
 			
 IOdata <= sd_in;			
 
@@ -152,6 +156,34 @@ rs232_select <= '1' when addr(23 downto 12)=X"DA8" ELSE '0';
 KEY_select <= '1' when addr(23 downto 12)=X"DE0" ELSE '0';
 PART_select <= '1' when addr(23 downto 12)=X"DEE" ELSE '0';
 SPI_select <= '1' when addr(23 downto 12)=X"DA4" AND state(1)='1' ELSE '0';
+
+
+---------------------------------
+-- Platform specific registers --
+---------------------------------
+
+process(sysclk,n_reset)
+begin
+	if rising_edge(sysclk) then
+		if n_reset='0' then
+			fastramsize<="00";
+			turbochipram<='0';
+		end if;
+--		reconfigure<='0';
+		if PART_select='1' and state="11" then	-- Write to platform registers
+			case addr(4 downto 1) is
+				when "1010" => -- DEE014
+					fastramsize<=cpudata_in(1 downto 0);
+					turbochipram<=cpudata_in(15);
+--				when "1011" => -- DEE016
+--					reconfigure<='1';
+				when others =>
+					null;
+			end case;
+		end if;
+	end if;
+end process;
+
 
 -----------------------------------------------------------------
 -- Support States

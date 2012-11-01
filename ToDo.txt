@@ -1,5 +1,7 @@
 To Do:
 
+Genericise the SDRAM controller so that both projects can use the same one.
+
 Simplify bank mapping.  Since the entire Amiga memory map fits easily within SDRAM
 on the Chameleon and C3 board, there's no need for clever memory map trickery;
 everything can simply use its native address.
@@ -11,11 +13,14 @@ On the DE1 board we only have 8 meg available.  Suggest:
 The bottom line is that memory mapping should be board-specific, not a core function.
 This would allow turbo-kickstart, turbo-chipram, turbo-slowram, etc.
 
-(The current fastram implementation maps 0x200000 to 0x1200000
+(The original fastram implementation maps 0x200000 to 0x1200000
 and the OSD processor's RAM to 0xa00000.  Mapping the fastram to 0x400000 would
-be more convenient, since it would leave the second 16 meg free.)
+be more convenient, since it would leave the second 16 meg free.
+We now use a look-up to map ZII FastRAM into spare portions of the first 16 meg,
+leaving the second 16-meg clear for AddRAM'ed ZIII RAM.)
 
-| Add write cache
+| Add data cache
+Add write cache
 Add larger caches
 
 Add multi-slot capability to SDRAM controller.

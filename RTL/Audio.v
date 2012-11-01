@@ -72,13 +72,14 @@
 // 2012-02-12 - change sigma/delta module
 
 // AMR:
-// 2012-08-17 - remove multiplexing in front of sigma/delta module.
+// 2012-10-27 - new audio module, a hybrid PWM / SD DAC.
+//              Silences audio channel when replen is 1 - fix for Gods jump noise.
 
 module audio
 (
 	input 	clk,		    		//bus clock
 	input	clk28m,
-	input sigmadeltaclk,	// AMR
+	input sigmadeltaclk,
 	input 	cck,		    		//colour clock enable
 	input 	reset,			   		//reset 
 	input	strhor,					//horizontal strobe
@@ -216,8 +217,7 @@ audiochannel ach3
 //instantiate volume control and sigma/delta modulator
 sigmadelta dac0 
 (
-	.clk({clk28m}),
-	.sigmadeltaclk(sigmadeltaclk), // AMR
+	.clk({sigmadeltaclk}),
 	.sample0(sample0),
 	.sample1(sample1),
 	.sample2(sample2),
@@ -235,99 +235,56 @@ sigmadelta dac0
 
 endmodule
 
+// Hybrid PWM / Sigma Delta converter
+//
+// Uses 5-bit PWM, wrapped within a 10-bit Sigma Delta, with the intention of
+// increasing the pulse width, since narrower pulses seem to equate to more
+// noise on the Minimig
 
-module third_order_sigma_delta_dac
+module hybrid_pwm_sd
 (
-input rst,
-input clk,
-input [15:0] pcm_in,
-output reg dac_out
+	input clk,
+	input n_reset,
+	input dump,
+	input [15:0] din,
+	output dout
 );
 
-// ======================================
-// ============== Stage #1 ==============
-// ======================================
-wire [23:0] w_data_in_p0;
-wire [23:0] w_data_err_p0;
-wire [23:0] w_data_int_p0;
-reg [23:0] r_data_fwd_p1;
-wire [23:0] w_data_qt_p2;
-wire [23:0] w_data_fb3_p1;
-wire [23:0] w_data_int_p1;
-reg [23:0] r_data_fwd_p2;
-wire [23:0] w_data_fb1_p1;
-wire [23:0] w_data_fb2_p1;
-wire [23:0] w_data_lpf_p1;
-reg [23:0] r_data_lpf_p2;
+reg [5:0] pwmcounter;
+reg [5:0] pwmthreshold;
+reg [33:0] scaledin;
+reg [15:0] sigma;
+reg out;
 
-// PCM input extended to 20 bits
-assign w_data_in_p0 = { {4{pcm_in[15]}}, pcm_in, 4'b0000 };
+assign dout=out;
 
-// Error between the input and the quantizer output
-assign w_data_err_p0 = w_data_in_p0 - w_data_qt_p2;
+always @(posedge clk, negedge n_reset) // FIXME reset logic;
+begin
+	if(!n_reset)
+	begin
+		sigma<=16'b00000010_00000000;
+		pwmthreshold<=6'b100000;
+	end
+	else
+	begin
+		pwmcounter<=pwmcounter+1;
 
-// First integrator adder
-assign w_data_int_p0 = { {3{w_data_err_p0[23]}}, w_data_err_p0[22:2] } // Divide by 4
-+ r_data_fwd_p1;
+		if(pwmcounter==pwmthreshold)
+			out<=1'b0;
 
-// First integrator forward delay
-always @(posedge rst or posedge clk)
-if (rst)
-r_data_fwd_p1 <= 24'd0;
-else
-r_data_fwd_p1 <= w_data_int_p0;
-
-// ======================================
-// ============== Stage #2 ==============
-// ======================================
-
-// Feedback from the quantizer output
-assign w_data_fb1_p1 = { {3{r_data_fwd_p1[23]}}, r_data_fwd_p1[22:2] } // Divide by 4
-- { {3{w_data_qt_p2[23]}}, w_data_qt_p2[22:2] }; // Divide by 4
-
-// Feedback from the third stage
-assign w_data_fb2_p1 = w_data_fb1_p1
-- { {14{r_data_fwd_p2[23]}}, r_data_fwd_p2[22:13] }; // Divide by 8192
-
-// Low pass filter
-assign w_data_lpf_p1 = w_data_fb2_p1 + r_data_lpf_p2;
-
-// Low pass filter feedback delay
-always @(posedge rst or posedge clk)
-if (rst)
-r_data_lpf_p2 <= 24'd0;
-else
-r_data_lpf_p2 <= w_data_lpf_p1;
-
-// ======================================
-// ============== Stage #3 ==============
-// ======================================
-
-// Feedback from the quantizer output
-assign w_data_fb3_p1 = { {2{w_data_lpf_p1[23]}}, w_data_lpf_p1[22:1] } // Divide by 2
-- { {2{w_data_qt_p2[23]}}, w_data_qt_p2[22:1] }; // Divide by 2
-
-// Second integrator adder
-assign w_data_int_p1 = w_data_fb3_p1 + r_data_fwd_p2;
-
-// Second integrator forward delay
-always @(posedge rst or posedge clk)
-if (rst)
-r_data_fwd_p2 <= 24'd0;
-else
-r_data_fwd_p2 <= w_data_int_p1;
-
-// =====================================
-// ========== 1-bit quantizer ==========
-// =====================================
-
-assign w_data_qt_p2 = (r_data_fwd_p2[23]) ? 24'hF00000 : 24'h100000;
-
-always @(posedge rst or posedge clk)
-if (rst)
-dac_out <= 1'b0;
-else
-dac_out <= ~r_data_fwd_p2[23];
+		if(pwmcounter==6'b111111) // Update threshold when pwmcounter reaches zero
+		begin
+			// Pick a new PWM threshold using a Sigma Delta
+			scaledin<={1'b0,din}*64511; // 63<<(16-6)-1;
+			sigma<=scaledin[31:16]+{6'b000000,sigma[9:0]};	// Will use previous iteration's scaledin value
+			pwmthreshold<=sigma[15:10]; // Will lag 2 cycles behind, but shouldn't matter.
+			out<=1'b1;
+		end
+		
+		if(dump)
+			sigma[4:0]<=7'b1_0000; // Clear the accumulator to avoid standing tones.
+	end
+end
 
 endmodule
 
@@ -344,7 +301,6 @@ endmodule
 module sigmadelta
 (
 	input clk,					//bus clock
-	input sigmadeltaclk,	// AMR
 	input	[7:0] sample0,		//sample 0 input
 	input	[7:0] sample1,		//sample 1 input
 	input	[7:0] sample2,		//sample 2 input
@@ -359,8 +315,8 @@ module sigmadelta
 );
 
 //local signals
-reg		[17:0] acculeft;		//sigma/delta accumulator left
-reg		[17:0] accuright;		//sigma/delta accumulator right
+reg		[14:0] acculeft;		//sigma/delta accumulator left
+reg		[14:0] accuright;		//sigma/delta accumulator right
 wire	[7:0] leftsmux;			//left mux sample
 wire	[7:0] rightsmux;		//right mux sample
 wire	[6:0] leftvmux;			//left mux volum
@@ -371,10 +327,6 @@ reg	[13:0]ldatatmp;		//left DAC data
 reg	[13:0]rdatatmp; 		//right DAC data
 reg	[14:0]ldatasum;		//left DAC data
 reg	[14:0]rdatasum; 		//right DAC data
-wire	[16:0] lfiltered;
-wire	[16:0] rfiltered;
-reg	lout;
-reg	rout;
 reg		mxc;					//multiplex control
 
 //--------------------------------------------------------------------------------------
@@ -431,67 +383,46 @@ svmul sv1
 	.out(rdata)
 	);
 
-//vlboxfilter leftfilter
-//(
-//	.reset(~reset),
-//	.clk(clk),
-//	.pcm_in({~ldatasum[14],ldatasum[13:0],1'b0}),
-//	.pcm_out(lfiltered)
-//);
-//
-//vlboxfilter rightfilter
-//(
-//	.reset(~reset),
-//	.clk(clk),
-//	.pcm_in({~rdatasum[14],rdatasum[13:0],1'b0}),
-//	.pcm_out(rfiltered)
-//);
+reg [9:0] dumpcounter;
+reg dump;
 
-//third_order_sigma_delta_dac leftdac
-//(
-//	.rst(reset),
-//	.clk(clk),
-//	.pcm_in({~lfiltered[15],lfiltered[14:0]}),
-////	.pcm_in({ldatasum,1'b0}),
-//	.dac_out(left)
-//);
-//
-//third_order_sigma_delta_dac rightdac
-//(
-//	.rst(reset),
-//	.clk(clk),
-//	.pcm_in({~rfiltered[15],rfiltered[14:0]}),
-////	.pcm_in({rdatasum,1'b0}),
-//	.dac_out(right)
-//);
+always @(posedge clk)
+begin
+	dumpcounter<=dumpcounter+1;
+	dump<=dumpcounter==0 ? 1'b1 : 1'b0;
+end
+
+hybrid_pwm_sd leftdac
+(
+	.clk(clk),
+	.n_reset(1'b1),
+	.dump(dump),
+	.din({~ldatasum[14],ldatasum[13:0],1'b0}),
+	.dout(left)
+);
+
+hybrid_pwm_sd rightdac
+(
+	.clk(clk),
+	.n_reset(1'b1),
+	.dump(dump),
+	.din({~rdatasum[14],rdatasum[13:0],1'b0}),
+	.dout(right)
+);
+
 
 //--------------------------------------------------------------------------------------
 //left sigma/delta modulator
-always @(posedge sigmadeltaclk)
-begin
-	if(ldatasum[14:5]==10'b000000000 || ldatasum[14:5]==10'b1111111111)
-		acculeft[17:1] <= (acculeft[17:1] + {acculeft[17],acculeft[17],12'h800,2'b00});
-	else
-		acculeft[17:1] <= (acculeft[17:1] + {acculeft[17],acculeft[17],~ldatasum[14],ldatasum[13:0]});
-//		{lout,acculeft[12:0]} <= acculeft[12:0] + {~ldatasum[14],ldatasum[13:5],3'b000};
-end
-
- assign left = acculeft[17];
-//	assign left = lout;
-
-
-//right sigma/delta modulator
-always @(posedge sigmadeltaclk)
-begin
-	if(rdatasum[14:5]==10'b000000000 || rdatasum[14:5]==10'b1111111111)
-		accuright[17:1] <= (accuright[17:1] + {accuright[17],accuright[17],12'h800,2'b00});
-	else
-		accuright[17:1] <= (accuright[17:1] + {accuright[17],accuright[17],~rdatasum[14],rdatasum[13:0]});
-//		{rout,accuright[12:0]} <= accuright[12:0] + {~rdatasum[14],rdatasum[13:5],3'b000};
-end
-
-assign right = accuright[17];
-//	assign right = rout;
+//always @(posedge clk)
+//	acculeft[12:1] <= (acculeft[12:1] + {acculeft[12],acculeft[12],~ldatasum[14],ldatasum[13:5]});
+//
+//assign left = acculeft[12];
+//
+////right sigma/delta modulator
+//always @(posedge clk)
+//	accuright[12:1] <= (accuright[12:1] + {accuright[12],accuright[12],~rdatasum[14],rdatasum[13:5]});
+//
+//assign right = accuright[12];
 
 endmodule
 
@@ -548,7 +479,6 @@ parameter	AUDLEN = 4'h4;
 parameter	AUDPER = 4'h6;
 parameter	AUDVOL = 4'h8;
 parameter	AUDDAT = 4'ha;
-
 
 //local signals
 reg		[15:0] audlen;			//audio length register
@@ -675,8 +605,7 @@ always @(posedge clk)
 assign sample[7:0] = silence ? 8'b0 : ((penhi) ? (datbuf[15:8]) : datbuf[7:0]);
 
 //volume output
-//assign volume[6:0] = (silence) ? (6'b0) : (audvol[6:0]);
-assign volume[6:0] = audvol[6:0];
+assign volume[6:0] = (audvol[6:0]);
 
 //--------------------------------------------------------------------------------------
 

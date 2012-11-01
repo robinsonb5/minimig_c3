@@ -102,7 +102,7 @@ module userio
 	output	osd_enable,
 	output	[1:0] lr_filter,
 	output	[1:0] hr_filter,
-	output	[5:0] memory_config,
+	output	[3:0] memory_config,
 	output	[3:0] chipset_config,
 	output	[3:0] floppy_config,
 	output	[3:0] scanline,
@@ -390,7 +390,7 @@ module osd
 	output	reg key_disable = 0,			// keyboard disable
 	output	reg [1:0] lr_filter = 0,
 	output	reg [1:0] hr_filter = 0,
-	output	reg [5:0] memory_config = 0,
+	output	reg [3:0] memory_config = 0,
 	output	reg [3:0] chipset_config = 0,
 	output	reg [3:0] floppy_config = 0,
 	output	reg [3:0] scanline = 0,
@@ -416,7 +416,7 @@ reg		invert;					// invertion of highlighted line
 reg		[5:0] vpos;
 reg		vena;
 
-reg 	[5:0] t_memory_config = 0;
+reg 	[3:0] t_memory_config = 0;
 reg		[2:0] t_ide_config = 0;
 reg		[1:0] t_cpu_config = 0;
 reg 	[3:0] t_chipset_config = 0;
@@ -596,9 +596,9 @@ always @(posedge clk)
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:2]==6'b1111_01)	//slow
 		t_memory_config[3:2] <= wrdat[1:0];
-always @(posedge clk)
-	if (rx && cmd && wrdat[7:2]==6'b1111_10)	//fast
-		t_memory_config[5:4] <= wrdat[1:0];
+//always @(posedge clk)
+//	if (rx && cmd && wrdat[7:2]==6'b1111_10)	//fast
+//		t_memory_config[5:4] <= wrdat[1:0];
 		
 // cpu config
 always @(posedge clk)

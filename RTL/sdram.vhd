@@ -167,8 +167,7 @@ begin
 	hostena <= '1' when zena='1' or hostState(1 downto 0)="01" OR zcachehit='1' else '0'; 
 
 	-- Map host processor's address space to 0xA00000
-	-- AMR - changed this to 0xC00000
-	zmAddr <= X"00" & NOT hostAddr(23) & not hostAddr(22) & hostAddr(21) & hostAddr(20 downto 1);
+	zmAddr <= X"00" & NOT hostAddr(23) & hostAddr(22) & NOT hostAddr(21) & hostAddr(20 downto 1);
 	
 	process (sysclk, zmAddr, hostAddr, zcache_addr, zcache, zequal, zvalid, hostRDd) 
 	begin
