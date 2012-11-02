@@ -33,7 +33,7 @@ generic
 port
 	(
 	sdata		: inout std_logic_vector(15 downto 0);
-	sdaddr		: out std_logic_vector(11 downto 0);
+	sdaddr		: out std_logic_vector(rows-1 downto 0);
 	dqm			: out std_logic_vector(1 downto 0);
 	sd_cs		: out std_logic_vector(3 downto 0);
 	ba			: buffer std_logic_vector(1 downto 0);
@@ -45,7 +45,7 @@ port
 	reset_in	: in std_logic;
 	
 	hostWR		: in std_logic_vector(15 downto 0);
-	hostAddr	: in std_logic_vector(23 downto 1);
+	hostAddr	: in std_logic_vector(24 downto 1);
 	hostState	: in std_logic_vector(2 downto 0);
 	hostL		: in std_logic;
 	hostU		: in std_logic;
@@ -56,7 +56,7 @@ port
 	cpustate	: in std_logic_vector(5 downto 0);
 	cpu_dma		: in std_logic;
 	chipWR		: in std_logic_vector(15 downto 0);
-	chipAddr	: in std_logic_vector(23 downto 1);
+	chipAddr	: in std_logic_vector(24 downto 1);
 	chipU		: in std_logic;
 	chipL		: in std_logic;
 	chipRW		: in std_logic;
@@ -540,9 +540,9 @@ begin
 -- Time slot control
 -- Split the address space up like so:
 -- rrbb rrrr rrrr rrcc cccc cccc
--- b: 22 downto 21
--- r: 24 & 20 downto 11
--- c: 24 & 9 downto 1
+-- b: 24 downto 23
+-- r: rows+cols downto cols+1
+-- c: cols downto 1
 
 				if sdram_state=ph1 THEN
 					cpuCycle <= '0';
@@ -568,12 +568,12 @@ begin
 -- 				We give the chipset first priority...
 					IF chip_dma='0' OR chipRW='0' THEN
 						chipCycle <= '1';
-						sdaddr <= '0'&chipAddr(20 downto 10);
-						ba <= chipAddr(22 downto 21);
+						sdaddr <= chipAddr((rows+cols) downto (cols+1));
+						ba <= chipAddr((rows+cols+2) downto (rows+cols+1));
 						cas_dqm <= chipU& chipL;
 						sd_cs <= "1110"; 	--ACTIVE
 						sd_ras <= '0';
-						casaddr <= '0'&chipAddr;	
+						casaddr <= chipAddr;	
 						datain <= chipWR;
 						cas_sd_cas <= '0';
 						cas_sd_we <= chipRW;
@@ -590,8 +590,8 @@ begin
 						and (hostslot_cnt/="00000000" or (hostState(2)='1' or hostena='1')) THEN	
 						-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
 						cpuCycle <= '1';
-						sdaddr <= cpuAddr(24)&cpuAddr(20 downto 10);
-						ba <= cpuAddr(22 downto 21);
+						sdaddr <= cpuAddr((rows+cols) downto (cols+1));
+						ba <= cpuAddr((rows+cols+2) downto (rows+cols+1));
 						cas_dqm <= cpuU& cpuL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
@@ -602,8 +602,8 @@ begin
 					ELSIF hostState(2)='0' AND hostena='0' THEN
 						hostSlot_cnt <= "00001111";
 						hostCycle <= '1';
-						sdaddr <= '0'&zmAddr(20 downto 10);
-						ba <= zmAddr(22 downto 21);
+						sdaddr <= zmAddr((rows+cols) downto (cols+1));
+						ba <= zmAddr((rows+cols+2) downto (rows+cols+1));
 						cas_dqm <= hostU& hostL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
@@ -622,8 +622,10 @@ begin
 					END IF;
 				END IF;
 				if sdram_state=ph4 then
-					sdaddr <=  '0' & '1' & casaddr(23)&casaddr(9 downto 1);--auto precharge
-					ba <= casaddr(22 downto 21);
+					sdaddr(rows-1 downto 11)<=(others=>'0');
+					sdaddr(10) <='1';
+					sdaddr(9 downto 0) <= casaddr(10 downto 1);--auto precharge
+					ba <= casaddr((rows+cols+2) downto (rows+cols+1));
 					sd_cs <= cas_sd_cs; 
 					IF cas_sd_we='0' THEN
 						dqm <= cas_dqm;

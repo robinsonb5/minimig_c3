@@ -366,7 +366,7 @@ mysdram : entity work.sdram
 		reset_in	=> reset_n,
 	
 		hostWR => hostWR,
-		hostAddr	=> hostAddr(23 downto 1),
+		hostAddr	=> hostAddr(24 downto 1),
 		hostState => hostState,
 		hostL => hostL,
 		hostU => hostU,
@@ -383,7 +383,7 @@ mysdram : entity work.sdram
 		cpuena => cpu_ena,
 		
 		chipWR => mm_ram_data_out,
-		chipAddr => "00"&mm_ram_address,
+		chipAddr => "000"&mm_ram_address,
 		chipU => mm_ram_bhe,
 		chipL	=> mm_ram_ble,
 		chipRW => mm_ram_we,
