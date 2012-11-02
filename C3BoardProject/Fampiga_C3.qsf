@@ -246,7 +246,7 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
 set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name AUTO_MERGE_PLLS OFF
-set_global_assignment -name CYCLONEIII_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name CYCLONEIII_CONFIGURATION_SCHEME "ACTIVE SERIAL"
 set_global_assignment -name FORCE_CONFIGURATION_VCCIO ON
 set_global_assignment -name ENABLE_DRC_SETTINGS OFF
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION AUTO
@@ -607,4 +607,8 @@ set_global_assignment -name VHDL_FILE ../C3BoardRTL/C3BoardToplevel.vhd
 set_global_assignment -name VHDL_FILE ../RTL/Fampiga.vhd
 set_global_assignment -name TEXT_FILE ../ToDo.txt
 set_global_assignment -name QIP_FILE PLL2.qip
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

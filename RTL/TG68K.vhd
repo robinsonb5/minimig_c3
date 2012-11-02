@@ -164,7 +164,7 @@ BEGIN
 
 	sel_chipram <= '1' when state/="01" AND (cpuaddr(23 downto 21)="000") ELSE '0'; --$000000 - $1FFFFF
 
-	-- FIXME - prevent TurboChip toggling while a transaction's in progress!
+	-- Prevent TurboChip toggling while a transaction's in progress!
 	sel_fast <= '1' when state/="01" AND
 		(
 			(turbochip_ena='1' and turbochip_d='1' AND cpuaddr(23 downto 21)="000" )

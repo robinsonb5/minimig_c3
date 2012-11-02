@@ -90,7 +90,7 @@ VCCINT                       : 19        : power  :                   : 1.2V    
 GND                          : 20        : gnd    :                   :         :           :                
 misc_ios_1[1]                : 21        : output : 3.3-V LVTTL       :         : 1         : Y              
 aud_r                        : 22        : output : 3.3-V LVTTL       :         : 1         : Y              
-~ALTERA_DCLK~ / RESERVED_INPUT : 23        : input  : 3.3-V LVTTL       :         : 1         : N              
+RESERVED_INPUT_WITH_WEAK_PULLUP : 23        :        :                   :         : 1         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : 24        :        :                   :         : 1         :                
 nCONFIG                      : 25        :        :                   :         : 1         :                
 altera_reserved_tdi          : 26        : input  : 3.3-V LVTTL       :         : 1         : N              
