@@ -74,12 +74,13 @@
 // AMR:
 // 2012-10-27 - new audio module, a hybrid PWM / SD DAC.
 //              Silences audio channel when replen is 1 - fix for Gods jump noise.
+//              Dumps the accumulator once per scanline to avoid standing tones.
 
 module audio
 (
 	input 	clk,		    		//bus clock
 	input	clk28m,
-	input sigmadeltaclk,
+	input	sigmadeltaclk,
 	input 	cck,		    		//colour clock enable
 	input 	reset,			   		//reset 
 	input	strhor,					//horizontal strobe
@@ -217,7 +218,7 @@ audiochannel ach3
 //instantiate volume control and sigma/delta modulator
 sigmadelta dac0 
 (
-	.clk({sigmadeltaclk}),
+	.clk(clk28m),
 	.sample0(sample0),
 	.sample1(sample1),
 	.sample2(sample2),
@@ -250,10 +251,11 @@ module hybrid_pwm_sd
 	output dout
 );
 
-reg [5:0] pwmcounter;
-reg [5:0] pwmthreshold;
+reg [4:0] pwmcounter;
+reg [4:0] pwmthreshold;
 reg [33:0] scaledin;
 reg [15:0] sigma;
+reg [24:0] lfsr_reg=1234;
 reg out;
 
 assign dout=out;
@@ -262,8 +264,8 @@ always @(posedge clk, negedge n_reset) // FIXME reset logic;
 begin
 	if(!n_reset)
 	begin
-		sigma<=16'b00000010_00000000;
-		pwmthreshold<=6'b100000;
+		sigma<=16'b00000100_00000000;
+		pwmthreshold<=5'b10000;
 	end
 	else
 	begin
@@ -272,17 +274,25 @@ begin
 		if(pwmcounter==pwmthreshold)
 			out<=1'b0;
 
-		if(pwmcounter==6'b111111) // Update threshold when pwmcounter reaches zero
+		if(pwmcounter==5'b11111) // Update threshold when pwmcounter reaches zero
 		begin
 			// Pick a new PWM threshold using a Sigma Delta
-			scaledin<={1'b0,din}*64511; // 63<<(16-6)-1;
-			sigma<=scaledin[31:16]+{6'b000000,sigma[9:0]};	// Will use previous iteration's scaledin value
-			pwmthreshold<=sigma[15:10]; // Will lag 2 cycles behind, but shouldn't matter.
+//			scaledin<={1'b0,din}*64511; // 63<<(16-6)-1;
+			scaledin<=33'd134217728 // (1<<(16-5))<<16, offset to keep centre aligned.
+				+({1'b0,din}*61440); // 30<<(16-5)-1;
+			sigma<=scaledin[31:16]+{5'b000000,sigma[10:0]};	// Will use previous iteration's scaledin value
+			pwmthreshold<=sigma[15:11]; // Will lag 2 cycles behind, but shouldn't matter.
 			out<=1'b1;
 		end
-		
+
 		if(dump)
-			sigma[4:0]<=7'b1_0000; // Clear the accumulator to avoid standing tones.
+		begin
+			sigma[10:0]<=10'b10_0000_0000; // Clear the accumulator to avoid standing tones.
+//			sigma[10:0]<={(lfsr_reg[8] ? 4'b10_0 : 4'b011),lfsr_reg[7:0]}; // fill the accumulator with a random value to avoid standing tones.
+
+			// x^25 + x^22 + 1
+//			lfsr_reg<={lfsr_reg[23:0],lfsr_reg[24] ^ lfsr_reg[21]};
+		end
 	end
 end
 
@@ -385,11 +395,17 @@ svmul sv1
 
 reg [9:0] dumpcounter;
 reg dump;
+reg dump_d;
 
 always @(posedge clk)
 begin
-	dumpcounter<=dumpcounter+1;
-	dump<=dumpcounter==0 ? 1'b1 : 1'b0;
+	if(dump_d==1'b0 && strhor==1'b1)
+		dump<=1'b1;
+	else
+		dump<=1'b0;
+	dump_d<=strhor;
+//	dumpcounter<=dumpcounter+1;
+//	dump<=dumpcounter==0 ? 1'b1 : 1'b0;
 end
 
 hybrid_pwm_sd leftdac
@@ -519,6 +535,7 @@ reg		dmasen;					//pointer register reloading request
 reg		penhi;					//enable high byte of sample buffer
 
 reg	silence;	// AMR: disable audio if repeat length is 1
+reg	silence_d; // AMRL delay flag for silence logic
 
 //--------------------------------------------------------------------------------------
  
@@ -578,17 +595,35 @@ always @(posedge clk)
 
 assign perfin = (percnt[15:0]==1 && cck) ? 1 : 0;
 
+reg dmaena_d;
+
 //length counter
 always @(posedge clk)
-	if (lencntrld && cck)//load length counter from audio length register
 	begin
-		lencnt[15:0] <= (audlen[15:0]);
-		silence<=1'b0;
-		if(audlen==1 || audlen==0)
+		if (lencntrld && cck)//load length counter from audio length register
+		begin
+			lencnt[15:0] <= (audlen[15:0]);
+			silence<=1'b0;
+			if(audlen==1 || audlen==0)
+				silence<=1'b1;
+		end
+		else if (lencount && cck)//length counter count down
+			lencnt[15:0] <= (lencnt[15:0] - 1);
+
+		// Silence fix
+		dmaena_d<=dmaena;
+		if(dmaena_d==1'b1 && dmaena==1'b0)
+		begin
+			silence_d<=1'b1; // Prevent next write from unsilencing the channel.
 			silence<=1'b1;
+		end
+		if(AUDxDAT && cck)	// Unsilence the channel if the CPU writes to AUDxDAT
+			if(silence_d)
+				silence_d<=1'b0;
+			else
+				silence<=1'b0;
+			
 	end
-	else if (lencount && cck)//length counter count down
-		lencnt[15:0] <= (lencnt[15:0] - 1);
 
 assign lenfin = (lencnt[15:0]==1 && cck) ? 1 : 0;
 

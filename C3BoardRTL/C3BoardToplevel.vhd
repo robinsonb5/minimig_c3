@@ -143,10 +143,10 @@ attribute chip_pin of rs232_rxd : signal is "98";
 attribute chip_pin of rs232_txd : signal is "112";
 
 -- SD card interface
-attribute chip_pin of sd_cs : signal is "183";
-attribute chip_pin of sd_miso : signal is "194";
-attribute chip_pin of sd_mosi : signal is "185";
-attribute chip_pin of sd_clk : signal is "188";
+attribute chip_pin of sd_cs : signal is "185";
+attribute chip_pin of sd_miso : signal is "196";
+attribute chip_pin of sd_mosi : signal is "188";
+attribute chip_pin of sd_clk : signal is "194";
 
 
 -- Power and LEDs
@@ -155,14 +155,14 @@ attribute chip_pin of power_button : signal is "94";
 
 attribute chip_pin of leds : signal is "173, 169, 167, 135";
 
-attribute chip_pin of vga_scandbl : signal is "232";
+attribute chip_pin of vga_scandbl : signal is "231";
 
 -- Free pins, not yet assigned
 
 attribute chip_pin of misc_ios_1 : signal is "12,14,56,234,21,57";
 
-attribute chip_pin of misc_ios_21 : signal is "184,187,189,195,197,201,203,214,217,219,221,223,226,231";
-attribute chip_pin of misc_ios_22 : signal is "176,196,200,202,207,216,218,224,230";
+attribute chip_pin of misc_ios_21 : signal is "184,187,189,195,197,201,203,214,217,219,221,223,226,232";
+attribute chip_pin of misc_ios_22 : signal is "176,183,200,202,207,216,218,224,230";
 attribute chip_pin of misc_ios_3 : signal is "95,177";
 
 -- Signals internal to the project

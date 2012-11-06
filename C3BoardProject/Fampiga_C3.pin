@@ -250,20 +250,20 @@ GNDA2                        : 179       : gnd    :                   :         
 VCCD_PLL2                    : 180       : power  :                   : 1.2V    :           :                
 reset_button                 : 181       : input  : 3.3-V LVTTL       :         : 7         : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : 182       :        :                   :         : 7         :                
-sd_cs                        : 183       : output : 3.3-V LVTTL       :         : 7         : Y              
+misc_ios_22[7]               : 183       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[13]              : 184       : output : 3.3-V LVTTL       :         : 7         : Y              
-sd_mosi                      : 185       : output : 3.3-V LVTTL       :         : 7         : Y              
+sd_cs                        : 185       : output : 3.3-V LVTTL       :         : 7         : Y              
 sdram2_clk                   : 186       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[12]              : 187       : output : 3.3-V LVTTL       :         : 7         : Y              
-sd_clk                       : 188       : output : 3.3-V LVTTL       :         : 7         : Y              
+sd_mosi                      : 188       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[11]              : 189       : output : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 190       : power  :                   : 1.2V    :           :                
 GND                          : 191       : gnd    :                   :         :           :                
 VCCIO7                       : 192       : power  :                   : 3.3V    : 7         :                
 GND                          : 193       : gnd    :                   :         :           :                
-sd_miso                      : 194       : input  : 3.3-V LVTTL       :         : 7         : Y              
+sd_clk                       : 194       : output : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[10]              : 195       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_22[7]               : 196       : output : 3.3-V LVTTL       :         : 7         : Y              
+sd_miso                      : 196       : input  : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_21[9]               : 197       : output : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 198       : power  :                   : 1.2V    :           :                
 GND                          : 199       : gnd    :                   :         :           :                
@@ -298,8 +298,8 @@ GND                          : 227       : gnd    :                   :         
 VCCINT                       : 228       : power  :                   : 1.2V    :           :                
 GND                          : 229       : gnd    :                   :         :           :                
 misc_ios_22[0]               : 230       : output : 3.3-V LVTTL       :         : 8         : Y              
-misc_ios_21[0]               : 231       : output : 3.3-V LVTTL       :         : 8         : Y              
-vga_scandbl                  : 232       : input  : 3.3-V LVTTL       :         : 8         : Y              
+vga_scandbl                  : 231       : input  : 3.3-V LVTTL       :         : 8         : Y              
+misc_ios_21[0]               : 232       : output : 3.3-V LVTTL       :         : 8         : Y              
 led_out                      : 233       : output : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_1[2]                : 234       : output : 3.3-V LVTTL       :         : 8         : Y              
 ps2k_clk                     : 235       : bidir  : 3.3-V LVTTL       :         : 8         : Y              
