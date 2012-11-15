@@ -11,6 +11,18 @@ despite being very similar hardware-wide, so this project is basically intended 
 a testbed for improvements to the core, which I hope to bring back to the Chameleon
 as time goes on.
 
+PLEASE NOTE:
+The firmware is now stored in a separate repository, which is pulled in using git
+submodule support, so if you check out this repo, you will need to issue the
+following commands before building:
+
+git submodule init
+git submodule update
+
+The Firmware repo contains ready-built .hex files for AmigaBootstrap and OSD_Boot68K,
+but if you want to rebuild, there's now a toplevel makefile which supports
+"make" and "make clean".
+
 More information on the project and its progress can be found at:
 http://www.retroramblings.net
 
