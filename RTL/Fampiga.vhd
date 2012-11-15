@@ -55,9 +55,11 @@ port(
 		sd_cs : out std_logic;
 		sd_miso : in std_logic;
 		sd_mosi : out std_logic;
-		sd_clk : out std_logic
+		sd_clk : out std_logic;
 
-		-- FIXME - add joystick ports
+		-- Joystick ports
+		joy1_n : in std_logic_vector(6 downto 0);
+		joy2_n : in std_logic_vector(6 downto 0)
 	);
 end entity;
 
@@ -255,8 +257,6 @@ MyMinimig: COMPONENT Minimig1
 		txd => open,
 		cts => '0',
 		rts => open,
-		n_joy1	=> "111111",
-		n_joy2 => "111111",
 		n_15khz => vga_scandbl,
 		pwrled => powerled,
 		kbddat => ps2k_dat_in,
@@ -293,8 +293,10 @@ MyMinimig: COMPONENT Minimig1
 		locked => sdram_ready,
 		sysclock => clk,
 		ascancode => "100000000",
+		n_joy1 => joy1_n(5 downto 0),
+		n_joy2 => joy2_n(5 downto 0),
 		n_joy3 => "111111",
-		n_joy4	=> "111111"
+		n_joy4 => "111111"
 	);
 		
 MainCPU: entity work.TG68K

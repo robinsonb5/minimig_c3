@@ -72,11 +72,15 @@ port(
 		power_hold : out std_logic := '1';
 		leds : out std_logic_vector(3 downto 0);
 		
+		-- Joystick ports
+		joy1 : in std_logic_vector(6 downto 0); -- Fire3, Fire2, Fire 1, Right, Left, Down, Up
+		joy2 : in std_logic_vector(6 downto 0); -- Fire3, Fire2, Fire 1, Right, Left, Down, Up
+
 		-- Any remaining IOs yet to be assigned
 		misc_ios_1 : out std_logic_vector(5 downto 0);
-		misc_ios_21 : out std_logic_vector(13 downto 0);
+		misc_ios_21 : out std_logic_vector(1 downto 0);
 		misc_ios_22 : out std_logic_vector(8 downto 0);
-		misc_ios_3 : out std_logic_vector(1 downto 0)
+		misc_ios_3 : out std_logic
 	);
 end entity;
 
@@ -161,9 +165,12 @@ attribute chip_pin of vga_scandbl : signal is "231";
 
 attribute chip_pin of misc_ios_1 : signal is "12,14,56,234,21,57";
 
-attribute chip_pin of misc_ios_21 : signal is "184,187,189,195,197,201,203,214,217,219,221,223,226,232";
+attribute chip_pin of misc_ios_21 : signal is "226,232";
 attribute chip_pin of misc_ios_22 : signal is "176,183,200,202,207,216,218,224,230";
-attribute chip_pin of misc_ios_3 : signal is "95,177";
+attribute chip_pin of misc_ios_3 : signal is "95";
+
+attribute chip_pin of joy1 : signal is "201,203,214,217,219,221,223";
+attribute chip_pin of joy2 : signal is "184,182,177,197,195,189,187";
 
 -- Signals internal to the project
 
@@ -343,9 +350,11 @@ myFampiga: entity work.Fampiga
 		sd_cs => sd_cs,
 		sd_miso => sd_miso,
 		sd_mosi => sd_mosi,
-		sd_clk => sd_clk
+		sd_clk => sd_clk,
 
-		-- FIXME - add joystick ports
+		-- Joystick
+		joy1_n => joy1,
+		joy2_n => joy2
 	);
 	
 end rtl;

@@ -162,7 +162,7 @@ GND+                         : 91        :        :                   :         
 GND+                         : 92        :        :                   :         : 4         :                
 sd1_data[4]                  : 93        : bidir  : 3.3-V LVTTL       :         : 4         : Y              
 power_button                 : 94        : input  : 3.3-V LVTTL       :         : 4         : Y              
-misc_ios_3[1]                : 95        : output : 3.3-V LVTTL       :         : 4         : Y              
+misc_ios_3                   : 95        : output : 3.3-V LVTTL       :         : 4         : Y              
 VCCIO4                       : 96        : power  :                   : 3.3V    : 4         :                
 GND                          : 97        : gnd    :                   :         :           :                
 rs232_rxd                    : 98        : input  : 3.3-V LVTTL       :         : 4         : Y              
@@ -244,33 +244,33 @@ leds[3]                      : 173       : output : 3.3-V LVTTL       :         
 VCCINT                       : 174       : power  :                   : 1.2V    :           :                
 GND                          : 175       : gnd    :                   :         :           :                
 misc_ios_22[8]               : 176       : output : 3.3-V LVTTL       :         : 6         : Y              
-misc_ios_3[0]                : 177       : output : 3.3-V LVTTL       :         : 6         : Y              
+joy2[4]                      : 177       : input  : 3.3-V LVTTL       :         : 6         : Y              
 VCCA2                        : 178       : power  :                   : 2.5V    :           :                
 GNDA2                        : 179       : gnd    :                   :         :           :                
 VCCD_PLL2                    : 180       : power  :                   : 1.2V    :           :                
 reset_button                 : 181       : input  : 3.3-V LVTTL       :         : 7         : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : 182       :        :                   :         : 7         :                
+joy2[5]                      : 182       : input  : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_22[7]               : 183       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[13]              : 184       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy2[6]                      : 184       : input  : 3.3-V LVTTL       :         : 7         : Y              
 sd_cs                        : 185       : output : 3.3-V LVTTL       :         : 7         : Y              
 sdram2_clk                   : 186       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[12]              : 187       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy2[0]                      : 187       : input  : 3.3-V LVTTL       :         : 7         : Y              
 sd_mosi                      : 188       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[11]              : 189       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy2[1]                      : 189       : input  : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 190       : power  :                   : 1.2V    :           :                
 GND                          : 191       : gnd    :                   :         :           :                
 VCCIO7                       : 192       : power  :                   : 3.3V    : 7         :                
 GND                          : 193       : gnd    :                   :         :           :                
 sd_clk                       : 194       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[10]              : 195       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy2[2]                      : 195       : input  : 3.3-V LVTTL       :         : 7         : Y              
 sd_miso                      : 196       : input  : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[9]               : 197       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy2[3]                      : 197       : input  : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 198       : power  :                   : 1.2V    :           :                
 GND                          : 199       : gnd    :                   :         :           :                
 misc_ios_22[6]               : 200       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[8]               : 201       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy1[6]                      : 201       : input  : 3.3-V LVTTL       :         : 7         : Y              
 misc_ios_22[5]               : 202       : output : 3.3-V LVTTL       :         : 7         : Y              
-misc_ios_21[7]               : 203       : output : 3.3-V LVTTL       :         : 7         : Y              
+joy1[5]                      : 203       : input  : 3.3-V LVTTL       :         : 7         : Y              
 VCCINT                       : 204       : power  :                   : 1.2V    :           :                
 GND                          : 205       : gnd    :                   :         :           :                
 VCCIO7                       : 206       : power  :                   : 3.3V    : 7         :                
@@ -281,16 +281,16 @@ GND+                         : 210       :        :                   :         
 GND+                         : 211       :        :                   :         : 8         :                
 GND+                         : 212       :        :                   :         : 8         :                
 VCCIO8                       : 213       : power  :                   : 3.3V    : 8         :                
-misc_ios_21[6]               : 214       : output : 3.3-V LVTTL       :         : 8         : Y              
+joy1[4]                      : 214       : input  : 3.3-V LVTTL       :         : 8         : Y              
 GND                          : 215       : gnd    :                   :         :           :                
 misc_ios_22[3]               : 216       : output : 3.3-V LVTTL       :         : 8         : Y              
-misc_ios_21[5]               : 217       : output : 3.3-V LVTTL       :         : 8         : Y              
+joy1[3]                      : 217       : input  : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_22[2]               : 218       : output : 3.3-V LVTTL       :         : 8         : Y              
-misc_ios_21[4]               : 219       : output : 3.3-V LVTTL       :         : 8         : Y              
+joy1[2]                      : 219       : input  : 3.3-V LVTTL       :         : 8         : Y              
 VCCINT                       : 220       : power  :                   : 1.2V    :           :                
-misc_ios_21[3]               : 221       : output : 3.3-V LVTTL       :         : 8         : Y              
+joy1[1]                      : 221       : input  : 3.3-V LVTTL       :         : 8         : Y              
 GND                          : 222       : gnd    :                   :         :           :                
-misc_ios_21[2]               : 223       : output : 3.3-V LVTTL       :         : 8         : Y              
+joy1[0]                      : 223       : input  : 3.3-V LVTTL       :         : 8         : Y              
 misc_ios_22[1]               : 224       : output : 3.3-V LVTTL       :         : 8         : Y              
 VCCIO8                       : 225       : power  :                   : 3.3V    : 8         :                
 misc_ios_21[1]               : 226       : output : 3.3-V LVTTL       :         : 8         : Y              
