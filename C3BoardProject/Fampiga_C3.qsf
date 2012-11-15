@@ -239,44 +239,6 @@ set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[2]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[1]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd2_data[0]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to sd_miso
-set_global_assignment -name VHDL_FILE ../RTL/cfide.vhd
-set_global_assignment -name VHDL_FILE ../RTL/Debounce.vhd
-set_global_assignment -name BDF_FILE ../RTL/fampiga_top.bdf
-set_global_assignment -name VHDL_FILE ../RTL/sdram.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68K.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68K_ALU.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68K_Pack.vhd
-set_global_assignment -name VHDL_FILE ../RTL/TG68KdotC_Kernel.vhd
-set_global_assignment -name VERILOG_FILE ../RTL/Bitplanes.v
-set_global_assignment -name VERILOG_FILE ../RTL/Blitter.v
-set_global_assignment -name VERILOG_FILE ../RTL/CIA8520.v
-set_global_assignment -name VERILOG_FILE ../RTL/Minimig1.v
-set_global_assignment -name VERILOG_FILE ../RTL/Amber.v
-set_global_assignment -name VERILOG_FILE ../RTL/Clock.v
-set_global_assignment -name VERILOG_FILE ../RTL/Sprites.v
-set_global_assignment -name VERILOG_FILE ../RTL/PS2Keyboard.v
-set_global_assignment -name VERILOG_FILE ../RTL/ActionReplay3.v
-set_global_assignment -name VERILOG_FILE ../RTL/Paula.v
-set_global_assignment -name VERILOG_FILE ../RTL/Copper.v
-set_global_assignment -name VERILOG_FILE ../RTL/Beamcounter.v
-set_global_assignment -name VERILOG_FILE ../RTL/Agnus.v
-set_global_assignment -name VERILOG_FILE ../RTL/Gary.v
-set_global_assignment -name VERILOG_FILE ../RTL/Audio.v
-set_global_assignment -name VERILOG_FILE ../RTL/Denise.v
-set_global_assignment -name VERILOG_FILE ../RTL/BootRom.v
-set_global_assignment -name VERILOG_FILE ../RTL/Gayle.v
-set_global_assignment -name VERILOG_FILE ../RTL/Userio.v
-set_global_assignment -name VERILOG_FILE ../RTL/Floppy.v
-set_global_assignment -name VHDL_FILE ../C3BoardRTL/statusleds_pwm.vhd
-set_global_assignment -name VHDL_FILE ../C3BoardRTL/poweronreset.vhd
-set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/PLL.qip
-set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/JBBoot.qip
-set_global_assignment -name SIGNALTAP_FILE stp1.stp
-set_global_assignment -name QIP_FILE ../C3BoardRTL/OSDBootstrap.qip
-set_global_assignment -name VHDL_FILE ../C3BoardRTL/C3BoardToplevel.vhd
-set_global_assignment -name VHDL_FILE ../RTL/Fampiga.vhd
-set_global_assignment -name TEXT_FILE ../ToDo.txt
-set_global_assignment -name QIP_FILE PLL2.qip
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
@@ -1026,4 +988,42 @@ set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=00
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=1124" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_LOWORD=9164" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_HIWORD=29357" -section_id auto_signaltap_0
+set_global_assignment -name VHDL_FILE ../RTL/cfide.vhd
+set_global_assignment -name VHDL_FILE ../RTL/Debounce.vhd
+set_global_assignment -name BDF_FILE ../RTL/fampiga_top.bdf
+set_global_assignment -name VHDL_FILE ../RTL/sdram.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68K.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68K_ALU.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68K_Pack.vhd
+set_global_assignment -name VHDL_FILE ../RTL/TG68KdotC_Kernel.vhd
+set_global_assignment -name VERILOG_FILE ../RTL/Bitplanes.v
+set_global_assignment -name VERILOG_FILE ../RTL/Blitter.v
+set_global_assignment -name VERILOG_FILE ../RTL/CIA8520.v
+set_global_assignment -name VERILOG_FILE ../RTL/Minimig1.v
+set_global_assignment -name VERILOG_FILE ../RTL/Amber.v
+set_global_assignment -name VERILOG_FILE ../RTL/Clock.v
+set_global_assignment -name VERILOG_FILE ../RTL/Sprites.v
+set_global_assignment -name VERILOG_FILE ../RTL/PS2Keyboard.v
+set_global_assignment -name VERILOG_FILE ../RTL/ActionReplay3.v
+set_global_assignment -name VERILOG_FILE ../RTL/Paula.v
+set_global_assignment -name VERILOG_FILE ../RTL/Copper.v
+set_global_assignment -name VERILOG_FILE ../RTL/Beamcounter.v
+set_global_assignment -name VERILOG_FILE ../RTL/Agnus.v
+set_global_assignment -name VERILOG_FILE ../RTL/Gary.v
+set_global_assignment -name VERILOG_FILE ../RTL/Audio.v
+set_global_assignment -name VERILOG_FILE ../RTL/Denise.v
+set_global_assignment -name VERILOG_FILE ../RTL/BootRom.v
+set_global_assignment -name VERILOG_FILE ../RTL/Gayle.v
+set_global_assignment -name VERILOG_FILE ../RTL/Userio.v
+set_global_assignment -name VERILOG_FILE ../RTL/Floppy.v
+set_global_assignment -name VHDL_FILE ../C3BoardRTL/statusleds_pwm.vhd
+set_global_assignment -name VHDL_FILE ../C3BoardRTL/poweronreset.vhd
+set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/PLL.qip
+set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/JBBoot.qip
+set_global_assignment -name QIP_FILE ../C3BoardRTL/Generated/OSDBootstrap.qip
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
+set_global_assignment -name VHDL_FILE ../C3BoardRTL/C3BoardToplevel.vhd
+set_global_assignment -name VHDL_FILE ../RTL/Fampiga.vhd
+set_global_assignment -name TEXT_FILE ../ToDo.txt
+set_global_assignment -name QIP_FILE PLL2.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
