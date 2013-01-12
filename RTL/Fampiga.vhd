@@ -96,7 +96,7 @@ signal mem_config : std_logic_vector(3 downto 0);
 signal sdram_ready : std_logic;
 signal cpu_ena : std_logic;
 signal turbochipram : std_logic;
-signal fastramsize : std_logic_vector(1 downto 0);
+signal fastramsize : std_logic_vector(2 downto 0);
 
 		-- TG68 signals
 signal wrd : std_logic;
