@@ -135,6 +135,7 @@ signal chipCycle	:std_logic;
 signal slow			:std_logic_vector(7 downto 0);
 
 signal refreshcnt : std_logic_vector(8 downto 0);
+signal refresh_pending : std_logic;
 
 type sdram_states is (ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7,ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15);
 signal sdram_state		: sdram_states;
@@ -266,13 +267,17 @@ begin
 				if enaWRreg='1' THEN
 					zena <= '0';
 				end if;
-				if sdram_state=ph9 AND hostCycle='1' THEN 
+				if sdram_state=ph9 AND slot1_type=host THEN 
 					hostRDd <= sdata_reg;
 				end if;
-				if sdram_state=ph11 AND hostCycle='1' THEN 
-					if zmAddr=casaddr and cas_sd_cas='0' then
+				
+				-- The cache will take care of enabling the host for instruction read cycles,
+				-- but for write cycles and data read cycles we need to enable it separately.
+				if sdram_state=ph11 AND slot1_type=host
+					and (hostState(1 downto 0)="11" or hostState(1 downto 0)="10") THEN 
+--					if zmAddr=casaddr and cas_sd_cas='0' then
 						zena <= '1';
-					end if;
+--					end if;
 				end if;
 				hostStated <= hostState(1 downto 0);
 				if zequal='1' and hostState(1 downto 0)="11" THEN
@@ -280,7 +285,7 @@ begin
 				end if;
 					case sdram_state is	
 						when ph7 =>	
-										if hostStated(1)='0' AND hostCycle='1' THEN	--only instruction cache
+										if hostStated(1)='0' AND slot1_type=host THEN	--only instruction cache
 											zcache_addr <= casaddr(23 downto 1);
 											zcache_fill <= '1';
 											zvalid <= "0000";
@@ -539,7 +544,8 @@ mytwc : component TwoWayCache
 
 	process (sysclk, reset, sdwrite, datain) begin
 		IF sdwrite='1' THEN
-			sdata <= datawr;
+			sdata <= datain;
+--			sdata <= datawr;
 		ELSE
 			sdata <= "ZZZZZZZZZZZZZZZZ";
 		END IF;
@@ -573,14 +579,16 @@ mytwc : component TwoWayCache
 				ena7RDreg <= '0';
 				ena7WRreg <= '0';
 				case sdram_state is	--LATENCY=3
-					when ph2 =>	sdwrite <= '1';
-								enaWRreg <= '1';
+					when ph2 =>	enaWRreg <= '1';
 					when ph3 =>	sdwrite <= '1';
 					when ph4 =>	sdwrite <= '1';
 					when ph5 => sdwrite <= '1';
 					when ph6 =>	enaWRreg <= '1';
 								ena7RDreg <= '1';
 					when ph10 => enaWRreg <= '1';
+					when ph11 => sdwrite<= '1';	-- Access slot 2
+					when ph12 => sdwrite<= '1';
+					when ph13 => sdwrite<= '1';
 					when ph14 => enaWRreg <= '1';
 								ena7WRreg <= '1';
 					when others => null;
@@ -678,7 +686,14 @@ mytwc : component TwoWayCache
 -- r: rows+cols downto cols+1
 -- c: cols downto 1
 
+				if sdram_state=ph0 then
+					cache_fill_2<='1';
+				end if;
+
 				if sdram_state=ph1 THEN
+
+					cache_fill_2<='1';
+
 					cpuCycle <= '0';
 					chipCycle <= '0';
 					hostCycle <= '0';
@@ -695,10 +710,13 @@ mytwc : component TwoWayCache
 					IF hostSlot_cnt /= "00000000" THEN
 						hostSlot_cnt <= hostSlot_cnt-1;
 					END IF;
-					if refreshcnt /= "000000000" then
+					if refreshcnt = "000000000" then
+						refresh_pending<='1';
+					else
 						refreshcnt <= refreshcnt-1;
 					end if;
 
+					slot1_bank<="00"; -- All chipset and OSD accesses are to bank 0
 -- 				We give the chipset first priority...
 					IF chip_dma='0' OR chipRW='0' THEN
 						slot1_type<=chip; -- chipCycle <= '1';
@@ -714,52 +732,54 @@ mytwc : component TwoWayCache
 						cas_sd_we <= chipRW;
 
 -- 				Next in line is refresh...
-					elsif refreshcnt="000000000" then
+					elsif refresh_pending='1' and slot2_type=idle then
 						slot1_type<=refresh; -- chipCycle <= '1';
 						sd_cs <="0000"; --AUTOREFRESH
 						sd_ras <= '0';
 						sd_cas <= '0';
 						refreshcnt <= "111111111";
+						refresh_pending<='0';
 						
 --					The Amiga CPU gets next bite of the cherry, unless the OSD CPU has been cycle-starved...
-					ELSIF writebuffer_req='1'
+					ELSIF writebuffer_req='1' and (slot2_type=idle or slot2_bank/=writebufferAddr((rows+cols+2) downto (rows+cols+1)))
 						and (hostslot_cnt/="00000000" or (hostState(2)='1' or hostena='1'))
 --						and (slot2_type=idle or slot2_bank/=writebufferAddr(24 downto 23))
 							then
 							-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
-							slot1_type<=cpu_writecache;
-							cpuCycle <= '1';
-							sdaddr <= writebufferAddr((rows+cols) downto (cols+1));
-							ba <= writebufferAddr((rows+cols+2) downto (rows+cols+1));
---							slot1_bank<=writebufferAddr(24 downto 23);
-							cas_dqm <= writebuffer_dqm;
-							sd_cs <= "1110"; --ACTIVE
-							sd_ras <= '0';
-							casaddr <= writebufferAddr(24 downto 1);
-							cas_sd_we <= '0';
-							datain <= writebufferWR;
-							cas_sd_cas <= '0';
-							writebuffer_hold<='1';	-- Let the write buffer know we're about to write.
-					ELSIF cache_req='1'
+						slot1_type<=cpu_writecache;
+						cpuCycle <= '1';
+						sdaddr <= writebufferAddr((rows+cols) downto (cols+1));
+						ba <= writebufferAddr((rows+cols+2) downto (rows+cols+1));
+						slot1_bank<=writebufferAddr((rows+cols+2) downto (rows+cols+1));
+						cas_dqm <= writebuffer_dqm;
+						sd_cs <= "1110"; --ACTIVE
+						sd_ras <= '0';
+						casaddr <= writebufferAddr(24 downto 1);
+						cas_sd_we <= '0';
+						datain <= writebufferWR;
+						cas_sd_cas <= '0';
+						writebuffer_hold<='1';	-- Let the write buffer know we're about to write.
+					ELSIF cache_req='1' and (slot2_type=idle or slot2_bank/=cpuAddr((rows+cols+2) downto (rows+cols+1)))
 						and (hostslot_cnt/="00000000" or (hostState(2)='1' or hostena='1')) THEN	
 						-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
-							slot1_type<=cpu_readcache; -- chipCycle <= '1';
+						slot1_type<=cpu_readcache; -- chipCycle <= '1';
 						cpuCycle <= '1';
 						sdaddr <= cpuAddr((rows+cols) downto (cols+1));
 						ba <= cpuAddr((rows+cols+2) downto (rows+cols+1));
+						slot1_bank<=cpuAddr((rows+cols+2) downto (rows+cols+1));
 						cas_dqm <= cpuU& cpuL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
 						casaddr <= cpuAddr(24 downto 1);
-						datain <= cpuWR;
+--						datain <= cpuWR;
 						cas_sd_cas <= '0';
-						cas_sd_we <= NOT cpuState(1) OR NOT cpuState(0);
+--						cas_sd_we <= '1';
 					ELSIF hostState(2)='0' AND hostena='0' THEN
 						slot1_type<=host; -- chipCycle <= '1';
 						hostSlot_cnt <= "00001111";
 						hostCycle <= '1';
 						sdaddr <= zmAddr((rows+cols) downto (cols+1));
-						ba <= zmAddr((rows+cols+2) downto (rows+cols+1));
+						ba <= "00"; -- zmAddr((rows+cols+2) downto (rows+cols+1));
 						cas_dqm <= hostU& hostL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
@@ -770,14 +790,23 @@ mytwc : component TwoWayCache
 							cas_sd_we <= '0';
 						END IF;
 					else
+						slot1_type<=idle;
 --						If no-one else wants this cycle we refresh the RAM.
-						slot1_type<=refresh; -- chipCycle <= '1';
-						sd_cs <="0000"; --AUTOREFRESH
-						sd_ras <= '0';
-						sd_cas <= '0';
-						refreshcnt <= "111111111";
+--						slot1_type<=refresh; -- chipCycle <= '1';
+--						sd_cs <="0000"; --AUTOREFRESH
+--						sd_ras <= '0';
+--						sd_cas <= '0';
+--						refreshcnt <= "111111111";
 					END IF;
 				END IF;
+
+				if sdram_state=ph2 then
+					cache_fill_2<='1';
+				end if;
+
+				if sdram_state=ph3 then
+					cache_fill_2<='1';
+				end if;
 
 				if sdram_state=ph4 then
 					sdaddr(rows-1 downto 11)<=(others=>'0');
@@ -800,6 +829,55 @@ mytwc : component TwoWayCache
 				
 				if sdram_state=ph9 then
 					cache_fill_1<='1';
+
+--						Access slot 2, RAS
+						cpuCycle <= '0';
+						chipCycle <= '0';
+						hostCycle <= '0';
+						cas_sd_cs <= "1110"; 
+						cas_sd_ras <= '1';
+						cas_sd_cas <= '1';
+						cas_sd_we <= '1';
+
+						slot2_type<=idle;
+						if refresh_pending='0' and slot1_type/=refresh then
+							IF writebuffer_req='1'  and writebufferAddr((rows+cols+2) downto (rows+cols+1))/="00" -- Reserve bank 0 for slot 1
+								and (slot1_type=idle or slot1_bank/=writebufferAddr((rows+cols+2) downto (rows+cols+1)))
+									then
+								-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
+								slot2_type<=cpu_writecache;
+								cpuCycle <= '1';
+								sdaddr <= writebufferAddr((rows+cols) downto (cols+1));
+								ba <= writebufferAddr((rows+cols+2) downto (rows+cols+1));
+								slot2_bank<=writebufferAddr(24 downto 23);
+								cas_dqm <= writebuffer_dqm;
+								sd_cs <= "1110"; --ACTIVE
+								sd_ras <= '0';
+								casaddr <= writebufferAddr(24 downto 1);
+								cas_sd_we <= '0';
+								datain <= writebufferWR;
+								cas_sd_cas <= '0';
+								writebuffer_hold<='1';	-- Let the write buffer know we're about to write.
+
+							-- Request from read cache
+							ELSIF cache_req='1' and cpuAddr((rows+cols+2) downto (rows+cols+1))/="00" -- Reserve bank 0 for slot 1
+								and (slot1_type=idle or slot1_bank/=cpuAddr((rows+cols+2) downto (rows+cols+1)))
+								then
+								slot2_type<=cpu_readcache; -- chipCycle <= '1';
+								cpuCycle <= '1';
+								sdaddr <= cpuAddr((rows+cols) downto (cols+1));
+								ba <= cpuAddr((rows+cols+2) downto (rows+cols+1));
+								slot2_bank<=cpuAddr((rows+cols+2) downto (rows+cols+1));
+								cas_dqm <= cpuU& cpuL;
+								sd_cs <= "1110"; --ACTIVE
+								sd_ras <= '0';
+								casaddr <= cpuAddr(24 downto 1);
+--								datain <= cpuWR;
+								cas_sd_cas <= '0';
+								cas_sd_we <= '1';
+							end if;
+						end if;
+
 				end if;
 				
 				if sdram_state=ph10 then
@@ -809,8 +887,57 @@ mytwc : component TwoWayCache
 				if sdram_state=ph11 then
 					cache_fill_1<='1';
 				end if;
+
+				if sdram_state=ph12 then
+					sdaddr(rows-1 downto 11)<=(others=>'0');
+					sdaddr(10) <='1';
+					sdaddr(9 downto 0) <= casaddr(10 downto 1);--auto precharge
+					ba <= casaddr((rows+cols+2) downto (rows+cols+1));
+					sd_cs <= cas_sd_cs; 
+					IF cas_sd_we='0' THEN
+						dqm <= cas_dqm;
+					END IF;
+					sd_ras <= cas_sd_ras;
+					sd_cas <= cas_sd_cas;
+					sd_we  <= cas_sd_we;
+					writebuffer_hold<='0'; -- Indicate to WriteBuffer that it's safe to accept the next write.
+				END IF;
 				
 			END IF;	
 		END IF;	
 	END process;
 END;
+
+--                Slot 1                       Slot 2
+-- ph0 	(read)								(Read 0 in sdata)
+
+-- ph1	Slot alloc, RAS (read)			Read0		
+
+-- ph2	... (read)							Read1
+
+-- ph3	... (write)							Read2 (read3 in sdata)
+
+-- ph4	CAS, write0 (write) 				Read3
+
+-- ph5	write1 (write)
+
+-- ph6	write2 (write)
+
+-- ph7	write3 (read)
+
+-- ph8   (read0 in sdata) (rd)		
+
+-- ph9	read0 in sdata_reg (rd)			Slot alloc, RAS
+
+-- ph10	read1	(read)						...
+
+-- ph11	read2 (rd3 in sdata, wr)		...
+
+-- ph12	read3 (write)						CAS, write 0
+
+-- ph13	(write)								write1
+
+-- ph14	(write)								write2
+
+-- ph15	(read)								write3
+
