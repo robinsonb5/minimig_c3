@@ -85,7 +85,7 @@ signal cas_sd_cs	:std_logic_vector(3 downto 0);
 signal cas_sd_ras	:std_logic;
 signal cas_sd_cas	:std_logic;
 signal cas_sd_we 	:std_logic;
-signal cas_dqm		:std_logic_vector(7 downto 0);
+signal cas_dqm		:std_logic_vector(1 downto 0);
 signal init_done	:std_logic;
 signal datain		:std_logic_vector(15 downto 0);
 signal datawr		:std_logic_vector(15 downto 0);
@@ -183,37 +183,17 @@ END COMPONENT;
 
 -- Write buffer signals
 
---signal writebuffer_req : std_logic;
---signal writebuffer_ena : std_logic;
----- signal writebufferCycle : std_logic;
---signal writebuffer_dqm : std_logic_vector(1 downto 0);
---signal writebufferAddr : std_logic_vector(24 downto 1);
---signal writebufferWR : std_logic_vector(15 downto 0);
---signal writebuffer_cache_ack : std_logic;
---signal writebuffer_hold : std_logic; -- 1 during write access, cleared to indicate that the buffer can accept the next word.
---
---type writebuffer_states is (waiting,write1,write2,write3);
---signal writebuffer_state : writebuffer_states;
+signal writebuffer_req : std_logic;
+signal writebuffer_ena : std_logic;
+-- signal writebufferCycle : std_logic;
+signal writebuffer_dqm : std_logic_vector(1 downto 0);
+signal writebufferAddr : std_logic_vector(24 downto 1);
+signal writebufferWR : std_logic_vector(15 downto 0);
+signal writebuffer_cache_ack : std_logic;
+signal writebuffer_hold : std_logic; -- 1 during write access, cleared to indicate that the buffer can accept the next word.
 
--- Write cache signals
-
-type writecache_states is (waitwrite,fill,finish);
-signal writecache_state : writecache_states;
-signal writecache_state2 : writecache_states;
-
-signal writecache_cycle : std_logic;
-signal writecache_addr : std_logic_vector(31 downto 3);
-signal writecache_word0 : std_logic_vector(15 downto 0);
-signal writecache_word1 : std_logic_vector(15 downto 0);
-signal writecache_word2 : std_logic_vector(15 downto 0);
-signal writecache_word3 : std_logic_vector(15 downto 0);
-signal writecache_dqm : std_logic_vector(7 downto 0);
-signal writecache_req : std_logic;
-signal writecache_ack : std_logic;
-signal writecache_dirty : std_logic;
-signal writecache_ena : std_logic;
-signal writecache_release : std_logic;
-signal writecache_burst : std_logic;
+type writebuffer_states is (waiting,write1,write2,write3);
+signal writebuffer_state : writebuffer_states;
 
 
 begin
@@ -346,7 +326,7 @@ mytwc : component TwoWayCache
 		cpu_addr => "0000000"&cpuAddr&'0',
 		cpu_req => not cpustate(2),
 		cpu_ack => ccachehit,
-		cpu_wr_ack => writecache_ack,
+		cpu_wr_ack => writebuffer_cache_ack,
 		cpu_rw => NOT cpuState(1) OR NOT cpuState(0),
 		cpu_rwl => cpuL,
 		cpu_rwu => cpuU,
@@ -361,115 +341,187 @@ mytwc : component TwoWayCache
 		sdram_rw => open
 	);
 
-	
--- Write Cache
+-- Write buffer, enables CPU to continue while a write is in progress.
 
-process(sysclk)
-begin
-	if reset='0' then
-		writecache_req<='0';
-		writecache_ena<='0';
-		writecache_dqm<="11111111";
-		writecache_state<=waitwrite;
-		writecache_state2<=waitwrite;
-		writecache_release<='0';
-	elsif rising_edge(sysclk) then
+	process(sysclk, reset) begin
+		if reset='0' then
+			writebuffer_req<='0';
+			writebuffer_ena<='0';
+			writebuffer_state<=waiting;
+		elsif rising_edge(sysclk) then
 
-		-- Second state machine to monitor the read cache.
-		case writecache_state2 is
-			when waitwrite =>
-				if cpuState(2 downto 0)="011" and writecache_ack='1' then
-					writecache_release<='1'; -- Allow the processor to continue
-					writecache_state2<=fill;
-				end if;
-			when fill =>
-				if cpustate(2)='1' then
-					writecache_release<='0';
-					writecache_state2<=waitwrite;
-				end if;
-			when others =>
-				null;
-		end case;
-	
-		-- Main state machine
-		writecache_ena<='0';
-		case writecache_state is
-			when waitwrite =>
-				if cpuState(2 downto 0)="011" then -- write request
-					if writecache_dirty='0' or cpuAddr(24 downto 3)=writecache_addr(24 downto 3) then
-						writecache_addr(31 downto 25)<=(others =>'0');
-						writecache_addr(24 downto 3)<=cpuAddr(24 downto 3);
-						case cpuAddr(2 downto 1) is
-							when "00" =>
-								if cpuU='0' then
-									writecache_word0(15 downto 8)<=cpuWR(15 downto 8);
-									writecache_dqm(1)<='0';
-								end if;
-								if cpuL='0' then
-									writecache_word0(7 downto 0)<=cpuWR(7 downto 0);
-									writecache_dqm(0)<='0';
-								end if;
---								writecache_dqm(1 downto 0)<=cpuU&cpuL;
-							when "01" =>
-								if cpuU='0' then
-									writecache_word1(15 downto 8)<=cpuWR(15 downto 8);
-									writecache_dqm(3)<='0';
-								end if;
-								if cpuL='0' then
-									writecache_word1(7 downto 0)<=cpuWR(7 downto 0);
-									writecache_dqm(2)<='0';
-								end if;
---								writecache_dqm(3 downto 2)<=cpuU&cpuL;
-							when "10" =>
-								if cpuU='0' then
-									writecache_word2(15 downto 8)<=cpuWR(15 downto 8);
-									writecache_dqm(5)<='0';
-								end if;
-								if cpuL='0' then
-									writecache_word2(7 downto 0)<=cpuWR(7 downto 0);
-									writecache_dqm(4)<='0';
-								end if;
---								writecache_dqm(5 downto 4)<=cpuU&cpuL;
-							when "11" =>
-								if cpuU='0' then
-									writecache_word3(15 downto 8)<=cpuWR(15 downto 8);
-									writecache_dqm(7)<='0';
-								end if;
-								if cpuL='0' then
-									writecache_word3(7 downto 0)<=cpuWR(7 downto 0);
-									writecache_dqm(6)<='0';
-								end if;
---								writecache_dqm(7 downto 6)<=cpuU&cpuL;
-						end case;
-						writecache_req<='1';
-
-						writecache_ena<=(not cpuState(2)) and writecache_release; -- Will be held until CPU unpauses.
-						writecache_dirty<='1';
+			case writebuffer_state is
+				when waiting =>
+					-- CPU write cycle, no cycle already pending.
+					if cpuState(2 downto 0)="011" then
+						writebufferAddr<=cpuAddr(24 downto 1);
+						writebufferWR<=cpuWR;
+						writebuffer_dqm<=cpuU & cpuL;
+						writebuffer_req<='1';
+						if writebuffer_cache_ack='1' then
+							writebuffer_ena<='1';
+							writebuffer_state<=write2;
+						end if;
 					end if;
-				end if;
-				if writecache_burst='1' and writecache_dirty='1' then
-					writecache_req<='0';
-					writecache_state<=fill;
-				end if;
-			when fill =>
-				if writecache_burst='0' then
-					writecache_dirty<='0';
-					writecache_dqm<="11111111";
-					writecache_state<=waitwrite;
-				end if;
-			when others =>
-				null;
-		end case;
-				
-	end if;
-end process;
+				when write2 =>
+					if writebuffer_hold='1' then	-- The SDRAM controller has picked up the request
+						writebuffer_req<='0';
+						writebuffer_state<=write3;
+					end if;
+				when write3 =>
+					if writebuffer_hold='0' then	-- Wait for write cycle to finish, so it's safe to update the signals.
+						writebuffer_state<=waiting;
+					end if;
+				when others =>
+					writebuffer_state<=waiting;
+			end case;
+			
+			if cpuState(2)='1' then -- the CPU has unpaused, so clear the ack signal.
+				writebuffer_ena<='0';
+			end if;
+		end if;
+	end process;
 
-
-	cpuena <= '1' when ccachehit='1' or writecache_ena='1' else '0'; 
+	cpuena <= '1' when ccachehit='1' or writebuffer_ena='1' else '0'; 
 	readcache_fill<='1' when
 		(cache_fill_1='1' and slot1_type=cpu_readcache) or
 		(cache_fill_2='1' and slot2_type=cpu_readcache)
 			else '0';
+	
+--	process (sysclk, cpuAddr, ccache_addr, ccache, cequal, cvalid, cpuRDd) 
+--	begin
+--		if cpuAddr(24 downto 3)=ccache_addr(24 downto 3) THEN
+--			cequal <='1';
+--		else	
+--			cequal <='0';
+--		end if;	
+--
+--		if cpuAddr(24 downto 3)=dcache_addr(24 downto 3) THEN
+--			dequal <='1';
+--		else	
+--			dequal <='0';
+--		end if;	
+--
+--		ccachehit <= '0';
+--		dcachehit <= '0';
+--
+--		if cequal='1' and cvalid(0)='1' and cpuStated(1)='0' THEN -- instruction cache
+--			case (cpuAddr(2 downto 1)&ccache_addr(2 downto 1)) is
+--				when "0000"|"0101"|"1010"|"1111"=>
+--					ccachehit <= cvalid(0);
+--					cpuRD <= ccache(63 downto 48);
+--				when "0100"|"1001"|"1110"|"0011"=>
+--					ccachehit <= cvalid(1);
+--					cpuRD <= ccache(47 downto 32);
+--				when "1000"|"1101"|"0010"|"0111"=>
+--					ccachehit <= cvalid(2);
+--					cpuRD <= ccache(31 downto 16);
+--				when "1100"|"0001"|"0110"|"1011"=>
+--					ccachehit <= cvalid(3);
+--					cpuRD <= ccache(15 downto 0);
+--				when others=> null;
+--			end case;
+--		elsif dequal='1' and dvalid(0)='1' and cpuStated(1 downto 0)="10" THEN -- Read data
+--			case (cpuAddr(2 downto 1)&dcache_addr(2 downto 1)) is
+--				when "0000"|"0101"|"1010"|"1111"=>
+--					dcachehit <= dvalid(0);
+--					cpuRD <= dcache(63 downto 48);
+--				when "0100"|"1001"|"1110"|"0011"=>
+--					dcachehit <= dvalid(1);
+--					cpuRD <= dcache(47 downto 32);
+--				when "1000"|"1101"|"0010"|"0111"=>
+--					dcachehit <= dvalid(2);
+--					cpuRD <= dcache(31 downto 16);
+--				when "1100"|"0001"|"0110"|"1011"=>
+--					dcachehit <= dvalid(3);
+--					cpuRD <= dcache(15 downto 0);
+--				when others=> null;
+--			end case;	
+--		else
+--			cpuRD <= cpuRDd;
+--		end if;	
+--	end process;		
+--		
+--	
+----Daten�bernahme
+--	process (sysclk, reset) begin
+--		if reset = '0' THEN
+--			ccache_fill <= '0';
+--			cena <= '0';
+--			dcache_fill <= '0';
+--			cvalid <= "0000";
+--			dvalid <= "0000";
+--		elsif (sysclk'event and sysclk='1') THEN
+--				if cpuState(5)='1' THEN
+--					cena <= '0';
+--				end if;
+--				if sdram_state=ph9 AND cpuCycle='1' THEN 
+--					cpuRDd <= sdata_reg;
+--				end if;
+--				if sdram_state=ph11 AND cpuCycle='1' THEN 
+--					if cpuAddr=casaddr(24 downto 1) and cas_sd_cas='0' then
+--						cena <= '1';
+--					end if;
+--				end if;
+--				cpuStated <= cpuState(1 downto 0);
+--
+--				-- Invalidate caches on write
+--				if cequal='1' and cpuState(1 downto 0)="11" THEN
+--					cvalid <= "0000";
+--				end if;
+--				if dequal='1' and cpuState(1 downto 0)="11" THEN
+--					dvalid <= "0000";
+--				end if;
+--
+--				case sdram_state is	
+--						when ph7 =>	
+--							if cpuCycle='1' then
+--								if cpuStated(1)='0' THEN	-- instruction cache
+--									ccache_addr <= casaddr;
+--									ccache_fill <= '1';
+--									cvalid <= "0000";
+--								elsif cpuStated(1 downto 0)="10" THEN	-- data cache
+--									dcache_addr <= casaddr;
+--									dcache_fill <= '1';
+--									dvalid <= "0000";
+--								end if;
+--							end if;
+--						when ph9 =>	
+--							if ccache_fill='1' THEN
+--								ccache(63 downto 48) <= sdata_reg;
+--							end if;
+--							if dcache_fill='1' THEN
+--								dcache(63 downto 48) <= sdata_reg;
+--							end if;
+--						when ph10 =>	
+--							if ccache_fill='1' THEN
+--								ccache(47 downto 32) <= sdata_reg;
+--							end if;
+--							if dcache_fill='1' THEN
+--								dcache(47 downto 32) <= sdata_reg;
+--							end if;
+--						when ph11 =>	
+--							if ccache_fill='1' THEN
+--								ccache(31 downto 16) <= sdata_reg;
+--							end if;
+--							if dcache_fill='1' THEN
+--								dcache(31 downto 16) <= sdata_reg;
+--							end if;
+--						when ph12 =>	
+--							if ccache_fill='1' THEN
+--								ccache(15 downto 0) <= sdata_reg;
+--								cvalid <= "1111";
+--							end if;
+--							if dcache_fill='1' THEN
+--								dcache(15 downto 0) <= sdata_reg;
+--								dvalid <= "1111";
+--							end if;
+--							ccache_fill <= '0';
+--							dcache_fill <= '0';
+--						when others =>	null;
+--					end case;
+--			end if;
+--	end process;		
 
 	
 -------------------------------------------------------------------------
@@ -502,15 +554,15 @@ end process;
 		END IF;
 
 		if (sysclk'event and sysclk='1') THEN
---			if sdram_state=ph2 THEN
---				IF chipCycle='1' THEN
---					datawr <= chipWR;
---				ELSIF cpuCycle='1' THEN
---					datawr <= writebufferWR;
---				ELSE	
---					datawr <= hostWR;
---				END IF;
---			END IF;
+			if sdram_state=ph2 THEN
+				IF chipCycle='1' THEN
+					datawr <= chipWR;
+				ELSIF cpuCycle='1' THEN
+					datawr <= writebufferWR;
+				ELSE	
+					datawr <= hostWR;
+				END IF;
+			END IF;
 			sdata_reg <= sdata;
 			c_7mdd <= c_7md;
 			c_7mdr <= c_7md AND NOT c_7mdd;
@@ -533,26 +585,12 @@ end process;
 					when ph5 => sdwrite <= '1';
 					when ph6 =>	enaWRreg <= '1';
 								ena7RDreg <= '1';
-						if cas_sd_we='0' then
-							sdwrite <= '1';
-						end if;
-					when ph7 =>	
-						if cas_sd_we='0' then
-							sdwrite <= '1';
-						end if;
 					when ph10 => enaWRreg <= '1';
 					when ph11 => sdwrite<= '1';	-- Access slot 2
 					when ph12 => sdwrite<= '1';
 					when ph13 => sdwrite<= '1';
 					when ph14 => enaWRreg <= '1';
 								ena7WRreg <= '1';
-						if cas_sd_we='0' then
-							sdwrite <= '1';
-						end if;
-					when ph15 =>
-						if cas_sd_we='0' then
-							sdwrite <= '1';
-						end if;
 					when others => null;
 				end case;	
 			END IF;	
@@ -635,8 +673,7 @@ end process;
 							sd_ras <= '0';
 							sd_cas <= '0';
 							sd_we <= '0';
---							sdaddr <= "001000110010"; --BURST=4 LATENCY=3
-							sdaddr <= "000000110010"; --BURST=4 LATENCY=3
+							sdaddr <= "001000110010"; --BURST=4 LATENCY=3
 						when others =>	null;	--NOP
 					end case;
 				END IF;
@@ -686,7 +723,7 @@ end process;
 						chipCycle <= '1';
 						sdaddr <= chipAddr((rows+cols) downto (cols+1));
 						ba <= chipAddr((rows+cols+2) downto (rows+cols+1));
-						cas_dqm <= "111111"&chipU& chipL;
+						cas_dqm <= chipU& chipL;
 						sd_cs <= "1110"; 	--ACTIVE
 						sd_ras <= '0';
 						casaddr <= chipAddr;	
@@ -704,23 +741,24 @@ end process;
 						refresh_pending<='0';
 						
 --					The Amiga CPU gets next bite of the cherry, unless the OSD CPU has been cycle-starved...
-					ELSIF writecache_req='1' and (slot2_type=idle or slot2_bank/=writecache_addr((rows+cols+2) downto (rows+cols+1)))
+					ELSIF writebuffer_req='1' and (slot2_type=idle or slot2_bank/=writebufferAddr((rows+cols+2) downto (rows+cols+1)))
 						and (hostslot_cnt/="00000000" or (hostState(2)='1' or hostena='1'))
 --						and (slot2_type=idle or slot2_bank/=writebufferAddr(24 downto 23))
 							then
 							-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
 						slot1_type<=cpu_writecache;
 						cpuCycle <= '1';
-						sdaddr <= writecache_addr((rows+cols) downto (cols+1));
-						ba <= writecache_addr((rows+cols+2) downto (rows+cols+1));
-						slot1_bank<=writecache_addr((rows+cols+2) downto (rows+cols+1));
-						cas_dqm <= writecache_dqm;
+						sdaddr <= writebufferAddr((rows+cols) downto (cols+1));
+						ba <= writebufferAddr((rows+cols+2) downto (rows+cols+1));
+						slot1_bank<=writebufferAddr((rows+cols+2) downto (rows+cols+1));
+						cas_dqm <= writebuffer_dqm;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
-						casaddr <= writecache_addr(24 downto 3)&"00";
+						casaddr <= writebufferAddr(24 downto 1);
 						cas_sd_we <= '0';
---						datain <= writebufferWR;
+						datain <= writebufferWR;
 						cas_sd_cas <= '0';
+						writebuffer_hold<='1';	-- Let the write buffer know we're about to write.
 					ELSIF cache_req='1' and (slot2_type=idle or slot2_bank/=cpuAddr((rows+cols+2) downto (rows+cols+1)))
 						and (hostslot_cnt/="00000000" or (hostState(2)='1' or hostena='1')) THEN	
 						-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
@@ -729,7 +767,7 @@ end process;
 						sdaddr <= cpuAddr((rows+cols) downto (cols+1));
 						ba <= cpuAddr((rows+cols+2) downto (rows+cols+1));
 						slot1_bank<=cpuAddr((rows+cols+2) downto (rows+cols+1));
---						cas_dqm <= "111111"&cpuU& cpuL;
+						cas_dqm <= cpuU& cpuL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
 						casaddr <= cpuAddr(24 downto 1);
@@ -742,7 +780,7 @@ end process;
 						hostCycle <= '1';
 						sdaddr <= zmAddr((rows+cols) downto (cols+1));
 						ba <= "00"; -- zmAddr((rows+cols+2) downto (rows+cols+1));
-						cas_dqm <= "111111"&hostU& hostL;
+						cas_dqm <= hostU& hostL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
 						casaddr <= zmAddr;
@@ -764,9 +802,6 @@ end process;
 
 				if sdram_state=ph2 then
 					cache_fill_2<='1';
-					if slot1_type=cpu_writecache then
-						writecache_burst<='1'; -- Close the door on this burst write.
-					end if;
 				end if;
 
 				if sdram_state=ph3 then
@@ -780,37 +815,13 @@ end process;
 					ba <= casaddr((rows+cols+2) downto (rows+cols+1));
 					sd_cs <= cas_sd_cs; 
 					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(1 downto 0);
+						dqm <= cas_dqm;
 					END IF;
 					sd_ras <= cas_sd_ras;
 					sd_cas <= cas_sd_cas;
 					sd_we  <= cas_sd_we;
-					if slot1_type=cpu_writecache then
-						datain <= writecache_word0;
-					end if;
+					writebuffer_hold<='0'; -- Indicate to WriteBuffer that it's safe to accept the next write.
 				END IF;
-
-				if sdram_state=ph5 then
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(3 downto 2);
-						datain <= writecache_word1;
-					END IF;
-				end if;
-
-				if sdram_state=ph6 then
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(5 downto 4);
-						datain <= writecache_word2;
-					END IF;
-				end if;
-
-				if sdram_state=ph7 then
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(7 downto 6);
-						datain <= writecache_word3;
-					END IF;
-					writecache_burst<='0'; -- Close the door on this burst write.
-				end if;
 				
 				if sdram_state=ph8 then
 					cache_fill_1<='1';
@@ -830,22 +841,23 @@ end process;
 
 						slot2_type<=idle;
 						if refresh_pending='0' and slot1_type/=refresh then
-							IF writecache_req='1'  and writecache_addr((rows+cols+2) downto (rows+cols+1))/="00" -- Reserve bank 0 for slot 1
-								and (slot1_type=idle or slot1_bank/=writecache_addr((rows+cols+2) downto (rows+cols+1)))
+							IF writebuffer_req='1'  and writebufferAddr((rows+cols+2) downto (rows+cols+1))/="00" -- Reserve bank 0 for slot 1
+								and (slot1_type=idle or slot1_bank/=writebufferAddr((rows+cols+2) downto (rows+cols+1)))
 									then
 								-- We only yeild to the OSD CPU if it's both cycle-starved and ready to go.
 								slot2_type<=cpu_writecache;
 								cpuCycle <= '1';
-								sdaddr <= writecache_addr((rows+cols) downto (cols+1));
-								ba <= writecache_addr((rows+cols+2) downto (rows+cols+1));
-								slot2_bank<=writecache_addr(24 downto 23);
-								cas_dqm <= writecache_dqm;
+								sdaddr <= writebufferAddr((rows+cols) downto (cols+1));
+								ba <= writebufferAddr((rows+cols+2) downto (rows+cols+1));
+								slot2_bank<=writebufferAddr(24 downto 23);
+								cas_dqm <= writebuffer_dqm;
 								sd_cs <= "1110"; --ACTIVE
 								sd_ras <= '0';
-								casaddr <= writecache_addr(24 downto 3)&"00";
+								casaddr <= writebufferAddr(24 downto 1);
 								cas_sd_we <= '0';
+								datain <= writebufferWR;
 								cas_sd_cas <= '0';
-								writecache_burst<='1';	-- Let the write buffer know we're about to write.
+								writebuffer_hold<='1';	-- Let the write buffer know we're about to write.
 
 							-- Request from read cache
 							ELSIF cache_req='1' and cpuAddr((rows+cols+2) downto (rows+cols+1))/="00" -- Reserve bank 0 for slot 1
@@ -856,7 +868,7 @@ end process;
 								sdaddr <= cpuAddr((rows+cols) downto (cols+1));
 								ba <= cpuAddr((rows+cols+2) downto (rows+cols+1));
 								slot2_bank<=cpuAddr((rows+cols+2) downto (rows+cols+1));
---								cas_dqm <= cpuU& cpuL;
+								cas_dqm <= cpuU& cpuL;
 								sd_cs <= "1110"; --ACTIVE
 								sd_ras <= '0';
 								casaddr <= cpuAddr(24 downto 1);
@@ -870,9 +882,6 @@ end process;
 				
 				if sdram_state=ph10 then
 					cache_fill_1<='1';
-					if slot2_type<=cpu_writecache then
-						writecache_burst<='1';  -- Close the door on this burst write.
-					end if;
 				end if;
 				
 				if sdram_state=ph11 then
@@ -886,38 +895,14 @@ end process;
 					ba <= casaddr((rows+cols+2) downto (rows+cols+1));
 					sd_cs <= cas_sd_cs; 
 					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(1 downto 0);
+						dqm <= cas_dqm;
 					END IF;
 					sd_ras <= cas_sd_ras;
 					sd_cas <= cas_sd_cas;
 					sd_we  <= cas_sd_we;
-					if slot2_type=cpu_writecache then
-						datain <= writecache_word0;
-					end if;
+					writebuffer_hold<='0'; -- Indicate to WriteBuffer that it's safe to accept the next write.
 				END IF;
-
-				if sdram_state=ph13 then
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(3 downto 2);
-						datain <= writecache_word1;
-					END IF;
-				end if;
-
-				if sdram_state=ph14 then
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(5 downto 4);
-						datain <= writecache_word2;
-					END IF;
-				end if;
-
-				if sdram_state=ph15 then
-					IF cas_sd_we='0' THEN
-						dqm <= cas_dqm(7 downto 6);
-						datain <= writecache_word3;
-					END IF;
-					writecache_burst<='0'; -- Close the door on this burst write.
-				end if;
-
+				
 			END IF;	
 		END IF;	
 	END process;
@@ -955,3 +940,4 @@ END;
 -- ph14	(write)								write2
 
 -- ph15	(read)								write3
+

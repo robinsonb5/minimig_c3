@@ -59,7 +59,8 @@ port(
 		
 		-- RS232
 		rs232_rxd : in std_logic;
-		rs232_txd : out std_logic;
+		rs232_txd : buffer std_logic;
+		midi_txd : out std_logic;
 
 		-- SD card interface
 		sd_cs : out std_logic;
@@ -79,8 +80,7 @@ port(
 		-- Any remaining IOs yet to be assigned
 		misc_ios_1 : out std_logic_vector(5 downto 0);
 		misc_ios_21 : out std_logic_vector(1 downto 0);
-		misc_ios_22 : out std_logic_vector(8 downto 0);
-		misc_ios_3 : out std_logic
+		misc_ios_22 : out std_logic_vector(8 downto 0)
 	);
 end entity;
 
@@ -167,7 +167,6 @@ attribute chip_pin of misc_ios_1 : signal is "12,14,56,234,21,57";
 
 attribute chip_pin of misc_ios_21 : signal is "226,232";
 attribute chip_pin of misc_ios_22 : signal is "176,183,200,202,207,216,218,224,230";
-attribute chip_pin of misc_ios_3 : signal is "95";
 
 attribute chip_pin of joy1 : signal is "201,203,214,217,219,221,223";
 attribute chip_pin of joy2 : signal is "184,182,177,197,195,189,187";
@@ -212,6 +211,8 @@ signal disk_led : unsigned(5 downto 0);
 signal net_led : unsigned(5 downto 0);
 signal odd_led : unsigned(5 downto 0);
 
+signal rs232_txd_inv : std_logic; 
+
 -- Minimig signals
 
 signal clk7m : std_logic;
@@ -223,6 +224,8 @@ signal diskled : std_logic;
 signal floppyled : std_logic;
 
 begin
+
+	midi_txd <= not rs232_txd;
 
 	power_led(3 downto 0)<=(others =>'0');
 	disk_led(5 downto 0)<=(others =>diskled);
