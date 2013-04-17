@@ -15,7 +15,8 @@
 //   Bits 25:11 have to be stored in the tag, which, it turns out is no problem,
 //     since we can use 18-bit wide words.  The highest bit will be used as
 //     a "most recently used" flag, leaving one bit spare, so we can support 64 meg
-//     without changing bit widths.
+//     without changing bit widths.  In practice we have enough space to store bits
+//     25:9, so two bits headroom.
 // (Storing the MRU flag in both tags in a 2-way cache is redundant, so we'll only 
 // store it in the first tag.)
 
@@ -24,7 +25,7 @@
 // addresses appearing on the snoop_addr lines.  This is triggered by
 // the snoop_req line, which should be taken high when a chipset write to ChipRAM
 // takes place.
-// Since we can't afford to delay the chipset write accessed, we need to latch
+// Since we can't afford to delay the chipset write accesses, we need to latch
 // the snoop address.
 
 
@@ -48,14 +49,15 @@ module TwoWayCache
 	output reg sdram_req,
 	input sdram_fill,
 	output reg sdram_rw,	// 1 for read cycles, 0 for write cycles
-	input [20:0] snoop_addr, // Address of chipram writes
+	input [24:0] snoop_addr, // Address of chipram writes
 	input snoop_req // 1 when snoop_addr contains an address that requires invalidation.
 );
 
 // States for state machine
 parameter WAITING=0, WAITRD=1, WAITFILL=2,
 				FILL2=3, FILL3=4, FILL4=5, FILL5=6, PAUSE1=7,
-				WRITE1=8, WRITE2=9, INIT1=10, INIT2=11;
+				WRITE1=8, WRITE2=9, INIT1=10, INIT2=11,
+				SNOOP1=12, SNOOP2=13, SNOOP3=14;
 reg [4:0] state = INIT1;
 reg init;
 reg [7:0] initctr;
@@ -64,8 +66,12 @@ assign ready=~init;
 
 // BlockRAM and related signals for data
 
-wire [10:0] data_port1_addr;
-wire [10:0] data_port2_addr;
+// The data stored in the cache is 18 bits wide.
+// bit 17 indicates upper byte valid,
+// bit 16 indicates lower byte valid,
+// bit 15:0 are the actual data.
+
+wire [9:0] data_addr;
 wire [17:0] data_port1_r;
 wire [17:0] data_port2_r;
 reg[17:0] data_ports_w;
@@ -74,26 +80,30 @@ reg data_wren2;
 
 Cache_DataRAM dataram(
 	.clock(clk),
-	.address_a(data_port1_addr),
-	.address_b(data_port2_addr),
+	.address_a({1'b0,data_addr}),	// Address a and b will match apart from
+	.address_b({1'b1,data_addr}),	// the MSB, which will be 0 for a, 1 for b.
 	.data_a(data_ports_w),
-	.data_b(data_ports_w),
+	.data_b(data_ports_w),	// 
 	.q_a(data_port1_r),
 	.q_b(data_port2_r),
 	.wren_a(data_wren1),
 	.wren_b(data_wren2)
 );
 
-wire data_valid1;
-wire data_valid2;
+wire data_valid1;	// The data_valid1 / 2 signals are 1 if both the
+wire data_valid2; // upper and lower bytes of the cached word are valid.
 
 assign data_valid1 = data_port1_r[17] & data_port1_r[16];
 assign data_valid2 = data_port2_r[17] & data_port2_r[16];
 
+
 // BlockRAM and related signals for tags.
 
-wire [8:0] tag_port1_addr;
-wire [8:0] tag_port2_addr;
+// The tag is 18 bits wide.
+//   Bits 25:9 are stored in the tag, taking up 17 of the 18 available bits.
+//   Bit 17 of the first way of the cache is the "most recently used" flag.
+
+wire [7:0] tag_addr;
 wire [17:0] tag_port1_r;
 wire [17:0] tag_port2_r;
 wire [17:0] tag_port1_w;
@@ -105,8 +115,8 @@ reg tag_mru1;
 
 CacheBlockRAM tagram(
 	.clock(clk),
-	.address_a(tag_port1_addr),
-	.address_b(tag_port2_addr),
+	.address_a({1'b0,tag_addr}),
+	.address_b({1'b1,tag_addr}),
 	.data_a(tag_port1_w),
 	.data_b(tag_port2_w),
 	.q_a(tag_port1_r),
@@ -120,24 +130,27 @@ CacheBlockRAM tagram(
 //   Since we're building a 2-way cache, we'll map this to 
 //   {1'b0,addr[10:3]} and {1;b1,addr[10:3]} respectively.
 
-wire [10:0] cacheline1;
-wire [10:0] cacheline2;
-
-reg readword_burst; // Set to 1 when the lsb of the cache address should
+reg readword_burst;	// Set to 1 when the lsb of the cache address should
 							// track the SDRAM controller.
 reg [9:0] readword;
 
-//assign cacheline1 = {1'b0,cpu_addr[10:3],(readword_burst ? readword : cpu_addr[2:1])};
-//assign cacheline2 = {1'b1,cpu_addr[10:3],(readword_burst ? readword : cpu_addr[2:1])};
+wire [9:0] cacheline;
+assign cacheline = {readword_burst ? readword : cpu_addr[10:1]};
 
-assign cacheline1 = {1'b0,readword_burst ? readword : cpu_addr[10:1]};
-assign cacheline2 = {1'b1,readword_burst ? readword : cpu_addr[10:1]};
+// In the data blockram the lower two bits of the address determine
+// which word of the burst we're reading.  When reading from the cache, this comes
+// from the CPU address; when writing to the cache it's determined by the state
+// machine.
+
+// FIXME - can use readword / readword_burst instead of initctr to clear the cache at
+// reset.  Need to find better names for these!
+assign data_addr = init ? initctr : cacheline;
 
 // We share each tag between all four words of a cacheline.  We therefore only need
 // one M9K tag RAM for four M9Ks of data RAM.
 
-assign tag_port1_addr = cacheline1[10:2];
-assign tag_port2_addr = cacheline2[10:2];
+assign tag_addr = cacheline[9:2];
+
 
 // The first port contains the mru flag, so we have to write to it on every
 // access.  The second tag only needs writing when a cacheline in the second
@@ -161,14 +174,29 @@ assign tag_hit1 = tag_port1_r[16:0]==cpu_addr[25:9];
 assign tag_hit2 = tag_port2_r[16:0]==cpu_addr[25:9];
 
 
-// In the data blockram the lower two bits of the address determine
-// which word of the burst we're reading.  When reading from the cache, this comes
-// from the CPU address; when writing to the cache it's determined by the state
-// machine.
+// Bus snooping signals
 
+reg [24:0] snoop_addr_latched;
+reg snoop_pending;
+reg snoop_done;
 
-assign data_port1_addr = init ? {1'b0,initctr} : cacheline1;
-assign data_port2_addr = init ? {1'b1,initctr} : cacheline2;
+always @(posedge clk)
+begin
+	if(snoop_done)
+		snoop_pending<=1'b0;
+
+	if(snoop_req)
+	begin
+		snoop_addr_latched<=snoop_addr;
+		snoop_pending<=1'b1;
+	end
+end
+
+wire snoop_hit1;
+wire snoop_hit2;
+
+assign snoop_hit1 = tag_port1_r[16:0]=={1'b0,snoop_addr_latched[24:9]};
+assign snoop_hit2 = tag_port2_r[16:0]=={1'b0,snoop_addr_latched[24:9]};
 
 
 always @(posedge clk)
@@ -182,6 +210,8 @@ begin
 	init<=1'b0;
 	readword_burst<=1'b0;
 	cpu_wr_ack<=1'b0;
+
+	snoop_done<=1'b0;
 
 	case(state)
 
@@ -211,7 +241,14 @@ begin
 		WAITING:
 		begin
 			state<=WAITING;
-			if(cpu_req==1'b1)
+
+			if(snoop_pending)	// Do we need to deal with a write on the external bus?
+			begin
+				state<=SNOOP1;
+				readword_burst<=1'b1; // use alternative address
+				readword<=snoop_addr_latched[10:1];
+			end
+			else if(cpu_req==1'b1)
 			begin
 				if(cpu_rw==1'b1)	// Read cycle
 					state<=WAITRD;
@@ -219,6 +256,39 @@ begin
 					state<=WRITE1;
 			end
 		end
+		
+		SNOOP1:
+		begin
+			readword_burst<=1'b1; // use alternative address
+			state<=SNOOP2;
+		end
+
+		SNOOP2:
+		begin
+			// We write junk data, with valid flags cleared.
+			data_ports_w<=18'b00XXXXXXXXXXXXXXXX;
+			readword_burst<=1'b1; // use alternative address
+
+			if(snoop_hit1)
+			begin
+				// Write the data to the first cache way
+				data_wren1<=1'b1;
+				// We won't worry about tag data.
+			end
+			if(snoop_hit2)
+			begin
+				// Write the data to the second cache way
+				data_wren2<=1'b1;
+			end
+			snoop_done<=1'b1;	// Allow time for pending flag to clear before next we enter the Waiting state
+			state <=SNOOP3;
+		end
+		
+		SNOOP3:
+		begin
+			state <=WAITING;
+		end
+		
 		WRITE1:
 			begin
 				// If the current address is in cache,

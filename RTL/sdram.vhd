@@ -177,7 +177,9 @@ COMPONENT TwoWayCache
 		data_to_sdram		:	 OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
 		sdram_req		:	 OUT STD_LOGIC;
 		sdram_fill		:	 IN STD_LOGIC;
-		sdram_rw		:	 OUT STD_LOGIC
+		sdram_rw		:	 OUT STD_LOGIC;
+		snoop_addr : IN STD_LOGIC_VECTOR(24 downto 0);
+		snoop_req : IN STD_LOGIC
 	);
 END COMPONENT;
 
@@ -195,6 +197,7 @@ signal writebuffer_hold : std_logic; -- 1 during write access, cleared to indica
 type writebuffer_states is (waiting,write1,write2,write3);
 signal writebuffer_state : writebuffer_states;
 
+signal snoop_req : std_logic;
 
 begin
 
@@ -338,7 +341,9 @@ mytwc : component TwoWayCache
 		data_to_sdram => open,
 		sdram_req => cache_req,
 		sdram_fill => readcache_fill,
-		sdram_rw => open
+		sdram_rw => open,
+		snoop_addr => chipAddr&'0',
+		snoop_req => snoop_req
 	);
 
 -- Write buffer, enables CPU to continue while a write is in progress.
@@ -649,6 +654,8 @@ mytwc : component TwoWayCache
 			
 			cache_fill_1<='0';
 			cache_fill_2<='0';
+			
+			snoop_req<='0';
 
 			if cpuState(5)='1' then
 				cena<='0';
@@ -730,6 +737,7 @@ mytwc : component TwoWayCache
 						datain <= chipWR;
 						cas_sd_cas <= '0';
 						cas_sd_we <= chipRW;
+						snoop_req<=not chipRW;	-- Cache needs to know about writes
 
 -- 				Next in line is refresh...
 					elsif refresh_pending='1' and slot2_type=idle then
