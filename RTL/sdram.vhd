@@ -648,7 +648,7 @@ mytwc : component TwoWayCache
 			sd_ras <= '1';
 			sd_cas <= '1';
 			sd_we <= '1';
-			sdaddr <= "XXXXXXXXXXXX";
+			sdaddr <= (others => 'X');
 			ba <= "00";
 			dqm <= "00";
 			
@@ -680,7 +680,8 @@ mytwc : component TwoWayCache
 							sd_ras <= '0';
 							sd_cas <= '0';
 							sd_we <= '0';
-							sdaddr <= "001000110010"; --BURST=4 LATENCY=3
+							sdaddr <= (others=>'0');
+							sdaddr(9 downto 0) <= "1000110010"; --BURST=4 LATENCY=3
 						when others =>	null;	--NOP
 					end case;
 				END IF;

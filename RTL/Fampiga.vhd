@@ -4,6 +4,11 @@ use ieee.std_logic_unsigned.all;
 use IEEE.numeric_std.ALL;
 
 entity Fampiga is
+generic
+	(
+		sdram_rows : integer := 12;
+		sdram_cols : integer := 10
+	);
 port(
 		clk 	: in std_logic;
 		clk7m : in std_logic;
@@ -14,7 +19,7 @@ port(
 		oddled_out : out std_logic; -- Use for floppy access
 
 		-- SDRAM.  A separate shifted clock is provided by the toplevel
-		sdr_addr : out std_logic_vector(11 downto 0);
+		sdr_addr : out std_logic_vector(sdram_rows-1 downto 0);
 		sdr_data : inout std_logic_vector(15 downto 0);
 		sdr_ba : out std_logic_vector(1 downto 0);
 		sdr_cke : out std_logic;
@@ -34,14 +39,14 @@ port(
 		vga_scandbl : in std_logic;
 
 		-- PS/2
-		ps2k_clk_in : inout std_logic;
-		ps2k_clk_out : inout std_logic;
-		ps2k_dat_in : inout std_logic;
-		ps2k_dat_out : inout std_logic;
-		ps2m_clk_in : inout std_logic;
-		ps2m_clk_out : inout std_logic;
-		ps2m_dat_in : inout std_logic;
-		ps2m_dat_out : inout std_logic;
+		ps2k_clk_in : in std_logic;
+		ps2k_clk_out : out std_logic;
+		ps2k_dat_in : in std_logic;
+		ps2k_dat_out : out std_logic;
+		ps2m_clk_in : in std_logic;
+		ps2m_clk_out : out std_logic;
+		ps2m_dat_in : in std_logic;
+		ps2m_dat_out : out std_logic;
 		
 		-- Audio
 		aud_l : out std_logic;
@@ -56,10 +61,13 @@ port(
 		sd_miso : in std_logic;
 		sd_mosi : out std_logic;
 		sd_clk : out std_logic;
+		sd_ack : in std_logic;
 
 		-- Joystick ports
 		joy1_n : in std_logic_vector(6 downto 0);
-		joy2_n : in std_logic_vector(6 downto 0)
+		joy2_n : in std_logic_vector(6 downto 0);
+		joy3_n : in std_logic_vector(6 downto 0);
+		joy4_n : in std_logic_vector(6 downto 0)
 	);
 end entity;
 
@@ -295,8 +303,8 @@ MyMinimig: COMPONENT Minimig1
 		ascancode => "100000000",
 		n_joy1 => joy1_n(5 downto 0),
 		n_joy2 => joy2_n(5 downto 0),
-		n_joy3 => "111111",
-		n_joy4 => "111111"
+		n_joy3 => joy3_n(5 downto 0),
+		n_joy4 => joy4_n(5 downto 0)
 	);
 		
 MainCPU: entity work.TG68K
@@ -349,13 +357,13 @@ MainCPU: entity work.TG68K
 mysdram : entity work.sdram
 	generic map
 	(
-		rows => 12,
-		cols => 10
+		rows => sdram_rows,
+		cols => sdram_cols
 	)
 	port map
 	(
 		sdata => sdr_data,
-		sdaddr(11 downto 0) => sdr_addr,
+		sdaddr(sdram_rows-1 downto 0) => sdr_addr,
 		dqm => sdr_dqm,
 		sd_cs(0)	=> sdr_cs,
 		sd_cs(3 downto 1) => open,
@@ -421,6 +429,7 @@ mycfide : entity work.cfide
 		sd_clk => spi_sck,
 		sd_do => spi_sdi,
 		sd_dimm => sd_miso,
+		sd_ack => sd_ack,
 		enaWRreg => enaWRreg,
 --		debugTxD => rs232_txd,
 --		debugRxD => rs232_rxd,

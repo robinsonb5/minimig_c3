@@ -47,6 +47,7 @@ entity cfide is
 		sd_clk 		: out std_logic;
 		sd_do		: out std_logic;
 		sd_dimm		: in std_logic;		--for sdcard
+		sd_ack : in std_logic; -- indicates that SPI signal has made it to the wire
 		enaWRreg    : in std_logic:='1';
 		debugTxD : out std_logic;
 		debugRxD : in std_logic;
@@ -90,6 +91,8 @@ signal dscs		: std_logic;
 signal SD_busy		: std_logic;
 signal spi_div: std_logic_vector(7 downto 0);
 signal spi_speed: std_logic_vector(7 downto 0);
+signal spi_wait : std_logic;
+
 signal rom_data: std_logic_vector(15 downto 0);
 
 signal timecnt: std_logic_vector(15 downto 0);
@@ -136,7 +139,7 @@ cpudata <=  rom_data WHEN ROM_select='1' ELSE
 part_in <= 
 			timecnt WHEN addr(4 downto 1)="1000" ELSE	--DEE010
 			"XXXXXXXX"&"1"&"0000001" WHEN addr(4 downto 1)="1001" ELSE	--DEE012
-			"XXXX"&"00000001"&"0101"; -- Reconfig supported, Turbo Chipram supported, 32 meg of RAM
+			"0000"&"00000001"&"0101"; -- Reconfig supported, Turbo Chipram supported, 32 meg of RAM
 				--  WHEN addr(4 downto 1)="1010" ELSE	--DEE014
 			
 IOdata <= sd_in;			
@@ -241,7 +244,13 @@ end process;
 			sck <= '0';
 			spi_speed <= "00000000";
 			dscs <= '0';
+			spi_wait <= '0';
 		ELSIF (sysclk'event AND sysclk='1') THEN
+
+		if sd_ack='1' then -- Unpause SPI as soon as the IO controller has written to the MUX
+			spi_wait<='0';
+		end if;
+		
 		IF enaWRreg='1' THEN
 			IF SPI_select='1' AND state="11" AND SD_busy='0' THEN	 --SD write
 				case addr(4 downto 0) is
@@ -296,7 +305,12 @@ end process;
 --				END IF;
 			ELSE
 				IF spi_div="00000000" THEN
-					spi_div <= spi_speed;
+					if scs(1)='0' THEN -- Wait for io component to propagate signals.
+						spi_wait<='1'; -- Only wait if SPI needs to go through the MUX
+						spi_div <= spi_speed+2;
+					else
+						spi_div <= spi_speed;
+					end if;
 					IF SD_busy='1' THEN
 						IF sck='0' THEN
 							IF shiftcnt(12 downto 0)/="0000000000000" THEN
@@ -309,11 +323,12 @@ end process;
 							sd_in_shift <= sd_in_shift(14 downto 0)&sd_di_in;
 						END IF;
 					END IF;
-				ELSE
+				ELSif spi_wait='0' then
 					spi_div <= spi_div-1;
 				END IF;
 			END IF;		
-		END IF;		
+		END IF;
+
 		END IF;		
 	END PROCESS;
 

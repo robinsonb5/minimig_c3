@@ -300,6 +300,10 @@ begin
 	
 
 myFampiga: entity work.Fampiga
+	generic map(
+		sdram_rows => 12,
+		sdram_cols => 10
+	)
 	port map(
 		clk=>clk,
 		clk7m=>clk7m,
@@ -354,10 +358,13 @@ myFampiga: entity work.Fampiga
 		sd_miso => sd_miso,
 		sd_mosi => sd_mosi,
 		sd_clk => sd_clk,
+		sd_ack => '1',
 
 		-- Joystick
 		joy1_n => joy1,
-		joy2_n => joy2
+		joy2_n => joy2,
+		joy3_n => (others =>'1'),
+		joy4_n => (others =>'1')
 	);
 	
 end rtl;
