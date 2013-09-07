@@ -168,7 +168,7 @@ attribute chip_pin of misc_ios_1 : signal is "12,14,56,234,21,57";
 attribute chip_pin of misc_ios_21 : signal is "226,232";
 attribute chip_pin of misc_ios_22 : signal is "176,183,200,202,207,216,218,224,230";
 
-attribute chip_pin of joy1 : signal is "201,203,214,217,219,221,223";
+attribute chip_pin of joy1 : signal is "201,223,221,219,217,214,203";
 attribute chip_pin of joy2 : signal is "184,182,177,197,195,189,187";
 
 -- Signals internal to the project

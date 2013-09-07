@@ -65,8 +65,8 @@ derive_clock_uncertainty;
 # Set Input Delay
 #**************************************************************
 
-set_input_delay -clock sd1clk_pin -max 6.4 [get_ports sd1_data*]
-set_input_delay -clock sd2clk_pin -max 6.4 [get_ports sd2_data*]
+set_input_delay -clock sd1clk_pin -max 5.8 [get_ports sd1_data*]
+set_input_delay -clock sd2clk_pin -max 5.8 [get_ports sd2_data*]
 set_input_delay -clock sd1clk_pin -min 3.2 [get_ports sd1_data*]
 set_input_delay -clock sd2clk_pin -min 3.2 [get_ports sd2_data*]
 
