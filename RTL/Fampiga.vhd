@@ -439,7 +439,7 @@ mycfide : entity work.cfide
 		turbochipram => turbochipram
    );
 
-myhostcpu : entity work.TG68KdotC_Kernel
+myhostcpu : entity work.ZPU_Bridge
    port map(clk => clk,
 		nReset => sdram_ready,
 		clkena_in => hostena and enaWRreg,

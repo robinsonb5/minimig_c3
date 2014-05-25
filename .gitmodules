@@ -1,3 +1,6 @@
 [submodule "Firmware"]
 	path = Firmware
 	url = https://github.com/robinsonb5/Minimig_Firmware.git
+[submodule "ZPUFlex"]
+	path = ZPUFlex
+	url = https://github.com/robinsonb5/ZPUFlex.git
