@@ -106,15 +106,19 @@ signal slower : std_logic_vector(2 downto 0);
 
 begin
 
-srom: entity work.OSDBootstrap
+srom: entity work.osdload_ROM
+	generic map
+	(
+		maxAddrBitBRAM => 11
+	)
 	PORT MAP 
 	(
-		address => addr(11 downto 1),	--: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
-		byteena(0)	=> not lds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
-		byteena(1)	=> not uds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
-		clock   => sysclk,								--: IN STD_LOGIC ;
-		data	=> cpudata_in,		--	: IN STD_LOGIC_VECTOR (15 DOWNTO 0),
-		wren	=> RAM_write AND enaWRreg,		-- 	: IN STD_LOGIC ,
+		addr => addr(11 downto 0),	--: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		lds_n	=> lds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
+		uds_n	=> uds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
+		clk   => sysclk,								--: IN STD_LOGIC ;
+		d	=> cpudata_in,		--	: IN STD_LOGIC_VECTOR (15 DOWNTO 0),
+		we_n	=> not (RAM_write AND enaWRreg),		-- 	: IN STD_LOGIC ,
 		q		=> rom_data									--: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
     );
 
