@@ -57,6 +57,7 @@ int BootPrint(const char *text)
 
     p = text;
     n = rom_strlen(text)+2;
+	cmd=1;
 
     while (1)
     {
