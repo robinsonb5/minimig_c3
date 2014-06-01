@@ -250,22 +250,22 @@ int BootPrint(const char *text)
     while (1)
     {
         EnableFpga();
-		c1=SPIW(0x1001);
-//        c1 = SPI(0x10); // track read command
-//        c2 = SPI(0x01); // disk present
+//		c1=SPIW(0x1001);
+        c1 = SPI(0x10); // track read command
+        c2 = SPI(0x01); // disk present
 		SPIW(0);
 //        SPI(0);
 //        SPI(0);
-		c3 = SPIW(0);
-//        c3 = SPI(0);
-//        c4 = SPI(0);
+//		c3 = SPIW(0);
+        c3 = SPI(0);
+        c4 = SPI(0);
 
         if (c1 & (CMD_RDTRK<<8))
         {
             if (cmd)
             { // command phase
-//                if (c3 == 0x80 && c4 == 0x06) // command packet size must be 12 bytes
-                if (c3 == 0x8006) // command packet size must be 12 bytes
+                if (c3 == 0x80 && c4 == 0x06) // command packet size must be 12 bytes
+//                if (c3 == 0x8006) // command packet size must be 12 bytes
                 {
                     cmd = 0;
                     SPIW(CMD_HDRID); // command header
@@ -294,8 +294,8 @@ int BootPrint(const char *text)
             }
             else
             { // data phase
-//                if (c3 == 0x8000 && c4 == ((n + 2) >> 1))
-                if (c3 == (0x8000 | ((n + 2) >> 1)))
+                if (c3 == 0x80 && c4 == ((n + 2) >> 1))
+//                if (c3 == (0x8000 | ((n + 2) >> 1)))
                 {
                     n = (c3&0xff) << 1;
                     c4 = rom_nextchar(text);

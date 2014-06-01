@@ -170,20 +170,18 @@ begin
 						read_pending<='0';
 						-- Trigger read of either high word, or single word if half or byte cycle.
 						if mem_hEnable='1' then	-- Halfword cycle
-							addr<=mem_addr; -- For halfword or byte writes we use the address unmodified
+							addr<=mem_addr; -- For halfword or byte reads we use the address unmodified
 							mem_read(31 downto 16)<=(others=>'0');
 							nUDS<='0';
 							nLDS<='0';
 							state<=readlow;						
 						elsif mem_bEnable='1' then -- Byte cycle
-							addr<=mem_addr; -- For halfword or byte writes we use the address unmodified
+							addr<=mem_addr; -- For halfword or byte reads we use the address unmodified
 							mem_read(31 downto 8)<=(others=>'0');
---							data_write<=mem_write(15 downto 0);
 							nUDS<=mem_addr(0);
 							nLDS<=not mem_addr(0);
 							state<=readlow;
 						else	-- longword cycle.
---							addr<=mem_addr(31 downto 2)&"00"; -- longword writes are 32-bit aligned to make the logic simpler
 							addr<=mem_addr(31 downto 1)&'0'; -- longword writes are now word-aligned
 							nUDS<='0';
 							nLDS<='0';

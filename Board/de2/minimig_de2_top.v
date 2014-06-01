@@ -258,7 +258,7 @@ assign sdctl_rst        = pll_locked & SW[0];
 assign VGA_R[5:0] = {VGA_R[9:6], VGA_R[9:8]};
 assign VGA_G[5:0] = {VGA_G[9:6], VGA_G[9:8]};
 assign VGA_B[5:0] = {VGA_B[9:6], VGA_B[9:8]};
-assign VGA_BLANK = VGA_HS && VGA_VS;
+assign VGA_BLANK = (~VGA_HS) && (~VGA_VS);
 assign VGA_SYNC = 0;
 assign VGA_CLK = clk_28; //DRAM_CLK;
  
