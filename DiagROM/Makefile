@@ -13,7 +13,7 @@ ZPUFLEXDIR = ../ZPUFlex
 # we use crt0.s from here
 STARTUP_DIR = $(ZPUFLEXDIR)/Firmware/startup
 
-STARTUP_SRC = $(STARTUP_DIR)/crt0.s
+STARTUP_SRC = $(STARTUP_DIR)/mincrt0.s
 STARTUP_OBJ = $(patsubst $(STARTUP_DIR)/%.s,$(BUILD_DIR)/%.o,$(STARTUP_SRC))
 
 ROMGEN = $(ZPUFLEXDIR)/Firmware/zpuromgen
