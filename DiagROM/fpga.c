@@ -34,8 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern char s[40];
 
-char BootPrint(const char *text);
-
 // single byte serialization of FPGA configuration datastream
 //void ShiftFpga(unsigned char data)
 //{
@@ -201,67 +199,111 @@ char BootPrint(const char *text);
 //}
 
 
-// print message on the boot screen
-char BootPrint(const char *text)
+static int rom_nextchar(const char *c)
 {
-    unsigned char c1, c2, c3, c4;
-    unsigned char cmd;
+	static int *p;
+	static int t;
+	static int s;
+	if(c)
+	{
+		p=(int *)c;
+		s=0;
+	}
+	if(s==0)
+		t=*p++;
+	else
+		t<<=8;
+	s=(s+1)&3;
+	return(t>>24);
+}
+
+
+static int rom_strlen(const char *str)
+{
+	int c=rom_nextchar(str);
+	int r=0;
+	while(1)
+	{
+		if(c)
+		{
+			++r;
+			c=rom_nextchar(0);
+		}
+		else
+			return(r);
+	}
+}
+
+
+// print message on the boot screen
+int BootPrint(const char *text)
+{
+    unsigned int c1, c2, c3, c4;
+    unsigned int cmd;
     const char *p;
-    unsigned char n;
+    unsigned int n;
 
     p = text;
-    n = 0;
-    while (*p++ != 0)
-        n++; // calculating string length
+    n = rom_strlen(text);
 
     cmd = 1;
     while (1)
     {
         EnableFpga();
-        c1 = SPI(0x10); // track read command
-        c2 = SPI(0x01); // disk present
-        SPI(0);
-        SPI(0);
-        c3 = SPI(0);
-        c4 = SPI(0);
+		c1=SPIW(0x1001);
+//        c1 = SPI(0x10); // track read command
+//        c2 = SPI(0x01); // disk present
+		SPIW(0);
+//        SPI(0);
+//        SPI(0);
+		c3 = SPIW(0);
+//        c3 = SPI(0);
+//        c4 = SPI(0);
 
-        if (c1 & CMD_RDTRK)
+        if (c1 & (CMD_RDTRK<<8))
         {
             if (cmd)
             { // command phase
-                if (c3 == 0x80 && c4 == 0x06) // command packet size must be 12 bytes
+//                if (c3 == 0x80 && c4 == 0x06) // command packet size must be 12 bytes
+                if (c3 == 0x8006) // command packet size must be 12 bytes
                 {
                     cmd = 0;
-                    SPI(CMD_HDRID >> 8); // command header
-                    SPI(CMD_HDRID & 0xFF);
-                    SPI(0x00); // cmd: 0x0001 = print text
-                    SPI(0x01);
+                    SPIW(CMD_HDRID); // command header
+//                    SPI(CMD_HDRID >> 8); // command header
+ //                   SPI(CMD_HDRID & 0xFF);
+					SPIW(0x0001);
+//                    SPI(0x00); // cmd: 0x0001 = print text
+ //                   SPI(0x01);
                     // data packet size in bytes
-                    SPI(0x00);
-                    SPI(0x00);
-                    SPI(0x00);
-                    SPI(n+2); // +2 because only even byte count is possible to send and we have to send termination zero byte
+					SPIW(0x0000);
+//                    SPI(0x00);
+//                    SPI(0x00);
+					SPIW(n+2);
+//                    SPI(0x00);
+//                    SPI(n+2); // +2 because only even byte count is possible to send and we have to send termination zero byte
                     // don't care
-                    SPI(0x00);
-                    SPI(0x00);
-                    SPI(0x00);
-                    SPI(0x00);
+					SPIW(0x0000);
+//                    SPI(0x00);
+//                    SPI(0x00);
+					SPIW(0x0000);
+//                    SPI(0x00);
+//                    SPI(0x00);
                 }
                 else
                     break;
             }
             else
             { // data phase
-                if (c3 == 0x80 && c4 == ((n + 2) >> 1))
+//                if (c3 == 0x8000 && c4 == ((n + 2) >> 1))
+                if (c3 == (0x8000 | ((n + 2) >> 1)))
                 {
-                    p = text;
-                    n = c4 << 1;
+                    n = (c3&0xff) << 1;
+                    c4 = rom_nextchar(text);
                     while (n--)
                     {
-                        c4 = *p;
                         SPI(c4);
                         if (c4) // if current character is not zero go to next one
-                            p++;
+                            c4=rom_nextchar(0);
                     }
                     DisableFpga();
                     return 1;
@@ -276,17 +318,19 @@ char BootPrint(const char *text)
     return 0;
 }
 
-unsigned char GetFPGAStatus(void)
+unsigned int GetFPGAStatus(void)
 {
-    unsigned char status;
+    unsigned int status;
 
     EnableFpga();
-    status = SPI(0);
-    SPI(0);
-    SPI(0);
-    SPI(0);
-    SPI(0);
-    SPI(0);
+    status = SPIW(0)>>8;
+//    SPI(0);
+	SPIW(0x0000);
+//    SPI(0);
+//    SPI(0);
+	SPIW(0x0000);
+//    SPI(0);
+//    SPI(0);
     DisableFpga();
 
     return status;

@@ -35,6 +35,7 @@
 //#define SPI(x) (*(volatile unsigned short *)0xDEE010,*(volatile unsigned char *)0xda4000=x,*(volatile unsigned char *)0xda4000)
 
 #define SPI(x) (*(volatile unsigned char *)0xda4000=x,*(volatile unsigned char *)0xda4000)
+#define SPIW(x) (*(volatile unsigned short *)0xda4000=x,*(volatile unsigned short *)0xda4000)
 
 #define SPIN (*(volatile unsigned short *)0xDEE010)	// Waste a few cycles to let the FPGA catch up
 

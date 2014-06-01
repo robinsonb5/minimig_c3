@@ -63,7 +63,11 @@ signal h_enable : std_logic;
 
 begin
 
-	myrom : entity work.Diag_ROM
+	myrom : entity work.DiagROM_ROM
+	generic map
+	(
+		maxAddrBitBRAM => 12
+	)
 	port map (
 		clk => clk,
 		from_zpu => zpu_to_rom,
