@@ -5,59 +5,60 @@ AS      = $(BASE)-as
 CP      = $(BASE)-objcopy
 DUMP    = $(BASE)-objdump
 
-BUILD_DIR=zpu_obj
+ZPUFLEXDIR = ../../ZPUFlex
+ROMGEN = $(ZPUFLEXDIR)/Firmware/zpuromgen
 
-DIAG_PRJ = DiagROM
-
-ZPUFLEXDIR = ../ZPUFlex
-# we use crt0.s from here
+# we use mincrt0.s from here
 STARTUP_DIR = $(ZPUFLEXDIR)/Firmware/startup
 
-STARTUP_SRC = $(STARTUP_DIR)/mincrt0.s
-STARTUP_OBJ = $(patsubst $(STARTUP_DIR)/%.s,$(BUILD_DIR)/%.o,$(STARTUP_SRC))
-
-ROMGEN = $(ZPUFLEXDIR)/Firmware/zpuromgen
 # we fetch ROM prologue / epilogue from here
 RTL_DIR = $(ZPUFLEXDIR)/RTL/
 
-COMMON_SRC = 
-COMMON_OBJ = $(patsubst ../Common/%.c,$(BUILD_DIR)/%.o,$(COMMON_SRC))
+# we use printf from here
+COMMON_DIR = .
 
-DIAG_SRC_C = main.c fpga.c
-DIAG_OBJ_C = $(patsubst %.c,$(BUILD_DIR)/%.o,$(DIAG_SRC_C))
-DIAG_OBJ = $(STARTUP_OBJ) $(COMMON_OBJ) $(DIAG_OBJ_C)
+BUILD_DIR=zpu_obj
+HWBUILD_DIR=zpu_obj_hw
 
-# FIXME - change this to mixed, allocating some SDRAM to the BSS section
-LINKMAP  = $(ZPUFLEXDIR)/Firmware/standalone_remapped.ld
-LIBDIR   = 
+MINSTARTUP_SRC = $(STARTUP_DIR)/mincrt0.s
+MINSTARTUP_OBJ = $(patsubst $(STARTUP_DIR)/%.s,$(BUILD_DIR)/%.o,$(MINSTARTUP_SRC))
 
-ZPUOPTS= # -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-mult -mno-div # -mno-neg
-ZPUOPTS= -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-neg # no-neg requires bugfixed toolchain
+COMMON_SRC = $(COMMON_DIR)/small_printf.c $(COMMON_DIR)/swap.c $(COMMON_DIR)/swap.h
+COMMON_OBJ = $(patsubst $(COMMON_DIR)/%.c,$(BUILD_DIR)/%.o,$(COMMON_SRC))
 
-CFLAGS  = -I. -I../Common/ -c -O6 $(ZPUOPTS) -DPRINTF_HEX_ONLY # -DDISABLE_PRINTF -DDISABLE_UART
-AFLAGS  = 
-LFLAGS  = -T$(LINKMAP) -nostartfiles -O6 -Wl,--relax
+HW_SRC = fpga.c fpga.h spi.c spi.h
+HW_OBJ = $(patsubst %.c,$(HWBUILD_DIR)/%.o,$(HW_SRC))
 
-# Libraries.
-LIBS       =
+MAIN_PRJ = DiagROM
+MAIN_SRC = boot.c minfat.c minfat.h
+MAIN_OBJ = $(COMMON_OBJ) $(HW_OBJ) $(patsubst %.c,$(BUILD_DIR)/%.o,$(MAIN_SRC))
+
+LINKMAP  = $(ZPUFLEXDIR)/Firmware/boot_mixed_remapped.ld
+
+
+# Commandline options for each tool.
+
+ZPUOPTS= -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-byteop -mno-shortop -mno-neg -mno-div -mno-mod # No-neg requires bugfixed toolchain
+CFLAGS  = -I. -I$(COMMON_DIR)/ -c -Os $(ZPUOPTS) -DDISABLE_UART_RX -DPRINTF_HEX_ONLY # -DDISABLE_PRINTF -DDISABLE_UART_TX
+
+# We need to compile the bit-banging stuff with storeh/storeb support.
+ZPUOPTS_HW= -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-neg -mno-div -mno-mod # No-neg requires bugfixed toolchain
+CFLAGS_HW  = -I. -I$(COMMON_DIR)/ -c -Os $(ZPUOPTS_HW) -DDISABLE_UART_RX -DPRINTF_HEX_ONLY # -DDISABLE_PRINTF -DDISABLE_UART_TX
+
+
+LFLAGS  = -nostartfiles -Wl,--relax -Os
+
 
 # Our target.
-all: $(BUILD_DIR) $(DIAG_PRJ)_ROM.vhd $(DIAG_PRJ).rpt
+all: $(BUILD_DIR) $(HWBUILD_DIR) $(MAIN_PRJ).bin $(MAIN_PRJ)_ROM.vhd $(MAIN_PRJ).rpt
 
 clean:
-	rm -f $(BUILD_DIR)/*.o *.elf *.rpt *.srec *.ld *~ */*.o *.bin
+	rm -f $(BUILD_DIR)/*.o *.hex *.elf *.map *.lst *.srec $(MAIN_PRJ).rom *~ */*.o *.bin
+
 
 # Convert ELF binary to bin file.
 %.bin: %.elf
 	$(CP) -O binary $< $@
-
-$(ROMGEN): $(ZPUFLEXDIR)/Firmware/zpuromgen.c
-	gcc -o $(ZPUFLEXDIR)/Firmware/zpuromgen $(ZPUFLEXDIR)/Firmware/zpuromgen.c
-
-%_ROM.vhd: %.bin $(ROMGEN)
-	sed 's/dualportram/$*_ROM/' >$*_ROM.vhd <$(RTL_DIR)/rom_prologue.vhd
-	$(ROMGEN) $*.bin >>$*_ROM.vhd
-	cat >>$*_ROM.vhd $(RTL_DIR)/rom_epilogue.vhd
 
 %.rpt: %.elf
 	echo >$@ -n "End of code:\t"
@@ -68,23 +69,38 @@ $(ROMGEN): $(ZPUFLEXDIR)/Firmware/zpuromgen.c
 	$(DUMP) -x $< | grep >>$@ __bss_end__
 	cat $@
 
+$(ROMGEN): $(ZPUFLEXDIR)/Firmware/zpuromgen.c
+	gcc -o $(ZPUFLEXDIR)/Firmware/zpuromgen $(ZPUFLEXDIR)/Firmware/zpuromgen.c
+
+%_ROM.vhd: %.bin $(ROMGEN)
+	sed 's/dualportram/$*_ROM/' >$*_ROM.vhd <$(RTL_DIR)/rom_prologue.vhd
+	$(ROMGEN) $*.bin >>$*_ROM.vhd
+	cat >>$*_ROM.vhd $(RTL_DIR)/rom_epilogue.vhd
+
 # Link - this produces an ELF binary.
 
-$(DIAG_PRJ).elf: $(DIAG_OBJ)
-	$(LD) $(LFLAGS) -o $@ $+ $(LIBS)
-
-$(BUILD_DIR)/%.o: ../Common/%.c Makefile
-	$(CC) $(CFLAGS)  -o $@ -c $<
-
-$(BUILD_DIR)/%.o: ../Common/%.s Makefile
-	$(CC) $(CFLAGS)  -o $@ -c $<
+$(MAIN_PRJ).elf: $(MINSTARTUP_OBJ) $(MAIN_OBJ)
+	$(LD) $(LFLAGS) -T $(LINKMAP) -o $@ $+ $(LIBS)
 
 $(BUILD_DIR)/%.o: %.c Makefile
 	$(CC) $(CFLAGS)  -o $@ -c $<
+
+$(BUILD_DIR)/%.o: $(COMMON_DIR)/%.c Makefile
+	$(CC) $(CFLAGS)  -o $@ -c $<
+
+$(HWBUILD_DIR)/%.o: $(COMMON_DIR)/%.c Makefile
+	$(CC) $(CFLAGSHW)  -o $@ -c $<
+
+
+$(BUILD_DIR)/%.o: %.s
+	$(AS) -o $@ $<
 
 $(BUILD_DIR)/%.o: $(STARTUP_DIR)/%.s
 	$(AS) -o $@ $<
 
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR)
+
+$(HWBUILD_DIR):
+	mkdir $(HWBUILD_DIR)
 
