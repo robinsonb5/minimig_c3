@@ -1,7 +1,7 @@
 #ifndef FPGA_H
 #define FPGA_H
 
-int BootPrint(const char *text);
+int puts(const char *text);
 
 #endif
 

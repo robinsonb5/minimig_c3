@@ -48,7 +48,7 @@ static int rom_strlen(const char *str)
 
 
 // print message on the boot screen
-int BootPrint(const char *text)
+int puts(const char *text)
 {
     unsigned int c1, c2, c3, c4;
     unsigned int cmd;
