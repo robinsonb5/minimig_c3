@@ -318,9 +318,6 @@ MainCPU: entity work.TG68K
 		  
 		IPL => n_cpu_ipl,
 		dtack => n_cpu_dtack,
-
-		vpa => '1',
-		ein => '1',
 		
 		addr => cpu_address,
 		data_read => cpu_data_in,
@@ -329,8 +326,6 @@ MainCPU: entity work.TG68K
 		uds => n_cpu_uds,
 		lds => n_cpu_lds,
 		rw => cpu_r_w,
-		e => open,
-		vma => open,
 
 		  -- TG68 specific signals...
 		  

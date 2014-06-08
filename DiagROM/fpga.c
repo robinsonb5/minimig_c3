@@ -87,7 +87,6 @@ int puts(const char *text)
             { // data phase
                 if (c3 == (0x8000 | (n >> 1)))
                 {
-                    n = c4 << 1;
                     c4 = rom_nextchar(text);
                     while (n--)
                     {

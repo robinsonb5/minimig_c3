@@ -98,38 +98,6 @@ set_output_delay -clock sd2clk_pin -min -0.8 [get_ports sd2*]
 set_multicycle_path -from [get_clocks {sd1clk_pin}] -to [get_clocks {mypll|altpll_component|auto_generated|pll1|clk[0]}] -setup -end 2
 set_multicycle_path -from [get_clocks {sd2clk_pin}] -to [get_clocks {mypll|altpll_component|auto_generated|pll1|clk[0]}] -setup -end 2
 
-#set_multicycle_path -from [get_clocks {mypll|altpll_component|auto_generated|pll1|clk[0]}] -to [get_clocks {sd2clk_pin}] -setup -end 2
-
-# set_multicycle_path -setup -to   {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|ram_block1a*~portb_address_reg*} 4
-#set_multicycle_path -setup -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -end 4 
-#set_multicycle_path -setup -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -end 4 
-#set_multicycle_path -setup -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -end 4 
-#set_multicycle_path -setup -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -end 4 
-#
-#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
-#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -hold -end 4
-#
-#set_multicycle_path -from {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -setup -end 4
-#set_multicycle_path -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -setup -end 4
-#set_multicycle_path -from {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -to * -setup -end 4
-#set_multicycle_path -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -from * -setup -end 4
-#
-#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
-#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68KdotC_Kernel:myhostcpu|altsyncram:regfile_high_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
-#
-#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|regfile_low_rtl_*} -to * -setup -end 4
-#set_multicycle_path -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|regfile_low_rtl_*} -from * -setup -end 4
-#
-#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -setup -end 4
-#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -hold -end 4
-#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -setup -end 4
-#set_multicycle_path -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_high_rtl_1|altsyncram_qqd1:auto_generated|ram_block1a0~portb_address_reg0} -to * -hold -end 4
-#
-#set_multicycle_path -from * -to {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
-#set_multicycle_path -to * -from {Fampiga:myFampiga|TG68K:MainCPU|TG68KdotC_Kernel:pf68K_Kernel_inst|altsyncram:regfile_low_rtl_0|altsyncram_qqd1:auto_generated|*} -hold -end 4
-
-
-
 #**************************************************************
 # Set Maximum Delay
 #**************************************************************

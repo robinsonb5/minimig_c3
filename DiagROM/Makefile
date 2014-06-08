@@ -33,7 +33,7 @@ MAIN_PRJ = DiagROM
 MAIN_SRC = boot.c minfat.c minfat.h
 MAIN_OBJ = $(COMMON_OBJ) $(HW_OBJ) $(patsubst %.c,$(BUILD_DIR)/%.o,$(MAIN_SRC))
 
-LINKMAP  = $(ZPUFLEXDIR)/Firmware/boot_mixed_remapped.ld
+LINKMAP  = linkscript.ld
 
 
 # Commandline options for each tool.
@@ -89,7 +89,7 @@ $(BUILD_DIR)/%.o: $(COMMON_DIR)/%.c Makefile
 	$(CC) $(CFLAGS)  -o $@ -c $<
 
 $(HWBUILD_DIR)/%.o: $(COMMON_DIR)/%.c Makefile
-	$(CC) $(CFLAGSHW)  -o $@ -c $<
+	$(CC) $(CFLAGS_HW)  -o $@ -c $<
 
 
 $(BUILD_DIR)/%.o: %.s

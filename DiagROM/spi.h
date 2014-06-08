@@ -5,7 +5,7 @@
 #define HW_SPI(x) *(volatile unsigned short *)(SPIBASE+x)
 
 /* SPI registers */
-#define HW_SPI_CS 0x04	/* CS bits are write-only, but bit 15 reads as the SPI busy signal */
+#define HW_SPI_CS 0x04
 #define HW_SPI_DATA 0x00 /* Blocks on both reads and writes, making BUSY signal redundant. */
 #define HW_SPI_SPEED 0x08
 

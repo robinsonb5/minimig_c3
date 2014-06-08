@@ -106,21 +106,21 @@ signal slower : std_logic_vector(2 downto 0);
 
 begin
 
-srom: entity work.osdload_ROM
-	generic map
-	(
-		maxAddrBitBRAM => 11
-	)
-	PORT MAP 
-	(
-		addr => addr(11 downto 0),	--: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
-		lds_n	=> lds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
-		uds_n	=> uds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
-		clk   => sysclk,								--: IN STD_LOGIC ;
-		d	=> cpudata_in,		--	: IN STD_LOGIC_VECTOR (15 DOWNTO 0),
-		we_n	=> not (RAM_write AND enaWRreg),		-- 	: IN STD_LOGIC ,
-		q		=> rom_data									--: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
-    );
+--srom: entity work.osdload_ROM
+--	generic map
+--	(
+--		maxAddrBitBRAM => 11
+--	)
+--	PORT MAP 
+--	(
+--		addr => addr(11 downto 0),	--: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+--		lds_n	=> lds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
+--		uds_n	=> uds,			--	: IN STD_LOGIC_VECTOR (1 DOWNTO 0),
+--		clk   => sysclk,								--: IN STD_LOGIC ;
+--		d	=> cpudata_in,		--	: IN STD_LOGIC_VECTOR (15 DOWNTO 0),
+--		we_n	=> not (RAM_write AND enaWRreg),		-- 	: IN STD_LOGIC ,
+--		q		=> rom_data									--: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+--    );
 
 -- Slow down accesses
 process(sysclk, cpuena)

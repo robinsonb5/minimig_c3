@@ -160,7 +160,7 @@ int is_sdhc()
 	spi_spin();
 
 	r=cmd_CMD8();		// test for SDHC capability
-	printf("cmd_CMD8 response: %d\n",r);
+//	printf("cmd_CMD8 response: %d\n",r);
 	if(r!=1)
 	{
 		wait_init();
@@ -170,7 +170,7 @@ int is_sdhc()
 	r=SPI_PUMP();
 	if((r&0xffff)!=0x01aa)
 	{
-		printf("CMD8_4 response: %d\n",r);
+//		printf("CMD8_4 response: %d\n",r);
 		wait_init();
 		return(0);
 	}
@@ -186,10 +186,10 @@ int is_sdhc()
 		{
 			if((r=cmd_CMD58())==0)
 			{
-				printf("CMD58 %d\n  ",r);
+//				printf("CMD58 %d\n  ",r);
 				SPI(0xff);
 				r=SPI_READ();
-				printf("CMD58_2 %d\n  ",r);
+//				printf("CMD58_2 %d\n  ",r);
 				SPI(0xff);
 				SPI(0xff);
 				SPI(0xff);
@@ -199,12 +199,12 @@ int is_sdhc()
 				else
 					return(0);
 			}
-			else
-				printf("CMD58 %d\n  ",r);
+//			else
+//				printf("CMD58 %d\n  ",r);
 		}
 		if(i==2)
 		{
-			printf("SDHC Initialization error!\n");
+//			printf("SDHC Initialization error!\n");
 			return(0);
 		}
 	}
@@ -279,7 +279,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	r=cmd_read(lba);
 	if(r!=0)
 	{
-		printf("Read command failed at %d (%d)\n",lba,r);
+//		printf("Read command failed at %d (%d)\n",lba,r);
 		return(result);
 	}
 

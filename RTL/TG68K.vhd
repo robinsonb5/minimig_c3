@@ -34,8 +34,6 @@ entity TG68K is
         clkena_in     : in std_logic:='1';
         IPL           : in std_logic_vector(2 downto 0):="111";
         dtack         : in std_logic;
-        vpa           : in std_logic:='1';
-        ein           : in std_logic:='1';
         addr          : buffer std_logic_vector(31 downto 0);
         data_read  	  : in std_logic_vector(15 downto 0);
         data_write 	  : buffer std_logic_vector(15 downto 0);
@@ -43,8 +41,6 @@ entity TG68K is
         uds           : out std_logic;
         lds           : out std_logic;
         rw            : out std_logic;
-        e             : out std_logic;
-        vma           : buffer std_logic:='1';
         wrd           : out std_logic;
         ena7RDreg      : in std_logic:='1';
         ena7WRreg      : in std_logic:='1';
@@ -100,8 +96,7 @@ COMPONENT TG68KdotC_Kernel
 
    SIGNAL cpuaddr     : std_logic_vector(31 downto 0);
    SIGNAL t_addr      : std_logic_vector(31 downto 0);
---   SIGNAL data_write  : std_logic_vector(15 downto 0);
---   SIGNAL t_data      : std_logic_vector(15 downto 0);
+
    SIGNAL r_data      : std_logic_vector(15 downto 0);
    SIGNAL cpuIPL      : std_logic_vector(2 downto 0);
    SIGNAL addr_akt_s  : std_logic;
@@ -127,13 +122,10 @@ COMPONENT TG68KdotC_Kernel
    SIGNAL lds_in	  : std_logic;
    SIGNAL state       : std_logic_vector(1 downto 0);
    SIGNAL clkena	  : std_logic;
---   SIGNAL n_clk		  : std_logic;
+
    SIGNAL vmaena	  : std_logic;
    SIGNAL vmaenad	  : std_logic;
    SIGNAL state_ena	  : std_logic;
-   SIGNAL sync_state3 : std_logic;
-   SIGNAL eind	      : std_logic;
-   SIGNAL eindd	      : std_logic;
    SIGNAL sel_autoconfig: std_logic;
    SIGNAL autoconfig_out: std_logic_vector(1 downto 0); -- We use this as a counter since we have two cards to configure
    SIGNAL autoconfig_out_next: std_logic_vector(1 downto 0); -- We use this as a counter since we have two cards to configure
@@ -147,34 +139,22 @@ COMPONENT TG68KdotC_Kernel
 
 	signal ziiI_base : std_logic_vector(7 downto 0);
 	signal ziiiram_ena : std_logic;
---	signal sel_ziiiram : std_logic;
-
-	type sync_states is (sync0, sync1, sync2, sync3, sync4, sync5, sync6, sync7, sync8, sync9);
-	signal sync_state		: sync_states;
 	
    SIGNAL datatg68      : std_logic_vector(15 downto 0);
    SIGNAL ramcs	      : std_logic;
 
 BEGIN  
---	n_clk <= NOT clk;
---	wrd <= data_akt_e OR data_akt_s;
 	wrd <= wr;
 	addr <= cpuaddr;-- WHEN addr_akt_e='1' ELSE t_addr WHEN addr_akt_s='1' ELSE "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
---	data <= data_write WHEN data_akt_e='1' ELSE t_data WHEN data_akt_s='1' ELSE "ZZZZZZZZZZZZZZZZ";
---	datatg68 <= fromram WHEN sel_fast='1' ELSE r_data; 
 
 	datatg68 <= fromram WHEN sel_fast='1'
 		ELSE autoconfig_data&r_data(11 downto 0) when sel_autoconfig='1' and autoconfig_out="01" -- Zorro II autoconfig
 		ELSE autoconfig_data2&r_data(11 downto 0) when sel_autoconfig='1' and autoconfig_out="10" -- Zorro III autoconfig
 		ELSE r_data;
 
---	toram <= data_write;
-	
    sel_autoconfig <= '1' when cpuaddr(23 downto 19)="11101" AND autoconfig_out/="00" ELSE '0'; --$E80000 - $EFFFFF
 
 	sel_chipram <= '1' when state/="01" AND (cpuaddr(23 downto 21)="000") ELSE '0'; --$000000 - $1FFFFF
-
---	sel_ziiiram <='1' when cpuaddr(31 downto 24)=ziii_base and ziiiram_ena='1' else '0';
 	
 	-- FIXME - prevent TurboChip toggling while a transaction's in progress!
 	sel_fast <= '1' when state/="01" AND
@@ -184,28 +164,20 @@ BEGIN
 			OR cpuaddr(23 downto 21)="010"
 			OR cpuaddr(23 downto 21)="011"
 			OR cpuaddr(23 downto 21)="100"
---			OR sel_ziiiram='1'
 			OR cpuaddr(30)='1'	-- Hard-code $40000000
 		)
 		ELSE '0'; --$200000 - $9FFFFF
---	sel_fast <= '1' when cpuaddr(23 downto 21)="001" OR cpuaddr(23 downto 21)="010" ELSE '0'; --$200000 - $5FFFFF
---	sel_fast <= '1' when cpuaddr(23 downto 19)="11111" ELSE '0'; --$F800000;
---	sel_fast <= '0'; --$200000 - $9FFFFF
---	sel_fast <= '1' when cpuaddr(24)='1' AND state/="01" ELSE '0'; --$1000000 - $1FFFFFF
+
 	ramcs <= (NOT sel_fast) or slower(0);-- OR (state(0) AND NOT state(1));
---	cpuDMA <= NOT ramcs;
+
 	cpuDMA <= sel_fast;
 	cpustate <= clkena&slower(1 downto 0)&ramcs&state;
 	ramlds <= lds_in;
 	ramuds <= uds_in;
 
---	ramaddr(23 downto 0) <= cpuaddr(23 downto 0);
---	ramaddr(24) <= sel_fast;
---	ramaddr(31 downto 25) <= cpuaddr(31 downto 25);
 
 	ramaddr(20 downto 0) <= cpuaddr(20 downto 0);
 	ramaddr(31 downto 25) <= "0000000";
---	ramaddr(24) <= sel_ziiiram;	-- Remap the Zorro III RAM to 0x1000000
 	ramaddr(24) <= cpuaddr(30);	-- Remap the Zorro III RAM to 0x1000000
 	ramaddr(23 downto 21) <= "100" when cpuaddr(30)&cpuaddr(23 downto 21)="0001" -- 2 -> 8
 		else "101" when cpuaddr(30)&cpuaddr(23 downto 21)="0010" -- 4 -> A
@@ -234,8 +206,6 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
         clk => clk,               	-- : in std_logic;
         nReset => reset,            -- : in std_logic:='1';			--low active
         clkena_in => clkena,	        -- : in std_logic:='1';
---        data_in => r_data,       -- : in std_logic_vector(15 downto 0);
---        data_in => data_read,       -- : in std_logic_vector(15 downto 0);
         data_in => datatg68,       -- : in std_logic_vector(15 downto 0);
 		IPL => cpuIPL,				  	-- : in std_logic_vector(2 downto 0):="111";
 		IPL_autovector => '1',   	-- : in std_logic:='0';
@@ -325,52 +295,9 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 
 	PROCESS (clk)
 	BEGIN
-		IF rising_edge(clk) THEN
-			IF reset='0' THEN
-				vmaena <= '0';
-				vmaenad <= '0';
-				sync_state3 <= '0';
-			ELSIF ena7RDreg='1' THEN
-				vmaena <= '0';
-				sync_state3 <= '0';
-				IF state/="01" OR state_ena='1' THEN
-					vmaenad <= vmaena;
-				END IF;
-				IF sync_state=sync5 THEN
-					e <= '1';
-				END IF;
-				IF sync_state=sync3 THEN
-					sync_state3 <= '1';
-				END IF;
-				IF sync_state=sync9 THEN
-					e <= '0';
-					vmaena <= NOT vma;
-				END IF;
-			END IF;
-		END IF;	
+
 		IF rising_edge(clk) THEN
 			S_stated <= S_state;
-			IF ena7WRreg='1' THEN
-				eind <= ein;
-				eindd <= eind;
-				CASE sync_state IS
-					WHEN sync0  => sync_state <= sync1;
-					WHEN sync1  => sync_state <= sync2;
-					WHEN sync2  => sync_state <= sync3;
-					WHEN sync3  => sync_state <= sync4;
-								   vma <= vpa;
-					WHEN sync4  => sync_state <= sync5;
-					WHEN sync5  => sync_state <= sync6;
-					WHEN sync6  => sync_state <= sync7;
-					WHEN sync7  => sync_state <= sync8;
-					WHEN sync8  => sync_state <= sync9;
-					WHEN OTHERS => sync_state <= sync0;
-								   vma <= '1';
-				END CASE;	
-				IF eind='1' AND eindd='0' THEN
-					sync_state <= sync7;
-				END IF;			
-			END IF;	
 		END IF;	
 	END PROCESS;
 				
@@ -378,7 +305,6 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 	PROCESS (clk)
 	BEGIN
 		state_ena <= '0';
---		IF clkena_in='1' AND enaWRreg='1' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
 		IF clkena_in='1' and slower(0)='0' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
 			clkena <= '1';
 		ELSE 
@@ -390,11 +316,8 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 		IF rising_edge(clk) THEN
         	IF clkena='1' THEN
 				slower <= "0111";	-- Let address, etc. propogate before SDRAM cycle.
---				slower <= "1000";
 			ELSE 
 				slower(3 downto 0) <= '0'&slower(3 downto 1);
---				slower(3 downto 0) <= enaWRreg&slower(3 downto 1);
---				slower(0) <= NOT slower(3) AND NOT slower(2);
 			END IF;	
 		END IF;	
 	END PROCESS;
@@ -440,12 +363,11 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 									 lds_s <= lds_in;
 									 S_state <= "10";
 									 t_addr <= cpuaddr;
---									 t_data <= data_write;
 						WHEN "10" =>
 									 addr_akt_s <= '1';
 									 data_akt_s <= NOT wr;
 									 r_data <= data_read;
-									 IF waitm='0' OR (vma='0' AND sync_state=sync9) THEN
+									 IF waitm='0' THEN
 										S_state <= "11";
 									 ELSE	
 										 as_s <= '0';
