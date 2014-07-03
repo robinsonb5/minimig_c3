@@ -1,4 +1,5 @@
 #include "spi.h"
+#include "uart.h"
 #include "small_printf.h"
 
 int SDHCtype;
@@ -87,7 +88,7 @@ int cmd_write(unsigned long cmd, unsigned long lba)
 	putchar('0'+(result>>4));
 	putchar('0'+(result&15));
 	#endif
-//	printf("Got result %d \n",result);
+	printf("Got result %d \n",result);
 
 	return(result);
 }
@@ -112,20 +113,20 @@ int wait_initV2()
 	{
 		if((r=cmd_CMD55())==1)
 		{
-//			printf("CMD55 %d\n",r);
+			printf("CMD55 %d\n",r);
 			SPI(0xff);
 			if((r=cmd_CMD41())==0)
 			{
-//				printf("CMD41 %d\n",r);
+				printf("CMD41 %d\n",r);
 				SPI(0xff);
 				return(1);
 			}
-//			else
-//				printf("CMD41 %d\n",r);
+			else
+				printf("CMD41 %d\n",r);
 			spi_spin();
 		}
-//		else
-//			printf("CMD55 %d\n",r);
+		else
+			printf("CMD55 %d\n",r);
 	}
 	return(0);
 }
@@ -141,12 +142,12 @@ int wait_init()
 	{
 		if((r=cmd_init())==0)
 		{
-//			printf("init %d\n  ",r);
+			printf("init %d\n  ",r);
 			SPI(0xff);
 			return(1);
 		}
-//		else
-//			printf("init %d\n  ",r);
+		else
+			printf("init %d\n  ",r);
 		spi_spin();
 	}
 	return(0);
@@ -160,7 +161,7 @@ int is_sdhc()
 	spi_spin();
 
 	r=cmd_CMD8();		// test for SDHC capability
-//	printf("cmd_CMD8 response: %d\n",r);
+	printf("cmd_CMD8 response: %d\n",r);
 	if(r!=1)
 	{
 		wait_init();
@@ -170,7 +171,7 @@ int is_sdhc()
 	r=SPI_PUMP();
 	if((r&0xffff)!=0x01aa)
 	{
-//		printf("CMD8_4 response: %d\n",r);
+		printf("CMD8_4 response: %d\n",r);
 		wait_init();
 		return(0);
 	}
@@ -186,10 +187,10 @@ int is_sdhc()
 		{
 			if((r=cmd_CMD58())==0)
 			{
-//				printf("CMD58 %d\n  ",r);
+				printf("CMD58 %d\n  ",r);
 				SPI(0xff);
 				r=SPI_READ();
-//				printf("CMD58_2 %d\n  ",r);
+				printf("CMD58_2 %d\n  ",r);
 				SPI(0xff);
 				SPI(0xff);
 				SPI(0xff);
@@ -199,12 +200,12 @@ int is_sdhc()
 				else
 					return(0);
 			}
-//			else
-//				printf("CMD58 %d\n  ",r);
+			else
+				printf("CMD58 %d\n  ",r);
 		}
 		if(i==2)
 		{
-//			printf("SDHC Initialization error!\n");
+			printf("SDHC Initialization error!\n");
 			return(0);
 		}
 	}
@@ -267,7 +268,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	int result=0;
 	int i;
 	int r;
-//	printf("sd_read_sector %d, %d\n",lba,buf);
+	printf("sd_read_sector %d, %d\n",lba,buf);
 	SPI(0xff);
 
 	EnableCard();
@@ -279,7 +280,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	r=cmd_read(lba);
 	if(r!=0)
 	{
-//		printf("Read command failed at %d (%d)\n",lba,r);
+		printf("Read command failed at %d (%d)\n",lba,r);
 		return(result);
 	}
 

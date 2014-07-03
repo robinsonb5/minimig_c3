@@ -259,10 +259,10 @@ MyMinimig: COMPONENT Minimig1
 		
 		-- Peripherals
 		
-		rxd => rs232_rxd,
-		txd => rs232_txd,
---		rxd => '1',
---		txd => open,
+--		rxd => rs232_rxd,
+--		txd => rs232_txd,
+		rxd => '1',
+		txd => open,
 		cts => '0',
 		rts => open,
 		n_15khz => vga_scandbl,
@@ -426,10 +426,10 @@ mycfide : entity work.cfide
 		sd_dimm => sd_miso,
 		sd_ack => sd_ack,
 		enaWRreg => enaWRreg,
---		debugTxD => rs232_txd,
---		debugRxD => rs232_rxd,
-		debugTxD => open,
-		debugRxD => '1',
+		debugTxD => rs232_txd,
+		debugRxD => rs232_rxd,
+--		debugTxD => open,
+--		debugRxD => '1',
 		fastramsize => fastramsize,
 		turbochipram => turbochipram
    );

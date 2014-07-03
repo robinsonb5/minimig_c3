@@ -9,7 +9,7 @@ unsigned int SwapBBBB(unsigned int i)
 
 unsigned int SwapBB(unsigned int i)
 {
-	unsigned short result=(i>>8)&0xff;
+	unsigned int result=(i>>8)&0xff;
 	result|=(i<<8)&0xff00;
 	return(result);
 }

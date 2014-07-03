@@ -2,7 +2,7 @@
 #define SPI_H
 
 #define SPIBASE 0xda4000
-#define HW_SPI(x) *(volatile unsigned short *)(SPIBASE+x)
+#define HW_SPI(x) *(volatile unsigned char *)(SPIBASE+x)
 
 /* SPI registers */
 #define HW_SPI_CS 0x04
