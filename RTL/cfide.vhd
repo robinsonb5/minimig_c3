@@ -158,7 +158,7 @@ sd_in(15 downto 8) <= sd_in_shift(15 downto 8) WHEN lds='0' ELSE sd_in_shift(7 d
 sd_in(7 downto 0) <= sd_in_shift(7 downto 0);
 
 RAM_write <= '1' when ROM_select='1' AND state="11" ELSE '0';
-ROM_select <= '1' when addr(23 downto 12)=X"000" ELSE '0';
+ROM_select <= '0'; -- '1' when addr(23 downto 12)=X"000" ELSE '0';
 rs232_select <= '1' when addr(23 downto 12)=X"DA8" ELSE '0';
 KEY_select <= '1' when addr(23 downto 12)=X"DE0" ELSE '0';
 PART_select <= '1' when addr(23 downto 12)=X"DEE" ELSE '0';

@@ -85,7 +85,7 @@ begin
 		IMPL_SHIFT => true,
 		IMPL_XOR => true,
 		REMAP_STACK => true,
-		EXECUTE_RAM => false -- Shouldn't need to execute insructions from external RAM in simple testcases
+		EXECUTE_RAM => true
 	)
 	port map (
 		clk                 => clk,
