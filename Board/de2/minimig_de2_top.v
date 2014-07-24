@@ -331,10 +331,10 @@ Fampiga myfampiga
 		.sdr_ba({DRAM_BA_1,DRAM_BA_0}),
 		.sdr_cke(DRAM_CKE),
 		.sdr_dqm({DRAM_UDQM,DRAM_LDQM}),
-		.sdr_cs(DRAM_CS),
-		.sdr_we(DRAM_WE),
-		.sdr_cas(DRAM_CAS),
-		.sdr_ras(DRAM_RAS),
+		.sdr_cs(DRAM_CS_N),
+		.sdr_we(DRAM_WE_N),
+		.sdr_cas(DRAM_CAS_N),
+		.sdr_ras(DRAM_RAS_N),
 
 		// VGA
 		.vga_r(VGA_R[9:6]),

@@ -85,7 +85,8 @@ begin
 		IMPL_SHIFT => true,
 		IMPL_XOR => true,
 		REMAP_STACK => true,
-		EXECUTE_RAM => true
+		EXECUTE_RAM => true,
+		stackbit => 24
 	)
 	port map (
 		clk                 => clk,
@@ -105,7 +106,7 @@ begin
 		from_rom => zpu_from_rom,
 		to_rom => zpu_to_rom
 	);
-
+	
 zpu_enable<='1';
 zpu_interrupt<='0';
 
@@ -132,6 +133,8 @@ begin
 			h_enable<=mem_hEnable;
 		end if;			
 
+		addr(31 downto 24)<=(others => '0');
+		
 		case state is
 			when waiting =>
 				if clkena_in='1' then -- Sync with toplevel state machine
@@ -141,14 +144,14 @@ begin
 						-- Trigger write of either high word, or single word if half or byte cycle.
 
 						if mem_hEnable='1' then	-- Halfword cycle
-							addr<=mem_addr; -- For halfword or byte writes we use the address unmodified
+							addr(23 downto 0)<=mem_addr(23 downto 0); -- For halfword or byte writes we use the address unmodified
 							data_write<=mem_write(15 downto 0);
 							nUDS<='0';
 							nLDS<='0';
 							state<=writelow;
 							
 						elsif mem_bEnable='1' then -- Byte cycle
-							addr<=mem_addr; -- For halfword or byte writes we use the address unmodified
+							addr(23 downto 0)<=mem_addr(23 downto 0); -- For halfword or byte writes we use the address unmodified
 							data_write<=mem_write(7 downto 0)&mem_write(7 downto 0);
 							nUDS<=mem_addr(0);
 							nLDS<=not mem_addr(0);
@@ -156,7 +159,7 @@ begin
 							
 						else	-- longword cycle.
 --							addr<=mem_addr(31 downto 2)&"00"; -- longword writes are 32-bit aligned to make the logic simpler
-							addr<=mem_addr(31 downto 1)&'0'; -- longword writes are now word-aligned.
+							addr(23 downto 0)<=mem_addr(23 downto 1)&'0'; -- longword writes are now word-aligned.
 							data_write<=mem_write(31 downto 16);
 							nUDS<='0';
 							nLDS<='0';
@@ -170,19 +173,19 @@ begin
 						read_pending<='0';
 						-- Trigger read of either high word, or single word if half or byte cycle.
 						if mem_hEnable='1' then	-- Halfword cycle
-							addr<=mem_addr; -- For halfword or byte reads we use the address unmodified
+							addr(23 downto 0)<=mem_addr(23 downto 0); -- For halfword or byte reads we use the address unmodified
 							mem_read(31 downto 16)<=(others=>'0');
 							nUDS<='0';
 							nLDS<='0';
 							state<=readlow;						
 						elsif mem_bEnable='1' then -- Byte cycle
-							addr<=mem_addr; -- For halfword or byte reads we use the address unmodified
+							addr(23 downto 0)<=mem_addr(23 downto 0); -- For halfword or byte reads we use the address unmodified
 							mem_read(31 downto 8)<=(others=>'0');
 							nUDS<=mem_addr(0);
 							nLDS<=not mem_addr(0);
 							state<=readlow;
 						else	-- longword cycle.
-							addr<=mem_addr(31 downto 1)&'0'; -- longword writes are now word-aligned
+							addr(23 downto 0)<=mem_addr(23 downto 1)&'0'; -- longword writes are now word-aligned
 							nUDS<='0';
 							nLDS<='0';
 							state<=readhigh;
@@ -196,7 +199,7 @@ begin
 			when readhigh =>
 				if clkena_in='1' then
 					mem_read(31 downto 16)<=data_in;
-					addr<=(mem_addr(31 downto 1)&'0')+2; -- Adjust address for second word
+					addr(23 downto 0)<=(mem_addr(23 downto 1)&'0')+2; -- Adjust address for second word
 --					addr(1)<='1'; -- Adjust address for second word
 					state<=readlow;
 				end if;
@@ -219,7 +222,7 @@ begin
 			
 			when writehigh =>
 				if clkena_in='1' then
-					addr<=(mem_addr(31 downto 1)&'0')+2; -- Adjust address for second word
+					addr(23 downto 0)<=(mem_addr(23 downto 1)&'0')+2; -- Adjust address for second word
 --					addr(1)<='1'; -- Adjust address for second word
 					data_write<=mem_write(15 downto 0);
 					state<=writelow;
