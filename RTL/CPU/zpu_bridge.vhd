@@ -3,7 +3,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
-use work.zpu_config.all;
 use work.zpupkg.ALL;
 
 
@@ -41,10 +40,12 @@ architecture rtl of ZPU_Bridge is
 type bridgestates is (waiting,readlow,readhigh,writelow,writehigh);
 signal state : bridgestates;
 
+constant maxAddrBit : integer := 31;
+
 signal mem_busy           : std_logic;
 signal mem_read             : std_logic_vector(wordSize-1 downto 0);
 signal mem_write            : std_logic_vector(wordSize-1 downto 0);
-signal mem_addr             : std_logic_vector(maxAddrBitIncIO downto 0);
+signal mem_addr             : std_logic_vector(maxAddrBit downto 0);
 signal mem_writeEnable      : std_logic; 
 signal mem_hEnable      : std_logic; 
 signal mem_bEnable      : std_logic; 
@@ -74,7 +75,7 @@ begin
 		to_zpu => zpu_from_rom
 	);
 
-	zpu: zpu_core 
+	zpu: zpu_core_flex 
 	generic map (
 		IMPL_MULTIPLY => true,
 		IMPL_COMPARISON_SUB => true,
