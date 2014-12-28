@@ -307,10 +307,12 @@ MyMinimig: COMPONENT Minimig1
 		n_joy4 => joy4_n(5 downto 0)
 	);
 		
-MainCPU: entity work.TG68K
+		
+MainCPU: entity work.CPU_SplitClock
    port map
 	(        
 		clk => clk,
+		clk28 => clk28m,
 		reset => n_cpu_reset and sdram_ready,
 		clkena_in => '1',
 		  
@@ -318,9 +320,6 @@ MainCPU: entity work.TG68K
 		  
 		IPL => n_cpu_ipl,
 		dtack => n_cpu_dtack,
-
-		vpa => '1',
-		ein => '1',
 		
 		addr => cpu_address,
 		data_read => cpu_data_in,
@@ -329,8 +328,6 @@ MainCPU: entity work.TG68K
 		uds => n_cpu_uds,
 		lds => n_cpu_lds,
 		rw => cpu_r_w,
-		e => open,
-		vma => open,
 
 		  -- TG68 specific signals...
 		  
@@ -352,7 +349,55 @@ MainCPU: entity work.TG68K
       cpuDMA => cpu_dma,
       ramlds => cpu_ram_lds,
       ramuds => cpu_ram_uds
-	);
+	);	
+	
+		
+--MainCPU: entity work.TG68K
+--   port map
+--	(        
+--		clk => clk,
+--		reset => n_cpu_reset and sdram_ready,
+--		clkena_in => '1',
+--		  
+--	  -- Standard MC68000 signals...
+--		  
+--		IPL => n_cpu_ipl,
+--		dtack => n_cpu_dtack,
+--
+--		vpa => '1',
+--		ein => '1',
+--		
+--		addr => cpu_address,
+--		data_read => cpu_data_in,
+--		data_write => cpu_data_out,
+--		as => n_cpu_as,
+--		uds => n_cpu_uds,
+--		lds => n_cpu_lds,
+--		rw => cpu_r_w,
+--		e => open,
+--		vma => open,
+--
+--		  -- TG68 specific signals...
+--		  
+--      wrd => wrd,
+--      ena7RDreg => ena7RDreg,
+--      ena7WRreg => ena7WRreg,
+--      enaWRreg => enaWRreg,
+--       
+--      fromram => cpu_data_from_ram,
+--      ramready => cpu_ena,	-- dtack equivalent for fastram access 
+--      cpu => cpu_config,
+--      ramaddr => cpu_ramaddr,
+--      cpustate => cpustate,
+--		turbochipram => turbochipram,
+--		fastramcfg => fastramsize,
+--
+--		nResetOut => maincpuready,
+--      skipFetch => open,
+--      cpuDMA => cpu_dma,
+--      ramlds => cpu_ram_lds,
+--      ramuds => cpu_ram_uds
+--	);
 
 mysdram : entity work.sdram
 	generic map
@@ -439,23 +484,23 @@ mycfide : entity work.cfide
 		turbochipram => turbochipram
    );
 
-myhostcpu : entity work.TG68KdotC_Kernel
-   port map(clk => clk,
-		nReset => sdram_ready,
-		clkena_in => hostena and enaWRreg,
-		data_in => hostdata,
-		addr(31 downto 1) => hostaddr,
-		addr(0) => open,
-		data_write => hostWR,
-		nWr => open, -- uses busstate instead?
-		nUDS => hostU,
-		nLDS => hostL,
-		busstate	=> hostState(1 downto 0),
-		nResetOut => open,
-		FC => open,
--- for debug		
-		skipFetch => open,
-		regin => open
-	);
+--myhostcpu : entity work.TG68KdotC_Kernel
+--   port map(clk => clk,
+--		nReset => sdram_ready,
+--		clkena_in => hostena and enaWRreg,
+--		data_in => hostdata,
+--		addr(31 downto 1) => hostaddr,
+--		addr(0) => open,
+--		data_write => hostWR,
+--		nWr => open, -- uses busstate instead?
+--		nUDS => hostU,
+--		nLDS => hostL,
+--		busstate	=> hostState(1 downto 0),
+--		nResetOut => open,
+--		FC => open,
+---- for debug		
+--		skipFetch => open,
+--		regin => open
+--	);
 	
 end rtl;

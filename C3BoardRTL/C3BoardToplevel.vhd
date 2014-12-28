@@ -291,7 +291,7 @@ begin
 	
 	myreset : entity work.poweronreset
 		port map(
-			clk => clk,
+			clk => clk28m,
 			reset_button => reset_button and pll_locked,
 			reset_out => reset_n,
 			power_button => power_button,
