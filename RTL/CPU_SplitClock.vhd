@@ -3,7 +3,11 @@
 --                                                                          --
 -- Copyright (c) 2009-2011 Tobias Gubener                                   -- 
 -- Subdesign fAMpIGA by TobiFlex                                            --
+-- Redesigned by Alastair M. Robinson to run the CPU at 28MHz instead       --
+-- of ~113.5Mhz                                                             --
 --                                                                          --
+-- Fast RAM / AutoConfig still to be implemented
+--
 -- This is the TOP-Level for TG68KdotC_Kernel to generate 68K Bus signals   --
 --                                                                          --
 -- This source file is free software: you can redistribute it and/or modify --
