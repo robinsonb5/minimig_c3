@@ -484,23 +484,23 @@ mycfide : entity work.cfide
 		turbochipram => turbochipram
    );
 
---myhostcpu : entity work.TG68KdotC_Kernel
---   port map(clk => clk,
---		nReset => sdram_ready,
---		clkena_in => hostena and enaWRreg,
---		data_in => hostdata,
---		addr(31 downto 1) => hostaddr,
---		addr(0) => open,
---		data_write => hostWR,
---		nWr => open, -- uses busstate instead?
---		nUDS => hostU,
---		nLDS => hostL,
---		busstate	=> hostState(1 downto 0),
---		nResetOut => open,
---		FC => open,
----- for debug		
---		skipFetch => open,
---		regin => open
---	);
+myhostcpu : entity work.TG68KdotC_Kernel
+   port map(clk => clk,
+		nReset => sdram_ready,
+		clkena_in => hostena and enaWRreg,
+		data_in => hostdata,
+		addr(31 downto 1) => hostaddr,
+		addr(0) => open,
+		data_write => hostWR,
+		nWr => open, -- uses busstate instead?
+		nUDS => hostU,
+		nLDS => hostL,
+		busstate	=> hostState(1 downto 0),
+		nResetOut => open,
+		FC => open,
+-- for debug		
+		skipFetch => open,
+		regin => open
+	);
 	
 end rtl;

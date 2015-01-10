@@ -69,6 +69,7 @@ ARCHITECTURE logic OF CPU_SplitClock IS
    SIGNAL uds_in	  : std_logic;
    SIGNAL lds_in	  : std_logic;
    SIGNAL busstate       : std_logic_vector(1 downto 0);
+	signal ramcs : std_logic;
    SIGNAL clkena	  : std_logic;
 --   SIGNAL n_clk		  : std_logic;
 
@@ -81,40 +82,13 @@ ARCHITECTURE logic OF CPU_SplitClock IS
 
 BEGIN
 
-	cpustate <= "0001"&busstate;
+	ramcs<='1';
+	cpustate <= "000" & ramcs & busstate;
 	
 --
---pf68K_Kernel_inst: TG68KdotC_Kernel 
---	generic map(
---		SR_Read => 2,         	--0=>user,   1=>privileged,      2=>switchable with CPU(0)
---		VBR_Stackframe => 2,  	--0=>no,     1=>yes/extended,    2=>switchable with CPU(0)
---		extAddr_Mode => 2,    	--0=>no,     1=>yes,    2=>switchable with CPU(1)
---		MUL_Mode => 2,	   		--0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no MUL,  
---		DIV_Mode => 2		  	 --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no DIV,  
---		)
---  PORT MAP(
---        clk => clk,               	-- : in std_logic;
---        nReset => reset,            -- : in std_logic:='1';			--low active
---        clkena_in => clkena,	        -- : in std_logic:='1';
-----        data_in => r_data,       -- : in std_logic_vector(15 downto 0);
-----        data_in => data_read,       -- : in std_logic_vector(15 downto 0);
---        data_in => datatg68,       -- : in std_logic_vector(15 downto 0);
---		IPL => cpuIPL,				  	-- : in std_logic_vector(2 downto 0):="111";
---		IPL_autovector => '1',   	-- : in std_logic:='0';
---        addr => cpuaddr,           	-- : buffer std_logic_vector(31 downto 0);
---        data_write => data_write,     -- : out std_logic_vector(15 downto 0);
---		busstate => state,	  	  	-- : buffer std_logic_vector(1 downto 0);	
---        regin => open,          	-- : out std_logic_vector(31 downto 0);
---		nWr => wr,			  	-- : out std_logic;
---		nUDS => uds_in,
---		nLDS => lds_in,	  			-- : out std_logic;
---		nResetOut => nResetOut,
---		CPU => cpu,
---		skipFetch => skipFetch 		-- : out std_logic
---        );
-
-		 
-		pf68K_Kernel_inst: entity work.DummyCPU
+pf68K_Kernel_inst: entity work.TG68KdotC_Kernel 
+--		pf68K_Kernel_inst: entity work.DummyCPU
+--		pf68K_Kernel_inst: entity work.ZPU_Bridge
 	generic map(
 		SR_Read => 2,         	--0=>user,   1=>privileged,      2=>switchable with CPU(0)
 		VBR_Stackframe => 2,  	--0=>no,     1=>yes/extended,    2=>switchable with CPU(0)
@@ -141,7 +115,7 @@ BEGIN
 		skipFetch => skipFetch 		-- : out std_logic
         );
 
-
+cpuIPL <= IPL;
 clkena<='1' when bridge_clkena='1' or busstate="01" else '0';
 		  
 PROCESS (clk28)
@@ -152,6 +126,8 @@ PROCESS (clk28)
 				uds<='1';
 				lds<='1';
 				rw<='1';
+				addr<=(others => '0');
+				bridge_state<=idle;
 			else
 				bridge_clkena<='0';
 				case bridge_state is
