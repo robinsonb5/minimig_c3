@@ -79,6 +79,7 @@ signal cpu_address : std_logic_vector(31 downto 0);
 signal cpu_data_in : std_logic_vector(15 downto 0);
 signal cpu_data_out : std_logic_vector(15 downto 0);
 signal cpu_data_from_ram : std_logic_vector(15 downto 0);
+signal cpu_data_to_ram : std_logic_vector(15 downto 0);
 signal n_cpu_ipl : std_logic_vector(2 downto 0);
 signal n_cpu_as : std_logic;
 signal n_cpu_uds : std_logic;
@@ -337,6 +338,7 @@ MainCPU: entity work.CPU_SplitClock
       enaWRreg => enaWRreg,
        
       fromram => cpu_data_from_ram,
+		toram => cpu_data_to_ram,
       ramready => cpu_ena,	-- dtack equivalent for fastram access 
       cpu => cpu_config,
       ramaddr => cpu_ramaddr,
@@ -428,7 +430,7 @@ mysdram : entity work.sdram
 		hostRD => hostRD,
 		hostena => hostena_in,
 
-		cpuWR	=> cpu_data_out,
+		cpuWR	=> cpu_data_to_ram,
 		cpuAddr => cpu_ramaddr(24 downto 1),
 		cpuU => cpu_ram_uds,
 		cpuL => cpu_ram_lds,
