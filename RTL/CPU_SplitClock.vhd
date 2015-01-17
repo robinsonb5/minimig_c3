@@ -151,34 +151,31 @@ PROCESS (clk28)
 				ramcs<='1';
 			else
 				bridge_clkena<='0';
+				ac_req<='0';
 				case bridge_state is
 					when idle =>
 						as<='1';
 						uds<='1';
 						lds<='1';
 						rw<='1';
-						if ena7WRreg='1' then
+						
+						if busstate/="01" and (sel_zorroii='1' or sel_zorroiii='1') then
+							ramcs<='0';
+							bridge_state<=fastramwait;
+						elsif ena7WRreg='1' then
 							addr<=cpuaddr;
 							uds<=uds_in;
 							lds<=lds_in;
-							ac_req<='0';
 							case busstate is
 								when "00" => -- Fetch instruction
-									if sel_zorroii='1' or sel_zorroiii='1' then
-										ramcs<='0';
-										bridge_state<=fastramwait;
-									else
-										as<='0';
-										bridge_state<=cpuread;
-									end if;
+									as<='0';
+									bridge_state<=cpuread;
 								when "01" => -- Decode
 									null;
 								when "10" => -- Read data
 									if sel_autoconfig='1' then
+										ac_req<='1';
 										bridge_state<=autoconfig;
-									elsif sel_zorroii='1' or sel_zorroiii='1' then
-										ramcs<='0';
-										bridge_state<=fastramwait;
 									else
 										as<='0';
 										bridge_state<=cpuread;
@@ -187,9 +184,6 @@ PROCESS (clk28)
 									if sel_autoconfig='1' then
 										ac_req<='1';
 										bridge_state<=autoconfig;
-									elsif sel_zorroii='1' or sel_zorroiii='1' then
-										ramcs<='0';
-										bridge_state<=fastramwait;
 									else
 										as<='0';
 										rw<='0';
