@@ -60,7 +60,7 @@ parameter WAITING=0, WAITRD=1, WAITFILL=2,
 				SNOOP1=12, SNOOP2=13, SNOOP3=14;
 reg [4:0] state = INIT1;
 reg init;
-reg [7:0] initctr;
+reg [9:0] initctr;
 assign ready=~init;
 
 
@@ -221,7 +221,7 @@ begin
 		INIT1:
 		begin
 			init<=1'b1;	// need to mark the entire cache as invalid before starting.
-			initctr<=8'b0000_0000;
+			initctr<=10'b00_0000_0000;
 			data_ports_w<=18'b0; // Mark entire cache as invalid
 			data_wren1<=1'b1;
 			data_wren2<=1'b1;
@@ -234,7 +234,7 @@ begin
 			initctr<=initctr+1;
 			data_wren1<=1'b1;
 			data_wren2<=1'b1;
-			if(initctr==8'b1111_1111)
+			if(initctr==10'b11_1111_1111)
 				state<=WAITING;
 		end
 
