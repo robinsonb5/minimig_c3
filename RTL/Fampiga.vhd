@@ -55,6 +55,8 @@ port(
 		-- RS232
 		rs232_rxd : in std_logic;
 		rs232_txd : out std_logic;
+		debug_rxd : in std_logic :='1';
+		debug_txd : out std_logic;
 
 		-- SD card interface
 		sd_cs : out std_logic;
@@ -431,10 +433,8 @@ mycfide : entity work.cfide
 		sd_dimm => sd_miso,
 		sd_ack => sd_ack,
 		enaWRreg => enaWRreg,
---		debugTxD => rs232_txd,
---		debugRxD => rs232_rxd,
-		debugTxD => open,
-		debugRxD => '1',
+		debugTxD => debug_txd,
+		debugRxD => debug_rxd,
 		fastramsize => fastramsize,
 		turbochipram => turbochipram
    );

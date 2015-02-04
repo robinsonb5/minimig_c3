@@ -126,6 +126,9 @@ architecture RTL of Fampiga_top is
 	signal sd_cs : std_logic;
 	signal sd_cke : std_logic;
 	
+	signal debug_rxd : std_logic;
+	signal debug_txd : std_logic;
+	
 --//********************
 
 	signal reset_counter : unsigned(15 downto 0):=X"0000";
@@ -143,6 +146,7 @@ begin
 			reset_n<='0';
 		end if;
 	end if;
+	reset<=not reset_n;
 end process;
 
 	mypll : entity work.PLL
@@ -211,6 +215,8 @@ myFampiga: entity work.Fampiga
 		-- RS232
 		rs232_rxd => '1',
 		rs232_txd => open,
+		debug_rxd => debug_rxd,
+		debug_txd => debug_txd,
 
 		-- SD card interface
 		sd_cs => spi_cs,
@@ -261,14 +267,15 @@ myFampiga: entity work.Fampiga
 			enable_docking_station => true,
 			enable_c64_joykeyb => true,
 			enable_c64_4player => true,
-			enable_raw_spi => true
+			enable_raw_spi => true,
+			enable_iec_access => true
 		)
 		port map (
 		-- Clocks
 			clk => clk,
 			clk_mux => clk,
 			ena_1mhz => ena_1MHz,
-			reset => reset_n, -- reset,
+			reset => reset, -- reset,
 			
 			no_clock => no_clock,
 			docking_station => docking_station,
@@ -323,7 +330,16 @@ myFampiga: entity work.Fampiga
 		-- Keyboards
 			keys => keys,
 			restore_key_n => restore_key_n,
-			c64_nmi_n => c64_nmi_n
+			c64_nmi_n => c64_nmi_n,
+
+--			iec_clk_out : in std_logic := '1';
+--			iec_dat_out : in std_logic := '1';
+			iec_atn_out => debug_txd,
+--			iec_srq_out : in std_logic := '1';
+			iec_clk_in => debug_rxd
+--			iec_dat_in : out std_logic;
+--			iec_atn_in : out std_logic;
+--			iec_srq_in : out std_logic
 			
 		);
 

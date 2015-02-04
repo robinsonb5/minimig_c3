@@ -289,7 +289,12 @@ end process;
 						END IF;
 					when "00000" =>
 --						ELSE							--DA4000
-						spi_div <= spi_speed;
+						if scs(1)='1' THEN -- Wait for io component to propagate signals.
+							spi_wait<='1'; -- Only wait if SPI needs to go through the MUX
+							spi_div <= spi_speed+2;
+						else
+							spi_div <= spi_speed;
+						end if;
 						sd_out <= cpudata_in(15 downto 0);
 						IF scs(6)='1' THEN		-- SPI direkt Mode
 							shiftcnt <= "10111111111111";
@@ -309,7 +314,7 @@ end process;
 --				END IF;
 			ELSE
 				IF spi_div="00000000" THEN
-					if scs(1)='0' THEN -- Wait for io component to propagate signals.
+					if scs(1)='1' THEN -- Wait for io component to propagate signals.
 						spi_wait<='1'; -- Only wait if SPI needs to go through the MUX
 						spi_div <= spi_speed+2;
 					else
