@@ -119,7 +119,6 @@ signal cpu_ramaddr : std_logic_vector(31 downto 0);
 signal cpustate : std_logic_vector(5 downto 0);
 
 signal maincpuready : std_logic;
-signal cpu_dma : std_logic;
 signal cpu_ram_lds : std_logic;
 signal cpu_ram_uds : std_logic;
 
@@ -313,8 +312,8 @@ MainCPU: entity work.TG68K
    port map
 	(        
 		clk => clk,
+		clk28 => clk28m,
 		reset => n_cpu_reset and sdram_ready,
-		clkena_in => '1',
 		  
 	  -- Standard MC68000 signals...
 		  
@@ -351,7 +350,6 @@ MainCPU: entity work.TG68K
 
 		nResetOut => maincpuready,
       skipFetch => open,
-      cpuDMA => cpu_dma,
       ramlds => cpu_ram_lds,
       ramuds => cpu_ram_uds
 	);
@@ -390,7 +388,6 @@ mysdram : entity work.sdram
 		cpuU => cpu_ram_uds,
 		cpuL => cpu_ram_lds,
 		cpustate	=> cpustate,
-		cpu_dma => cpu_dma,
 		cpuRD	=> cpu_data_from_ram,
 		cpuena => cpu_ena,
 		

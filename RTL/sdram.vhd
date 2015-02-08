@@ -54,7 +54,6 @@ port
 	cpuU		: in std_logic;
 	cpuL		: in std_logic;
 	cpustate	: in std_logic_vector(5 downto 0);
-	cpu_dma		: in std_logic;
 	chipWR		: in std_logic_vector(15 downto 0);
 	chipAddr	: in std_logic_vector(24 downto 1);
 	chipU		: in std_logic;

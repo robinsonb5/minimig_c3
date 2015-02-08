@@ -30,8 +30,8 @@ use ieee.std_logic_unsigned.all;
 entity TG68K is
    port(        
 		clk           : in std_logic;
+		clk28 : in std_logic;
 		reset         : in std_logic;
-        clkena_in     : in std_logic:='1';
         IPL           : in std_logic_vector(2 downto 0):="111";
         dtack         : in std_logic;
         vpa           : in std_logic:='1';
@@ -59,7 +59,6 @@ entity TG68K is
         cpustate      : out std_logic_vector(5 downto 0);
 		nResetOut	  : out std_logic;
         skipFetch     : buffer std_logic;
-        cpuDMA         : buffer std_logic;
         ramlds        : out std_logic;
         ramuds        : out std_logic
         );
@@ -177,24 +176,8 @@ BEGIN
 --	sel_ziiiram <='1' when cpuaddr(31 downto 24)=ziii_base and ziiiram_ena='1' else '0';
 	
 	-- FIXME - prevent TurboChip toggling while a transaction's in progress!
-	sel_fast <= '1' when state/="01" AND
-		(
-			(turbochip_ena='1' and turbochip_d='1' AND cpuaddr(23 downto 21)="000" )
-			OR cpuaddr(23 downto 21)="001"
-			OR cpuaddr(23 downto 21)="010"
-			OR cpuaddr(23 downto 21)="011"
-			OR cpuaddr(23 downto 21)="100"
---			OR sel_ziiiram='1'
-			OR cpuaddr(30)='1'	-- Hard-code $40000000
-		)
-		ELSE '0'; --$200000 - $9FFFFF
---	sel_fast <= '1' when cpuaddr(23 downto 21)="001" OR cpuaddr(23 downto 21)="010" ELSE '0'; --$200000 - $5FFFFF
---	sel_fast <= '1' when cpuaddr(23 downto 19)="11111" ELSE '0'; --$F800000;
---	sel_fast <= '0'; --$200000 - $9FFFFF
---	sel_fast <= '1' when cpuaddr(24)='1' AND state/="01" ELSE '0'; --$1000000 - $1FFFFFF
+	sel_fast <= '0';
 	ramcs <= (NOT sel_fast) or slower(0);-- OR (state(0) AND NOT state(1));
---	cpuDMA <= NOT ramcs;
-	cpuDMA <= sel_fast;
 	cpustate <= clkena&slower(1 downto 0)&ramcs&state;
 	ramlds <= lds_in;
 	ramuds <= uds_in;
@@ -213,14 +196,6 @@ BEGIN
 		else "111" when cpuaddr(30)&cpuaddr(23 downto 21)="0100" -- 8 -> E
 		else cpuaddr(23 downto 21);	-- pass through others
 
-process(clk,turbochipram)
-begin
-	if rising_edge(clk) then
-		if state="01" then -- No mem access, so safe to switch chipram access mode
-			turbochip_d<=turbochipram;
-		end if;
-	end if;
-end process;
 
 pf68K_Kernel_inst: TG68KdotC_Kernel 
 	generic map(
@@ -251,135 +226,85 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 		skipFetch => skipFetch 		-- : out std_logic
         );
  
-	PROCESS (clk)
-	BEGIN
+--	PROCESS (clk)
+--	BEGIN
 
-		-- Zorro II RAM (Up to 8 meg at 0x200000)
 		autoconfig_data <= "1111";
-		IF fastramcfg/="000" THEN
-			CASE cpuaddr(6 downto 1) IS
-				WHEN "000000" => autoconfig_data <= "1110";		--Zorro-II card, add mem, no ROM
-				WHEN "000001" => 
-					CASE fastramcfg(1 downto 0) IS 
-						WHEN "01" => autoconfig_data <= "0110";		--2MB
-						WHEN "10" => autoconfig_data <= "0111";		--4MB
-						WHEN OTHERS => autoconfig_data <= "0000";	--8MB
-					END CASE;	
-				WHEN "001000" => autoconfig_data <= "1110";		--4626=icomp
-				WHEN "001001" => autoconfig_data <= "1101";		
-				WHEN "001010" => autoconfig_data <= "1110";		
-				WHEN "001011" => autoconfig_data <= "1101";		
-				WHEN "010011" => autoconfig_data <= "1110";		--serial=1
-				WHEN OTHERS => null;
-			END CASE;	
-		END IF;
 		
-		-- Zorro III RAM (Up to 16 meg, address assigned by ROM)
-		autoconfig_data2 <= "1111";
-		IF fastramcfg(2)='1' THEN -- Zorro III RAM
-			CASE cpuaddr(6 downto 1) IS
-				WHEN "000000" => autoconfig_data2 <= "1010";		--Zorro-III card, add mem, no ROM
-				WHEN "000001" => autoconfig_data2 <= "0000";		--8MB (extended to 16 in reg 08)
-				when "000100" => autoconfig_data2 <= "0000";		--Memory card, not silenceable, Extended size (16 meg), reserved.
-				WHEN "001000" => autoconfig_data2 <= "1110";		--4626=icomp
-				WHEN "001001" => autoconfig_data2 <= "1101";		
-				WHEN "001010" => autoconfig_data2 <= "1110";		
-				WHEN "001011" => autoconfig_data2 <= "1101";		
-				WHEN "010011" => autoconfig_data2 <= "1101";		--serial=2
-				WHEN OTHERS => null;
-			END CASE;	
-		END IF;
+--		-- Zorro II RAM (Up to 8 meg at 0x200000)		
+--		IF fastramcfg/="000" THEN
+--			CASE cpuaddr(6 downto 1) IS
+--				WHEN "000000" => autoconfig_data <= "1110";		--Zorro-II card, add mem, no ROM
+--				WHEN "000001" => 
+--					CASE fastramcfg(1 downto 0) IS 
+--						WHEN "01" => autoconfig_data <= "0110";		--2MB
+--						WHEN "10" => autoconfig_data <= "0111";		--4MB
+--						WHEN OTHERS => autoconfig_data <= "0000";	--8MB
+--					END CASE;	
+--				WHEN "001000" => autoconfig_data <= "1110";		--4626=icomp
+--				WHEN "001001" => autoconfig_data <= "1101";		
+--				WHEN "001010" => autoconfig_data <= "1110";		
+--				WHEN "001011" => autoconfig_data <= "1101";		
+--				WHEN "010011" => autoconfig_data <= "1110";		--serial=1
+--				WHEN OTHERS => null;
+--			END CASE;	
+--		END IF;
+--		
+--		-- Zorro III RAM (Up to 16 meg, address assigned by ROM)
+--		autoconfig_data2 <= "1111";
+--		IF fastramcfg(2)='1' THEN -- Zorro III RAM
+--			CASE cpuaddr(6 downto 1) IS
+--				WHEN "000000" => autoconfig_data2 <= "1010";		--Zorro-III card, add mem, no ROM
+--				WHEN "000001" => autoconfig_data2 <= "0000";		--8MB (extended to 16 in reg 08)
+--				when "000100" => autoconfig_data2 <= "0000";		--Memory card, not silenceable, Extended size (16 meg), reserved.
+--				WHEN "001000" => autoconfig_data2 <= "1110";		--4626=icomp
+--				WHEN "001001" => autoconfig_data2 <= "1101";		
+--				WHEN "001010" => autoconfig_data2 <= "1110";		
+--				WHEN "001011" => autoconfig_data2 <= "1101";		
+--				WHEN "010011" => autoconfig_data2 <= "1101";		--serial=2
+--				WHEN OTHERS => null;
+--			END CASE;	
+--		END IF;
 
 
-		IF rising_edge(clk) THEN
-			IF reset='0' THEN
-				autoconfig_out_next <= "01";		--autoconfig on
-				autoconfig_out <= "01";		--autoconfig on
-				turbochip_ena <= '0';	-- disable turbo_chipram until we know kickstart's running...
-				ziiiram_ena <='0';
-				ziii_base<=X"01";
-			ELSIF enaWRreg='1' THEN
-				IF sel_autoconfig='1' AND state="11"AND uds_in='0' and clkena='1' then
-					case cpuaddr(6 downto 1) is
-						when "100100" => -- Register 0x48 - config
-							if autoconfig_out="01" then
-								autoconfig_out<=fastramcfg(2)&'0';
-							end if;
-							turbochip_ena <= '1';	-- enable turbo_chipram after autoconfig has been done...
-															-- FIXME - this is a hack to allow ROM overlay to work.
-						when "100010" => -- Register 0x44, assign base address to ZIII RAM.
-												-- We ought to take 16 bits here, but for now we take liberties and use a single byte.
-							if autoconfig_out="10" then
-								ziii_base<=data_write(15 downto 8);
-								ziiiram_ena <='1';
-								autoconfig_out<="00";
-							end if;
+--		IF rising_edge(clk) THEN
+--			IF reset='0' THEN
+--				autoconfig_out_next <= "01";		--autoconfig on
+--				autoconfig_out <= "01";		--autoconfig on
+--				turbochip_ena <= '0';	-- disable turbo_chipram until we know kickstart's running...
+--				ziiiram_ena <='0';
+--				ziii_base<=X"01";
+--			ELSIF enaWRreg='1' THEN
+--				IF sel_autoconfig='1' AND state="11"AND uds_in='0' and clkena='1' then
+--					case cpuaddr(6 downto 1) is
+--						when "100100" => -- Register 0x48 - config
+--							if autoconfig_out="01" then
+--								autoconfig_out<=fastramcfg(2)&'0';
+--							end if;
+--							turbochip_ena <= '1';	-- enable turbo_chipram after autoconfig has been done...
+--															-- FIXME - this is a hack to allow ROM overlay to work.
+--						when "100010" => -- Register 0x44, assign base address to ZIII RAM.
+--												-- We ought to take 16 bits here, but for now we take liberties and use a single byte.
+--							if autoconfig_out="10" then
+--								ziii_base<=data_write(15 downto 8);
+--								ziiiram_ena <='1';
+--								autoconfig_out<="00";
+--							end if;
+--
+--						when others =>
+--							null;
+--					end case;
+--				END IF;	
+--			END IF;	
+--		END IF;	
+--	END PROCESS;
 
-						when others =>
-							null;
-					end case;
-				END IF;	
-			END IF;	
-		END IF;	
-	END PROCESS;
-
-	PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
-			IF reset='0' THEN
-				vmaena <= '0';
-				vmaenad <= '0';
-				sync_state3 <= '0';
-			ELSIF ena7RDreg='1' THEN
-				vmaena <= '0';
-				sync_state3 <= '0';
-				IF state/="01" OR state_ena='1' THEN
-					vmaenad <= vmaena;
-				END IF;
-				IF sync_state=sync5 THEN
-					e <= '1';
-				END IF;
-				IF sync_state=sync3 THEN
-					sync_state3 <= '1';
-				END IF;
-				IF sync_state=sync9 THEN
-					e <= '0';
-					vmaena <= NOT vma;
-				END IF;
-			END IF;
-		END IF;	
-		IF rising_edge(clk) THEN
-			S_stated <= S_state;
-			IF ena7WRreg='1' THEN
-				eind <= ein;
-				eindd <= eind;
-				CASE sync_state IS
-					WHEN sync0  => sync_state <= sync1;
-					WHEN sync1  => sync_state <= sync2;
-					WHEN sync2  => sync_state <= sync3;
-					WHEN sync3  => sync_state <= sync4;
-								   vma <= vpa;
-					WHEN sync4  => sync_state <= sync5;
-					WHEN sync5  => sync_state <= sync6;
-					WHEN sync6  => sync_state <= sync7;
-					WHEN sync7  => sync_state <= sync8;
-					WHEN sync8  => sync_state <= sync9;
-					WHEN OTHERS => sync_state <= sync0;
-								   vma <= '1';
-				END CASE;	
-				IF eind='1' AND eindd='0' THEN
-					sync_state <= sync7;
-				END IF;			
-			END IF;	
-		END IF;	
-	END PROCESS;
-				
 	
 	PROCESS (clk)
 	BEGIN
 		state_ena <= '0';
 --		IF clkena_in='1' AND enaWRreg='1' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
-		IF clkena_in='1' and slower(0)='0' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
+		IF slower(0)='0' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
 			clkena <= '1';
 		ELSE 
 			clkena <= '0';
@@ -420,7 +345,7 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 			lds_s <= '1';
 			addr_akt_s <= '0';
 			data_akt_s <= '0';
-		ELSIF rising_edge(clk) THEN
+		ELSIF rising_edge(clk28) THEN
         	IF ena7WRreg='1' THEN
 				as_s <= '1';
 				rw_s <= '1';
@@ -445,7 +370,7 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 									 addr_akt_s <= '1';
 									 data_akt_s <= NOT wr;
 									 r_data <= data_read;
-									 IF waitm='0' OR (vma='0' AND sync_state=sync9) THEN
+									 IF waitm='0' THEN
 										S_state <= "11";
 									 ELSE	
 										 as_s <= '0';
@@ -467,7 +392,7 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 			clkena_e <= '0';
 			addr_akt_e <= '0';
 			data_akt_e <= '0';
-		ELSIF rising_edge(clk) THEN
+		ELSIF rising_edge(clk28) THEN
         	IF ena7RDreg='1' THEN
 				as_e <= '1';
 				rw_e <= '1';
