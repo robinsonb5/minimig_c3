@@ -129,7 +129,6 @@ COMPONENT TG68KdotC_Kernel
 --   SIGNAL n_clk		  : std_logic;
    SIGNAL vmaena	  : std_logic;
    SIGNAL vmaenad	  : std_logic;
-   SIGNAL state_ena	  : std_logic;
    SIGNAL sync_state3 : std_logic;
    SIGNAL eind	      : std_logic;
    SIGNAL eindd	      : std_logic;
@@ -206,7 +205,7 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 		DIV_Mode => 2		  	 --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no DIV,  
 		)
   PORT MAP(
-        clk => clk,               	-- : in std_logic;
+        clk => clk28,               	-- : in std_logic;
         nReset => reset,            -- : in std_logic:='1';			--low active
         clkena_in => clkena,	        -- : in std_logic:='1';
 --        data_in => r_data,       -- : in std_logic_vector(15 downto 0);
@@ -226,100 +225,22 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 		skipFetch => skipFetch 		-- : out std_logic
         );
  
---	PROCESS (clk)
---	BEGIN
-
-		autoconfig_data <= "1111";
+	autoconfig_data <= "1111";
 		
---		-- Zorro II RAM (Up to 8 meg at 0x200000)		
---		IF fastramcfg/="000" THEN
---			CASE cpuaddr(6 downto 1) IS
---				WHEN "000000" => autoconfig_data <= "1110";		--Zorro-II card, add mem, no ROM
---				WHEN "000001" => 
---					CASE fastramcfg(1 downto 0) IS 
---						WHEN "01" => autoconfig_data <= "0110";		--2MB
---						WHEN "10" => autoconfig_data <= "0111";		--4MB
---						WHEN OTHERS => autoconfig_data <= "0000";	--8MB
---					END CASE;	
---				WHEN "001000" => autoconfig_data <= "1110";		--4626=icomp
---				WHEN "001001" => autoconfig_data <= "1101";		
---				WHEN "001010" => autoconfig_data <= "1110";		
---				WHEN "001011" => autoconfig_data <= "1101";		
---				WHEN "010011" => autoconfig_data <= "1110";		--serial=1
---				WHEN OTHERS => null;
---			END CASE;	
---		END IF;
---		
---		-- Zorro III RAM (Up to 16 meg, address assigned by ROM)
---		autoconfig_data2 <= "1111";
---		IF fastramcfg(2)='1' THEN -- Zorro III RAM
---			CASE cpuaddr(6 downto 1) IS
---				WHEN "000000" => autoconfig_data2 <= "1010";		--Zorro-III card, add mem, no ROM
---				WHEN "000001" => autoconfig_data2 <= "0000";		--8MB (extended to 16 in reg 08)
---				when "000100" => autoconfig_data2 <= "0000";		--Memory card, not silenceable, Extended size (16 meg), reserved.
---				WHEN "001000" => autoconfig_data2 <= "1110";		--4626=icomp
---				WHEN "001001" => autoconfig_data2 <= "1101";		
---				WHEN "001010" => autoconfig_data2 <= "1110";		
---				WHEN "001011" => autoconfig_data2 <= "1101";		
---				WHEN "010011" => autoconfig_data2 <= "1101";		--serial=2
---				WHEN OTHERS => null;
---			END CASE;	
---		END IF;
-
-
---		IF rising_edge(clk) THEN
---			IF reset='0' THEN
---				autoconfig_out_next <= "01";		--autoconfig on
---				autoconfig_out <= "01";		--autoconfig on
---				turbochip_ena <= '0';	-- disable turbo_chipram until we know kickstart's running...
---				ziiiram_ena <='0';
---				ziii_base<=X"01";
---			ELSIF enaWRreg='1' THEN
---				IF sel_autoconfig='1' AND state="11"AND uds_in='0' and clkena='1' then
---					case cpuaddr(6 downto 1) is
---						when "100100" => -- Register 0x48 - config
---							if autoconfig_out="01" then
---								autoconfig_out<=fastramcfg(2)&'0';
---							end if;
---							turbochip_ena <= '1';	-- enable turbo_chipram after autoconfig has been done...
---															-- FIXME - this is a hack to allow ROM overlay to work.
---						when "100010" => -- Register 0x44, assign base address to ZIII RAM.
---												-- We ought to take 16 bits here, but for now we take liberties and use a single byte.
---							if autoconfig_out="10" then
---								ziii_base<=data_write(15 downto 8);
---								ziiiram_ena <='1';
---								autoconfig_out<="00";
---							end if;
---
---						when others =>
---							null;
---					end case;
---				END IF;	
---			END IF;	
---		END IF;	
---	END PROCESS;
 
 	
 	PROCESS (clk)
 	BEGIN
-		state_ena <= '0';
---		IF clkena_in='1' AND enaWRreg='1' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
 		IF slower(0)='0' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
 			clkena <= '1';
 		ELSE 
 			clkena <= '0';
 		END IF;	
-		IF state="01" THEN
-			state_ena <= '1';
-		END IF;	
-		IF rising_edge(clk) THEN
+		IF rising_edge(clk28) THEN
         	IF clkena='1' THEN
-				slower <= "0111";	-- Let address, etc. propogate before SDRAM cycle.
---				slower <= "1000";
+				slower <= "0001";	-- Let address, etc. propogate before SDRAM cycle.
 			ELSE 
 				slower(3 downto 0) <= '0'&slower(3 downto 1);
---				slower(3 downto 0) <= enaWRreg&slower(3 downto 1);
---				slower(0) <= NOT slower(3) AND NOT slower(2);
 			END IF;	
 		END IF;	
 	END PROCESS;
