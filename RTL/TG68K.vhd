@@ -103,10 +103,6 @@ COMPONENT TG68KdotC_Kernel
 --   SIGNAL t_data      : std_logic_vector(15 downto 0);
    SIGNAL r_data      : std_logic_vector(15 downto 0);
    SIGNAL cpuIPL      : std_logic_vector(2 downto 0);
-   SIGNAL addr_akt_s  : std_logic;
-   SIGNAL addr_akt_e  : std_logic;
-   SIGNAL data_akt_s  : std_logic;
-   SIGNAL data_akt_e  : std_logic;
    SIGNAL as_s        : std_logic;
    SIGNAL as_e        : std_logic;
    SIGNAL uds_s       : std_logic;
@@ -154,40 +150,26 @@ COMPONENT TG68KdotC_Kernel
    SIGNAL ramcs	      : std_logic;
 
 BEGIN  
---	n_clk <= NOT clk;
---	wrd <= data_akt_e OR data_akt_s;
 	wrd <= wr;
-	addr <= cpuaddr;-- WHEN addr_akt_e='1' ELSE t_addr WHEN addr_akt_s='1' ELSE "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
---	data <= data_write WHEN data_akt_e='1' ELSE t_data WHEN data_akt_s='1' ELSE "ZZZZZZZZZZZZZZZZ";
---	datatg68 <= fromram WHEN sel_fast='1' ELSE r_data; 
+	addr <= cpuaddr;
 
 	datatg68 <= fromram WHEN sel_fast='1'
 		ELSE autoconfig_data&r_data(11 downto 0) when sel_autoconfig='1' and autoconfig_out="01" -- Zorro II autoconfig
 		ELSE autoconfig_data2&r_data(11 downto 0) when sel_autoconfig='1' and autoconfig_out="10" -- Zorro III autoconfig
 		ELSE r_data;
 
---	toram <= data_write;
-	
    sel_autoconfig <= '1' when cpuaddr(23 downto 19)="11101" AND autoconfig_out/="00" ELSE '0'; --$E80000 - $EFFFFF
 
 	sel_chipram <= '1' when state/="01" AND (cpuaddr(23 downto 21)="000") ELSE '0'; --$000000 - $1FFFFF
 
---	sel_ziiiram <='1' when cpuaddr(31 downto 24)=ziii_base and ziiiram_ena='1' else '0';
-	
-	-- FIXME - prevent TurboChip toggling while a transaction's in progress!
 	sel_fast <= '0';
 	ramcs <= (NOT sel_fast) or slower(0);-- OR (state(0) AND NOT state(1));
 	cpustate <= clkena&slower(1 downto 0)&ramcs&state;
 	ramlds <= lds_in;
 	ramuds <= uds_in;
 
---	ramaddr(23 downto 0) <= cpuaddr(23 downto 0);
---	ramaddr(24) <= sel_fast;
---	ramaddr(31 downto 25) <= cpuaddr(31 downto 25);
-
 	ramaddr(20 downto 0) <= cpuaddr(20 downto 0);
 	ramaddr(31 downto 25) <= "0000000";
---	ramaddr(24) <= sel_ziiiram;	-- Remap the Zorro III RAM to 0x1000000
 	ramaddr(24) <= cpuaddr(30);	-- Remap the Zorro III RAM to 0x1000000
 	ramaddr(23 downto 21) <= "100" when cpuaddr(30)&cpuaddr(23 downto 21)="0001" -- 2 -> 8
 		else "101" when cpuaddr(30)&cpuaddr(23 downto 21)="0010" -- 4 -> A
@@ -208,8 +190,6 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
         clk => clk28,               	-- : in std_logic;
         nReset => reset,            -- : in std_logic:='1';			--low active
         clkena_in => clkena,	        -- : in std_logic:='1';
---        data_in => r_data,       -- : in std_logic_vector(15 downto 0);
---        data_in => data_read,       -- : in std_logic_vector(15 downto 0);
         data_in => datatg68,       -- : in std_logic_vector(15 downto 0);
 		IPL => cpuIPL,				  	-- : in std_logic_vector(2 downto 0):="111";
 		IPL_autovector => '1',   	-- : in std_logic:='0';
@@ -228,22 +208,9 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 	autoconfig_data <= "1111";
 		
 
-	
-	PROCESS (clk)
-	BEGIN
-		IF slower(0)='0' AND (state="01" OR (ena7RDreg='1' AND clkena_e='1') OR ramready='1') THEN
-			clkena <= '1';
-		ELSE 
-			clkena <= '0';
-		END IF;	
-		IF rising_edge(clk28) THEN
-        	IF clkena='1' THEN
-				slower <= "0001";	-- Let address, etc. propogate before SDRAM cycle.
-			ELSE 
-				slower(3 downto 0) <= '0'&slower(3 downto 1);
-			END IF;	
-		END IF;	
-	END PROCESS;
+clkena <= '1' when clkena_e='1'
+	or state="01"
+	else '0';
 				
 PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 	BEGIN
@@ -258,49 +225,45 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 			uds <= uds_s AND uds_e;
 			lds <= lds_s AND lds_e;
 		END IF;
+
 		IF reset='0' THEN
 			S_state <= "00";
 			as_s <= '1';
 			rw_s <= '1';
 			uds_s <= '1';
 			lds_s <= '1';
-			addr_akt_s <= '0';
-			data_akt_s <= '0';
 		ELSIF rising_edge(clk28) THEN
         	IF ena7WRreg='1' THEN
 				as_s <= '1';
 				rw_s <= '1';
 				uds_s <= '1';
 				lds_s <= '1';
-				addr_akt_s <= '0';
-				data_akt_s <= '0';
 					CASE S_state IS
-						WHEN "00" => IF state/="01" AND sel_fast='0' THEN
-										 uds_s <= uds_in;
-										 lds_s <= lds_in;
-										S_state <= "01";
-									 END IF;
-						WHEN "01" => as_s <= '0';
-									 rw_s <= wr;
-									 uds_s <= uds_in;
-									 lds_s <= lds_in;
-									 S_state <= "10";
-									 t_addr <= cpuaddr;
---									 t_data <= data_write;
+						WHEN "00" =>
+							IF state/="01" AND sel_fast='0' THEN
+								uds_s <= uds_in;
+								lds_s <= lds_in;
+								S_state <= "01";
+							 END IF;
+						WHEN "01" =>
+							as_s <= '0';
+							rw_s <= wr;
+							uds_s <= uds_in;
+							lds_s <= lds_in;
+							S_state <= "10";
+							t_addr <= cpuaddr;
 						WHEN "10" =>
-									 addr_akt_s <= '1';
-									 data_akt_s <= NOT wr;
-									 r_data <= data_read;
-									 IF waitm='0' THEN
-										S_state <= "11";
-									 ELSE	
-										 as_s <= '0';
-										 rw_s <= wr;
-										 uds_s <= uds_in;
-										 lds_s <= lds_in;
-									 END IF;
+							r_data <= data_read;
+							IF waitm='0' THEN
+								S_state <= "11";
+							ELSE	
+								as_s <= '0';
+								rw_s <= wr;
+								uds_s <= uds_in;
+								lds_s <= lds_in;
+							END IF;
 						WHEN "11" =>
-									 S_state <= "00";
+							S_state <= "00";
 						WHEN OTHERS => null;			
 					END CASE;
 			END IF;
@@ -311,46 +274,90 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 			uds_e <= '1';
 			lds_e <= '1';
 			clkena_e <= '0';
-			addr_akt_e <= '0';
-			data_akt_e <= '0';
 		ELSIF rising_edge(clk28) THEN
+			clkena_e <= '0';
         	IF ena7RDreg='1' THEN
 				as_e <= '1';
 				rw_e <= '1';
 				uds_e <= '1';
 				lds_e <= '1';
-				clkena_e <= '0';
-				addr_akt_e <= '0';
-				data_akt_e <= '0';
 				CASE S_state IS
-					WHEN "00" => addr_akt_e <= '1';
-								 cpuIPL <= IPL;
-								 IF sel_fast='0' THEN
-									 IF state/="01" THEN
-										as_e <= '0';
-									 END IF;
-									 rw_e <= wr;
-									 data_akt_e <= NOT wr;
-									 IF wr='1' THEN
-										 uds_e <= uds_in;
-										 lds_e <= lds_in;					
-									 END IF;
-								 END IF;
-					WHEN "01" => addr_akt_e <= '1';
-								 data_akt_e <= NOT wr;
-									as_e <= '0';
-									 rw_e <= wr;
-									 uds_e <= uds_in;
-									 lds_e <= lds_in;					
+					WHEN "00" =>
+						cpuIPL <= IPL;
+						IF sel_fast='0' THEN
+							IF state/="01" THEN
+								as_e <= '0';
+							END IF;
+							rw_e <= wr;
+							IF wr='1' THEN
+								uds_e <= uds_in;
+								lds_e <= lds_in;					
+							END IF;
+						END IF;
+					WHEN "01" =>
+						as_e <= '0';
+						rw_e <= wr;
+						uds_e <= uds_in;
+						lds_e <= lds_in;					
 					WHEN "10" => rw_e <= wr;
-								 addr_akt_e <= '1';
-								 data_akt_e <= NOT wr;
-								 cpuIPL <= IPL;
-								 waitm <= dtack;
+						cpuIPL <= IPL;
+						waitm <= dtack;
 					WHEN OTHERS => --null;			
-									 clkena_e <= '1';
+						clkena_e <= '1';
 				END CASE;
 			END IF;
 		END IF;	
 	END PROCESS;
+	
+
+-- Autoconfig
+
+--autoconfig_zii : entity work.AutoconfigRAM(ZorroII)
+--port map(
+--	clk => clk28,
+--	reset_n => reset,
+--	addr_in => cpuaddr,
+--	data_in => datatg68_out,
+--	data_out => ac_data1,
+--	config => fastramcfg(1 downto 0),
+--	rw => cpu_rw,
+--	req => ac_req,
+--	req_out => ac2_req,
+--	sel => sel_zorroii
+--);
+--
+--
+--autoconfig_ziii : entity work.AutoconfigRAM(ZorroIII)
+--port map(
+--	clk => clk28,
+--	reset_n => reset,
+--	addr_in => cpuaddr,
+--	data_in => datatg68_out,
+--	data_out => ac_data2,
+--	config => '0'&fastramcfg(2),
+--	rw => cpu_rw,
+--	req => ac2_req,
+--	req_out => ac3_req,
+--	sel => sel_zorroiii
+--);
+--
+--
+--autoconfig_turbochip : entity work.AutoconfigRAM(TurboChip)
+--port map(
+--	clk => clk28,
+--	reset_n => reset,
+--	addr_in => cpuaddr,
+--	data_in => datatg68_out,
+--	data_out => open, -- Not actually an autoconfig interface.
+--	config => '0'&turbochipram,
+--	rw => cpu_rw,
+--	req => ac3_req,
+--	req_out => open,
+--	sel => sel_turbochip
+--);
+--
+--autoconfig_data<=ac_data1 and ac_data2;
+	
 END;	
+
+

@@ -254,10 +254,14 @@ assign pll_in_clk       = CLOCK_27;
 assign pll_rst          = !SW[0];
 assign sdctl_rst        = pll_locked & SW[0];
 
+wire [7:0] vga_red;
+wire [7:0] vga_green;
+wire [7:0] vga_blue;
+
 // DE2 specific VGA wiring
-assign VGA_R[5:0] = {VGA_R[9:6], VGA_R[9:8]};
-assign VGA_G[5:0] = {VGA_G[9:6], VGA_G[9:8]};
-assign VGA_B[5:0] = {VGA_B[9:6], VGA_B[9:8]};
+assign VGA_R = {vga_red[7:4], vga_red[7:4], vga_red[7:6]};
+assign VGA_G = {vga_green[7:4], vga_green[7:4], vga_green[7:6]};
+assign VGA_B = {vga_blue[7:4], vga_blue[7:4], vga_blue[7:6]};
 assign VGA_BLANK = VGA_HS && VGA_VS;
 assign VGA_SYNC = 0;
 assign VGA_CLK = clk_28; //DRAM_CLK;
@@ -337,9 +341,9 @@ Fampiga myfampiga
 		.sdr_ras(DRAM_RAS),
 
 		// VGA
-		.vga_r(VGA_R[9:6]),
-		.vga_g(VGA_G[9:6]),
-		.vga_b(VGA_B[9:6]),
+		.vga_r(vga_red),
+		.vga_g(vga_green),
+		.vga_b(vga_blue),
 
 		.vga_hsync(VGA_HS),
 		.vga_vsync(VGA_VS),
