@@ -43,6 +43,7 @@ port
 
 	sysclk		: in std_logic;
 	reset_in	: in std_logic;
+  cache_rst : in std_logic;
 	
 	hostWR		: in std_logic_vector(15 downto 0);
 	hostAddr	: in std_logic_vector(24 downto 1);
@@ -71,7 +72,9 @@ port
 	enaRDreg	: out std_logic;
 	enaWRreg	: buffer std_logic;
 	ena7RDreg	: out std_logic;
-	ena7WRreg	: out std_logic
+	ena7WRreg	: out std_logic;
+	cache_valid : out std_logic;
+	cacheable : in std_logic
 --	c_7m		: out std_logic
 	);
 end;
@@ -154,15 +157,15 @@ signal slot2_bank : std_logic_vector(1 downto 0);
 
 
 COMPONENT TwoWayCache
-	GENERIC ( WAITING : INTEGER := 0; WAITRD : INTEGER := 1; WAITFILL : INTEGER := 2; FILL2 : INTEGER := 3;
-		 FILL3 : INTEGER := 4; FILL4 : INTEGER := 5; FILL5 : INTEGER := 6; PAUSE1 : INTEGER := 7 );
-		
 	PORT
 	(
 		clk		:	 IN STD_LOGIC;
 		reset	: IN std_logic;
+		cache_rst	: IN std_logic;
 		ready : out std_logic;
 		cpu_addr		:	 IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		cache_valid : out std_logic;
+		cacheable : in std_logic;
 		cpu_req		:	 IN STD_LOGIC;
 		cpu_ack		:	 OUT STD_LOGIC;
 		cpu_wr_ack		:	 OUT STD_LOGIC;
@@ -324,10 +327,13 @@ mytwc : component TwoWayCache
 	(
 		clk => sysclk,
 		reset => reset,
+		cache_rst => cache_rst,
 		ready => open,
 		cpu_addr => "0000000"&cpuAddr&'0',
 		cpu_req => not cpustate(2),
 		cpu_ack => ccachehit,
+		cache_valid => cache_valid,
+		cacheable => cacheable,
 		cpu_wr_ack => writebuffer_cache_ack,
 		cpu_rw => NOT cpuState(1) OR NOT cpuState(0),
 		cpu_rwl => cpuL,

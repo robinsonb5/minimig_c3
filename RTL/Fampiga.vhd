@@ -81,6 +81,7 @@ signal cpu_address : std_logic_vector(31 downto 0);
 signal cpu_data_in : std_logic_vector(15 downto 0);
 signal cpu_data_out : std_logic_vector(15 downto 0);
 signal cpu_data_from_ram : std_logic_vector(15 downto 0);
+signal cpu_data_to_ram : std_logic_vector(15 downto 0);
 signal n_cpu_ipl : std_logic_vector(2 downto 0);
 signal n_cpu_as : std_logic;
 signal n_cpu_uds : std_logic;
@@ -88,6 +89,8 @@ signal n_cpu_lds : std_logic;
 signal cpu_r_w : std_logic;
 signal n_cpu_dtack : std_logic;
 signal n_cpu_reset : std_logic;
+signal cache_valid : std_logic;
+signal cacheable : std_logic;
 
 		-- SDRAM
 		
@@ -314,7 +317,6 @@ MainCPU: entity work.TG68K
 		clk => clk,
 		clk28 => clk28m,
 		reset => n_cpu_reset and sdram_ready,
-		  
 	  -- Standard MC68000 signals...
 		  
 		IPL => n_cpu_ipl,
@@ -341,7 +343,10 @@ MainCPU: entity work.TG68K
       enaWRreg => enaWRreg,
        
       fromram => cpu_data_from_ram,
+      toram => cpu_data_to_ram,
       ramready => cpu_ena,	-- dtack equivalent for fastram access 
+		cacheable => cacheable,
+		cache_valid => cache_valid,
       cpu => cpu_config,
       ramaddr => cpu_ramaddr,
       cpustate => cpustate,
@@ -374,6 +379,7 @@ mysdram : entity work.sdram
 
 		sysclk => clk,
 		reset_in	=> reset_n,
+		cache_rst => n_cpu_reset, 
 	
 		hostWR => hostWR,
 		hostAddr	=> hostAddr(24 downto 1),
@@ -383,13 +389,15 @@ mysdram : entity work.sdram
 		hostRD => hostRD,
 		hostena => hostena_in,
 
-		cpuWR	=> cpu_data_out,
+		cpuWR	=> cpu_data_to_ram,
 		cpuAddr => cpu_ramaddr(24 downto 1),
 		cpuU => cpu_ram_uds,
 		cpuL => cpu_ram_lds,
 		cpustate	=> cpustate,
 		cpuRD	=> cpu_data_from_ram,
 		cpuena => cpu_ena,
+		cache_valid => cache_valid,
+		cacheable => cacheable,
 		
 		chipWR => mm_ram_data_out,
 		chipAddr => "000"&mm_ram_address,

@@ -38,7 +38,7 @@ entity TG68K is
         ein           : in std_logic:='1';
         addr          : buffer std_logic_vector(31 downto 0);
         data_read  	  : in std_logic_vector(15 downto 0);
-        data_write 	  : buffer std_logic_vector(15 downto 0);
+        data_write 	  : out std_logic_vector(15 downto 0);
         as            : out std_logic;
         uds           : out std_logic;
         lds           : out std_logic;
@@ -51,7 +51,10 @@ entity TG68K is
         enaWRreg      : in std_logic:='1';
         
         fromram    	  : in std_logic_vector(15 downto 0);
+        toram    	  	: out std_logic_vector(15 downto 0);
         ramready      : in std_logic:='0';
+		  cache_valid : in std_logic;
+		  cacheable : out std_logic;
         cpu           : in std_logic_vector(1 downto 0);
 		  fastramcfg	: in std_logic_vector(2 downto 0);
 		  turbochipram : in std_logic;
@@ -102,6 +105,7 @@ COMPONENT TG68KdotC_Kernel
 --   SIGNAL data_write  : std_logic_vector(15 downto 0);
 --   SIGNAL t_data      : std_logic_vector(15 downto 0);
    SIGNAL r_data      : std_logic_vector(15 downto 0);
+   SIGNAL w_data      : std_logic_vector(15 downto 0);
    SIGNAL cpuIPL      : std_logic_vector(2 downto 0);
    SIGNAL as_s        : std_logic;
    SIGNAL as_e        : std_logic;
@@ -128,13 +132,16 @@ COMPONENT TG68KdotC_Kernel
    SIGNAL sync_state3 : std_logic;
    SIGNAL eind	      : std_logic;
    SIGNAL eindd	      : std_logic;
-   SIGNAL sel_autoconfig: std_logic;
-   SIGNAL autoconfig_out: std_logic_vector(1 downto 0); -- We use this as a counter since we have two cards to configure
-   SIGNAL autoconfig_out_next: std_logic_vector(1 downto 0); -- We use this as a counter since we have two cards to configure
-   SIGNAL autoconfig_data: std_logic_vector(3 downto 0); -- Zorro II RAM
-   SIGNAL autoconfig_data2: std_logic_vector(3 downto 0); -- Zorro III RAM
-   SIGNAL sel_fast: std_logic;
-	SIGNAL sel_chipram: std_logic;
+	signal sel_interrupt : std_logic;
+	signal sel_32bit : std_logic;
+	signal sel_bridge : std_logic;
+	signal sel_chipram : std_logic;
+	signal sel_autoconfig : std_logic;
+	signal sel_zorroii : std_logic;
+	signal sel_zorroiii : std_logic;
+	signal sel_fastram : std_logic;
+	signal sel_turbochip : std_logic;
+	signal cpu_rw : std_logic;
 	SIGNAL turbochip_ena : std_logic := '0';
 	SIGNAL turbochip_d : std_logic := '0';
    SIGNAL slower       : std_logic_vector(3 downto 0);
@@ -149,24 +156,33 @@ COMPONENT TG68KdotC_Kernel
    SIGNAL datatg68      : std_logic_vector(15 downto 0);
    SIGNAL ramcs	      : std_logic;
 
+	
+	signal ac_data1 : std_logic_vector(3 downto 0);
+	signal ac_data2 : std_logic_vector(3 downto 0);
+	signal autoconfig_data : std_logic_vector(3 downto 0);
+	signal ac_req : std_logic;
+	signal ac2_req : std_logic;
+	signal ac3_req : std_logic;
+
+	signal sdram_req113 : std_logic;
+	signal sdram_req28 : std_logic;
+	signal sdram_req : std_logic;
+	signal fast_clkena : std_logic;
+	signal cache_clkena : std_logic;
+
+
 BEGIN  
 	wrd <= wr;
 	addr <= cpuaddr;
 
-	datatg68 <= fromram WHEN sel_fast='1'
-		ELSE autoconfig_data&r_data(11 downto 0) when sel_autoconfig='1' and autoconfig_out="01" -- Zorro II autoconfig
-		ELSE autoconfig_data2&r_data(11 downto 0) when sel_autoconfig='1' and autoconfig_out="10" -- Zorro III autoconfig
-		ELSE r_data;
+	cache_clkena <= '1' when cpu_rw='1' and cache_valid='1' and state/="01" else '0';
+	clkena<='1' when clkena_e='1' or fast_clkena='1' or cache_clkena='1' else '0';
 
-   sel_autoconfig <= '1' when cpuaddr(23 downto 19)="11101" AND autoconfig_out/="00" ELSE '0'; --$E80000 - $EFFFFF
+	datatg68 <= fromram when sel_fastram='1'
+		else autoconfig_data&X"FFF" when sel_autoconfig='1'
+		else r_data;
 
-	sel_chipram <= '1' when state/="01" AND (cpuaddr(23 downto 21)="000") ELSE '0'; --$000000 - $1FFFFF
-
-	sel_fast <= '0';
-	ramcs <= (NOT sel_fast) or slower(0);-- OR (state(0) AND NOT state(1));
 	cpustate <= clkena&slower(1 downto 0)&ramcs&state;
-	ramlds <= lds_in;
-	ramuds <= uds_in;
 
 	ramaddr(20 downto 0) <= cpuaddr(20 downto 0);
 	ramaddr(31 downto 25) <= "0000000";
@@ -194,7 +210,7 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 		IPL => cpuIPL,				  	-- : in std_logic_vector(2 downto 0):="111";
 		IPL_autovector => '1',   	-- : in std_logic:='0';
         addr => cpuaddr,           	-- : buffer std_logic_vector(31 downto 0);
-        data_write => data_write,     -- : out std_logic_vector(15 downto 0);
+        data_write => w_data,     -- : out std_logic_vector(15 downto 0);
 		busstate => state,	  	  	-- : buffer std_logic_vector(1 downto 0);	
         regin => open,          	-- : out std_logic_vector(31 downto 0);
 		nWr => wr,			  	-- : out std_logic;
@@ -204,13 +220,7 @@ pf68K_Kernel_inst: TG68KdotC_Kernel
 		CPU => cpu,
 		skipFetch => skipFetch 		-- : out std_logic
         );
- 
-	autoconfig_data <= "1111";
-		
-
-clkena <= '1' when clkena_e='1'
-	or state="01"
-	else '0';
+ 		
 				
 PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 	BEGIN
@@ -220,7 +230,7 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 			uds <= '1';
 			lds <= '1';
 		ELSE
-			as <= (as_s AND as_e) OR sel_fast;
+			as <= (as_s AND as_e) OR not sel_bridge;
 			rw <= rw_s AND rw_e;
 			uds <= uds_s AND uds_e;
 			lds <= lds_s AND lds_e;
@@ -240,13 +250,14 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 				lds_s <= '1';
 					CASE S_state IS
 						WHEN "00" =>
-							IF state/="01" AND sel_fast='0' THEN
+							IF state/="01" AND sel_bridge='1' THEN
 								uds_s <= uds_in;
 								lds_s <= lds_in;
 								S_state <= "01";
 							 END IF;
 						WHEN "01" =>
 							as_s <= '0';
+							data_write <= w_data;
 							rw_s <= wr;
 							uds_s <= uds_in;
 							lds_s <= lds_in;
@@ -284,7 +295,7 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 				CASE S_state IS
 					WHEN "00" =>
 						cpuIPL <= IPL;
-						IF sel_fast='0' THEN
+						IF sel_bridge='1' THEN
 							IF state/="01" THEN
 								as_e <= '0';
 							END IF;
@@ -309,54 +320,130 @@ PROCESS (clk, reset, state, as_s, as_e, rw_s, rw_e, uds_s, uds_e, lds_s, lds_e)
 		END IF;	
 	END PROCESS;
 	
+	
+-- SDRAM logic
+
+ramcs <= '0' when sdram_req='1' and sel_fastram='1' and (cpu_rw='0' or cache_valid='0') else '1';
+ramlds <= lds_in;
+ramuds <= uds_in;
+toram <= w_data;
+
+-- We don't want chipram to be data-cacheable until
+-- such time as the cache can bus-snoop.
+cacheable<='1' when	sel_zorroii='1' or sel_zorroiii='1'  -- Fast RAM always cacheable
+						or (sel_turbochip='1' and state="00")  -- Chip RAM only cacheable for instructions
+							else '0';
+
+-- Handle most logic on the falling edge of clk28,
+-- handing 7Mhz cycles off to logic on the rising edge.
+-- This allows us to unpause the CPU quicker
+process(clk28)
+begin
+	if falling_edge(clk28) then
+		fast_clkena<='0';
+		if state/="01" and sel_fastram='1' and (cache_valid='0' or cpu_rw='0') then -- Trigger an SDRAM access
+			sdram_req28<='1';
+		end if;
+
+		ac_req<='0';
+		if state/="01" then
+			if sel_autoconfig='1' then
+				ac_req<='1';
+				fast_clkena<='1';
+			elsif sel_fastram='0' then
+				sel_bridge<='1';
+			end if;
+		else
+			fast_clkena<='1';
+		end if;
+		
+		if clkena_e='1' then
+			sel_bridge<='0';
+		end if;
+
+		-- When SDRAM access finishes, force the state machine back to the "run" state
+		if sdram_req113='0' then
+			sdram_req28<='0';
+			fast_clkena<='1';
+		end if;
+			
+	end if;
+end process;	
+
+
+-- Address decoding
+
+sel_interrupt <= '1' when cpuaddr(31 downto 28)=X"F" else '0';
+sel_32bit <= '0' when cpuaddr(31 downto 24)=X"00" else '1';
+sel_chipram <= '1' when cpuaddr(31 downto 21)=X"00"&"111" else '0';
+sel_autoconfig <= '1' when cpuaddr(23 downto 19)="11101" ELSE '0'; --$E80000 - $EFFFFF
+sel_fastram <='1' when sel_zorroii='1' or sel_zorroiii='1' or sel_turbochip='1' else '0';
+
+cpu_rw <= '0' when state="11" else '1';
+
+process(clk)
+begin
+	if rising_edge(clk) then
+		if sdram_req28='0' then
+			sdram_req113<='1';
+		end if;
+		if ramready='1' then
+			sdram_req113<='0';
+		end if;
+	end if;
+end process;
+
+sdram_req<=sdram_req28 and sdram_req113;
+
+
 
 -- Autoconfig
 
---autoconfig_zii : entity work.AutoconfigRAM(ZorroII)
---port map(
---	clk => clk28,
---	reset_n => reset,
---	addr_in => cpuaddr,
---	data_in => datatg68_out,
---	data_out => ac_data1,
---	config => fastramcfg(1 downto 0),
---	rw => cpu_rw,
---	req => ac_req,
---	req_out => ac2_req,
---	sel => sel_zorroii
---);
---
---
---autoconfig_ziii : entity work.AutoconfigRAM(ZorroIII)
---port map(
---	clk => clk28,
---	reset_n => reset,
---	addr_in => cpuaddr,
---	data_in => datatg68_out,
---	data_out => ac_data2,
---	config => '0'&fastramcfg(2),
---	rw => cpu_rw,
---	req => ac2_req,
---	req_out => ac3_req,
---	sel => sel_zorroiii
---);
---
---
---autoconfig_turbochip : entity work.AutoconfigRAM(TurboChip)
---port map(
---	clk => clk28,
---	reset_n => reset,
---	addr_in => cpuaddr,
---	data_in => datatg68_out,
---	data_out => open, -- Not actually an autoconfig interface.
---	config => '0'&turbochipram,
---	rw => cpu_rw,
---	req => ac3_req,
---	req_out => open,
---	sel => sel_turbochip
---);
---
---autoconfig_data<=ac_data1 and ac_data2;
+autoconfig_zii : entity work.AutoconfigRAM(ZorroII)
+port map(
+	clk => clk28,
+	reset_n => reset,
+	addr_in => cpuaddr,
+	data_in => w_data,
+	data_out => ac_data1,
+	config => fastramcfg(1 downto 0),
+	rw => cpu_rw,
+	req => ac_req,
+	req_out => ac2_req,
+	sel => sel_zorroii
+);
+
+
+autoconfig_ziii : entity work.AutoconfigRAM(ZorroIII)
+port map(
+	clk => clk28,
+	reset_n => reset,
+	addr_in => cpuaddr,
+	data_in => w_data,
+	data_out => ac_data2,
+	config => '0'&fastramcfg(2),
+	rw => cpu_rw,
+	req => ac2_req,
+	req_out => ac3_req,
+	sel => sel_zorroiii
+);
+
+
+autoconfig_turbochip : entity work.AutoconfigRAM(TurboChip)
+port map(
+	clk => clk28,
+	reset_n => reset,
+	addr_in => cpuaddr,
+	data_in => w_data,
+	data_out => open, -- Not actually an autoconfig interface.
+	config => '0'&turbochipram,
+	rw => cpu_rw,
+	req => ac3_req,
+	req_out => open,
+	sel => sel_turbochip
+);
+
+autoconfig_data<=ac_data1 and ac_data2;
 	
 END;	
 
