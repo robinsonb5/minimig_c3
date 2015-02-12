@@ -184,15 +184,11 @@ BEGIN
 
 	cpustate <= clkena&slower(1 downto 0)&ramcs&state;
 
-	ramaddr(20 downto 0) <= cpuaddr(20 downto 0);
-	ramaddr(31 downto 25) <= "0000000";
-	ramaddr(24) <= cpuaddr(30);	-- Remap the Zorro III RAM to 0x1000000
-	ramaddr(23 downto 21) <= "100" when cpuaddr(30)&cpuaddr(23 downto 21)="0001" -- 2 -> 8
-		else "101" when cpuaddr(30)&cpuaddr(23 downto 21)="0010" -- 4 -> A
-		else "110" when cpuaddr(30)&cpuaddr(23 downto 21)="0011" -- 6 -> C
-		else "111" when cpuaddr(30)&cpuaddr(23 downto 21)="0100" -- 8 -> E
-		else cpuaddr(23 downto 21);	-- pass through others
-
+-- FastRAM address mangling
+ramaddr(22 downto 0) <= cpuaddr(22 downto 0);
+ramaddr(31 downto 25) <= "0000000";
+ramaddr(24) <= sel_zorroiii;	-- Remap the Zorro III RAM to 0x1000000
+ramaddr(23) <= cpuaddr(23) or sel_zorroii; -- Remap the Zorro II RAM to 0x0800000
 
 pf68K_Kernel_inst: TG68KdotC_Kernel 
 	generic map(
