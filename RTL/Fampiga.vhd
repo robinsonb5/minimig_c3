@@ -51,6 +51,8 @@ port(
 		-- Audio
 		aud_l : out std_logic;
 		aud_r : out std_logic;
+		aud16b_l : out std_logic_vector(15 downto 0);
+		aud16b_r : out std_logic_vector(15 downto 0);
 		
 		-- RS232
 		rs232_rxd : in std_logic;
@@ -188,6 +190,8 @@ COMPONENT Minimig1
 		blue		:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		aud_l		:	 OUT STD_LOGIC;
 		aud_r		:	 OUT STD_LOGIC;
+		aud16b_l		:	 OUT STD_LOGIC_VECTOR(15 downto 0);
+		aud16b_r		:	 OUT STD_LOGIC_VECTOR(15 downto 0);
 		cpu_config		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
 		memcfg		:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		drv_snd		:	 OUT STD_LOGIC;
@@ -295,6 +299,8 @@ MyMinimig: COMPONENT Minimig1
 		
 		aud_l => aud_l,
 		aud_r => aud_r,
+		aud16b_l => aud16b_l,
+		aud16b_r => aud16b_r,
 		cpu_config => cpu_config,
 		memcfg => mem_config,
 		drv_snd => open,

@@ -100,6 +100,8 @@ module Paula
 	// audio outputs
 	output	left,					// audio bitstream left
 	output	right,					// audio bitstream right
+	output	left16b,					// audio bitstream left
+	output	right16b,					// audio bitstream right
 	// system configuration
 	input	[1:0] floppy_drives,	// number of extra floppy drives
 	// direct sector read from SD card
@@ -295,7 +297,9 @@ audio ad1
 	.dmal(audio_dmal),
 	.dmas(audio_dmas),
 	.left(left),
-	.right(right)	
+	.right(right),	
+	.left16b(left16b),
+	.right16b(right16b)	
 );
 
 //--------------------------------------------------------------------------------------
