@@ -201,6 +201,8 @@ module Minimig1
 	// audio
 	output	aud_l,				// audio bitstream left
 	output	aud_r,				// audio bitstream right
+	output[15:0]	aud16b_l,				// audio bitstream left
+	output[15:0]	aud16b_r,				// audio bitstream right
 //	output	[14:0]ldata,		// left DAC data
 //	output	[14:0]rdata, 		// right DAC data
 	// user i/o
@@ -547,6 +549,8 @@ Paula PAULA1
 	.sck(sck),
 	.left(aud_l),
 	.right(aud_r),
+	.left16b(aud16b_l),
+	.right16b(aud16b_r),
 //	.ldata(ldata),
 //	.rdata(rdata),
 

@@ -162,8 +162,8 @@ wire           joy_emu_en;    // joystick emulation enable
 wire           sdo;           // SPI data output
 wire [ 15-1:0] ldata;         // left DAC data
 wire [ 15-1:0] rdata;         // right DAC data
-wire           audio_left;
-wire           audio_right;
+wire [15:0]    audio_left;
+wire [15:0]    audio_right;
 wire           floppy_fwr;
 wire           floppy_frd;
 wire           hd_fwr;
@@ -225,24 +225,16 @@ assign TDO              = 1'b1;
 assign SRAM_DQ          = SRAM_OE_N ? SRAM_DAT_W : 16'bzzzzzzzzzzzzzzzz;
 assign SRAM_DAT_R       = SRAM_DQ;
 
-// SDRAM
-//assign DRAM_CKE         = 1'b1;
-//assign DRAM_CLK         = clk_sdram;
-//assign DRAM_CS_N        = sdram_cs[0];
-//assign DRAM_LDQM        = sdram_dqm[0];
-//assign DRAM_UDQM        = sdram_dqm[1];
-//assign DRAM_BA_0        = sdram_ba[0];
-//assign DRAM_BA_1        = sdram_ba[1];
 
 // FLASH
 assign FL_DQ            = FL_OE_N   ? FL_DAT_W   : 8'bzzzzzzzz;
 assign FL_DAT_R         = FL_DQ;
 
 // AUDIO
-//assign AUDIOLEFT        = audio_left;
-//assign AUDIORIGHT       = audio_right;
-assign AUDIOLEFT        = 1'b0;
-assign AUDIORIGHT       = 1'b0;
+assign AUDIOLEFT        = audio_left;
+assign AUDIORIGHT       = audio_right;
+//assign AUDIOLEFT        = 1'b0;
+//assign AUDIORIGHT       = 1'b0;
 
 // ctrl
 assign SPI_DI           = !SPI_CS_N[0] ? SD_DAT : sdo;
@@ -254,10 +246,14 @@ assign pll_in_clk       = CLOCK_27;
 assign pll_rst          = !SW[0];
 assign sdctl_rst        = pll_locked & SW[0];
 
+wire [7:0] vga_red;
+wire [7:0] vga_green;
+wire [7:0] vga_blue;
+
 // DE2 specific VGA wiring
-assign VGA_R[5:0] = {VGA_R[9:6], VGA_R[9:8]};
-assign VGA_G[5:0] = {VGA_G[9:6], VGA_G[9:8]};
-assign VGA_B[5:0] = {VGA_B[9:6], VGA_B[9:8]};
+assign VGA_R = {vga_red[7:4], vga_red[7:4], vga_red[7:6]};
+assign VGA_G = {vga_green[7:4], vga_green[7:4], vga_green[7:6]};
+assign VGA_B = {vga_blue[7:4], vga_blue[7:4], vga_blue[7:6]};
 assign VGA_BLANK = VGA_HS && VGA_VS;
 assign VGA_SYNC = 0;
 assign VGA_CLK = clk_28; //DRAM_CLK;
@@ -290,27 +286,28 @@ end
 
 assign clk_7 = clk7_cnt[1];
 assign clk7_en = clk7_en_reg;
- 
- 
-//
-////// audio ////
-//audio_top audio_top (
-//  .clk          (clk_28           ),  // 28MHz input clock
-//  .rst_n        (reset_out        ),  // active low reset (from sdram controller)
-//  // config
-//  .exchan       (audio_lr_switch  ),  // switch audio left / right channel
-//  .mix          (audio_lr_mix     ),  // normal / centered mix (play some left channel on the right channel and vise-versa)
-//  // audio shifter
-//  .rdata        (rdata            ),  // right channel sample data
-//  .ldata        (ldata            ),  // left channel sample data
-//  .aud_bclk     (AUD_BCLK         ),  // CODEC data clock
-//  .aud_daclrck  (AUD_DACLRCK      ),  // CODEC data clock
-//  .aud_dacdat   (AUD_DACDAT       ),  // CODEC data
-//  .aud_xck      (AUD_XCK          ),  // CODEC data clock
-//  // I2C audio config
-//  .i2c_sclk     (I2C_SCLK         ),  // CODEC config clock
-//  .i2c_sdat     (I2C_SDAT         )   // CODEC config data
-//);
+
+assign audio_lr_mix=1'b0;
+assign audio_lr_switch=1'b0; 
+
+//// audio ////
+audio_top audio_top (
+  .clk          (clk_28           ),  // 28MHz input clock
+  .rst_n        (SW[0]^!KEY[0]    ),  // active low reset (from sdram controller)
+  // config
+  .exchan       (audio_lr_switch  ),  // switch audio left / right channel
+  .mix          (audio_lr_mix     ),  // normal / centered mix (play some left channel on the right channel and vise-versa)
+  // audio shifter
+  .rdata        (audio_right      ),  // right channel sample data
+  .ldata        (audio_left       ),  // left channel sample data
+  .aud_bclk     (AUD_BCLK         ),  // CODEC data clock
+  .aud_daclrck  (AUD_DACLRCK      ),  // CODEC data clock
+  .aud_dacdat   (AUD_DACDAT       ),  // CODEC data
+  .aud_xck      (AUD_XCK          ),  // CODEC data clock
+  // I2C audio config
+  .i2c_sclk     (I2C_SCLK         ),  // CODEC config clock
+  .i2c_sdat     (I2C_SDAT         )   // CODEC config data
+);
 
 defparam myfampiga.sdram_rows = 12;
 defparam myfampiga.sdram_cols = 8;
@@ -320,7 +317,7 @@ Fampiga myfampiga
 		.clk(clk_114),
 		.clk7m(clk_7),
 		.clk28m(clk_28),
-		.reset_n(SW[0]),
+		.reset_n(SW[0]^!KEY[0]),
 		.powerled_out(LEDR[1:0]),
 		.diskled_out(LEDG[0]),
 		.oddled_out(LEDG[1]),
@@ -331,15 +328,15 @@ Fampiga myfampiga
 		.sdr_ba({DRAM_BA_1,DRAM_BA_0}),
 		.sdr_cke(DRAM_CKE),
 		.sdr_dqm({DRAM_UDQM,DRAM_LDQM}),
-		.sdr_cs(DRAM_CS),
-		.sdr_we(DRAM_WE),
-		.sdr_cas(DRAM_CAS),
-		.sdr_ras(DRAM_RAS),
+		.sdr_cs(DRAM_CS_N),
+		.sdr_we(DRAM_WE_N),
+		.sdr_cas(DRAM_CAS_N),
+		.sdr_ras(DRAM_RAS_N),
 
 		// VGA
-		.vga_r(VGA_R[9:6]),
-		.vga_g(VGA_G[9:6]),
-		.vga_b(VGA_B[9:6]),
+		.vga_r(vga_red),
+		.vga_g(vga_green),
+		.vga_b(vga_blue),
 
 		.vga_hsync(VGA_HS),
 		.vga_vsync(VGA_VS),
@@ -363,19 +360,18 @@ Fampiga myfampiga
 		.sd_ack(1'b1),
 		
 		// Audio
-		.aud_l(audio_left),
-		.aud_r(audio_right),
+		.aud16b_l(audio_left),
+		.aud16b_r(audio_right),
 		
 		// RS232
 		.rs232_rxd(UART_RXD),
-		.rs232_txd(UART_TXD)
-
+		.rs232_txd(UART_TXD),
 
 		// Joystick
-//		.joy1_n => joy1,
-//		.joy2_n => joy2,
-//		.joy3_n => (others =>'1'),
-//		.joy4_n => (others =>'1')
+		.joy1_n({1'b1,Joya}),
+		.joy2_n({1'b1,Joyb}),
+		.joy3_n(7'b1111111),
+		.joy4_n(7'b1111111)
 	);
 
 

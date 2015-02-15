@@ -92,7 +92,9 @@ module audio
 	output	reg [3:0] dmal,			//dma request 
 	output	reg [3:0] dmas,			//dma special 
 	output	left,					//audio bitstream out left
-	output	right					//audio bitstream out right
+	output	right,					//audio bitstream out right
+	output [15:0]	left16b,					//audio bitstream out left
+	output [15:0]	right16b					//audio bitstream out right
 );
 
 //register names and addresses
@@ -229,7 +231,9 @@ sigmadelta dac0
 	.vol3(vol3),
 	.strhor(strhor),
 	.left(left),
-	.right(right)
+	.right(right),
+	.left16b(left16b),
+	.right16b(right16b)
 );
 
 //--------------------------------------------------------------------------------------
@@ -321,7 +325,9 @@ module sigmadelta
 	input	[6:0] vol3,			//volume 3 input
 	input	strhor,
 	output	left,				//left bitstream output
-	output	right				//right bitsteam output
+	output	right,				//right bitsteam output
+	output [15:0]	left16b,				//left bitstream output
+	output [15:0] right16b				//right bitsteam output
 );
 
 //local signals
@@ -338,6 +344,9 @@ reg	[13:0]rdatatmp; 		//right DAC data
 reg	[14:0]ldatasum;		//left DAC data
 reg	[14:0]rdatasum; 		//right DAC data
 reg		mxc;					//multiplex control
+
+assign left16b={ldatasum,1'b0};
+assign right16b={rdatasum,1'b0};
 
 //--------------------------------------------------------------------------------------
 

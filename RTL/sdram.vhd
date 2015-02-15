@@ -783,12 +783,13 @@ mytwc : component TwoWayCache
 --						datain <= cpuWR;
 						cas_sd_cas <= '0';
 --						cas_sd_we <= '1';
-					ELSIF hostState(2)='0' AND hostena='0' THEN
+					ELSIF hostState(2)='0' AND hostena='0'
+						and (slot2_type=idle or slot2_bank/=zmAddr((rows+cols+2) downto (rows+cols+1)))THEN
 						slot1_type<=host; -- chipCycle <= '1';
 						hostSlot_cnt <= "00001111";
 						hostCycle <= '1';
 						sdaddr <= zmAddr((rows+cols) downto (cols+1));
-						ba <= "00"; -- zmAddr((rows+cols+2) downto (rows+cols+1));
+						ba <= zmAddr((rows+cols+2) downto (rows+cols+1));
 						cas_dqm <= hostU& hostL;
 						sd_cs <= "1110"; --ACTIVE
 						sd_ras <= '0';
