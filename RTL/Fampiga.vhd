@@ -7,7 +7,8 @@ entity Fampiga is
 generic
 	(
 		sdram_rows : integer := 12;
-		sdram_cols : integer := 10
+		sdram_cols : integer := 10;
+		host_base : std_logic_vector(7 downto 0) := X"40"
 	);
 port(
 		clk 	: in std_logic;

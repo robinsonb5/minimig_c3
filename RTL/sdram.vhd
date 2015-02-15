@@ -28,7 +28,8 @@ entity sdram is
 generic
 	(
 		rows : integer := 12;
-		cols : integer := 10
+		cols : integer := 10;
+		host_base : std_logic_vector(7 downto 0) := X"40"
 	);
 port
 	(
@@ -227,10 +228,10 @@ begin
 -------------------------------------------------------------------------
 	hostena <= '1' when zena='1' or hostState(1 downto 0)="01" OR zcachehit='1' else '0'; 
 
-	-- Map host processor's address space to 0x400000
-	zmAddr <= "00" & NOT hostAddr(22) & hostAddr(21 downto 1);
---	-- Map host processor's address space to 0xA00000
---	zmAddr <= '0'& NOT hostAddr(23) & hostAddr(22) & NOT hostAddr(21) & hostAddr(20 downto 1);
+	-- Map host processor's address space to a generic-specified address
+	zmAddr(zmAddr'high downto 24)<=(others =>'0');
+	zmAddr(23 downto 16) <= host_base or hostAddr(23 downto 16);
+	zmAddr(15 downto 1) <= hostAddr(15 downto 1);
 	
 	process (sysclk, zmAddr, hostAddr, zcache_addr, zcache, zequal, zvalid, hostRDd) 
 	begin

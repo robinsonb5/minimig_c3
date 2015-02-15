@@ -286,8 +286,9 @@ end
 
 assign clk_7 = clk7_cnt[1];
 assign clk7_en = clk7_en_reg;
- 
- 
+
+assign audio_lr_mix=1'b0;
+assign audio_lr_switch=1'b0; 
 
 //// audio ////
 audio_top audio_top (
